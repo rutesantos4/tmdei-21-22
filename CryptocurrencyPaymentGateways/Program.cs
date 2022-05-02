@@ -20,6 +20,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
+
 #region BitPay
 
 app.MapGet("/bitpay/rates/{basecurrency}", ([FromRoute] string basecurrency) =>
@@ -907,6 +908,170 @@ app.MapPost("/coinpayments/webhook", async (
 #endregion
 
 
+#region Coinqvest
+
+// This returns the convertion amount
+app.MapPost("/coinqvest/checkout", (Coinqvest.Request request) =>
+{
+    var id = Guid.NewGuid().ToString();
+    var result = new
+    {
+        id = id,
+        paymentMethods = new List<object>(){
+            new
+            {
+                assetCode = "BTC",
+                blockchain = "Bitcoin",
+                paymentAmount = "0.0003672",
+                settlement = new
+                {
+                    assetId = "EURT:GAP5LETOV6YIE62YAM56STDANPRDO7ZFDBGSNHJQIYGGKSMOZAHOOS2S",
+                    amount = "14.3394628",
+                    netAmount = "14.3394628",
+                    fee = "0.0000000"
+                }
+            } ,
+            new
+            {
+                assetCode = "ETH",
+                blockchain = "Ethereum",
+                paymentAmount = "0.0050734",
+                settlement = new
+                {
+                    assetId = "EURT:GAP5LETOV6YIE62YAM56STDANPRDO7ZFDBGSNHJQIYGGKSMOZAHOOS2S",
+                    amount = "14.3502846",
+                    netAmount = "14.3394628",
+                    fee = "0.0000000"
+                }
+            } ,
+            new
+            {
+                assetCode = "LTC",
+                blockchain = "Litecoin",
+                paymentAmount = "0.0996787",
+                settlement = new
+                {
+                    assetId = "EURT:GAP5LETOV6YIE62YAM56STDANPRDO7ZFDBGSNHJQIYGGKSMOZAHOOS2S",
+                    amount = "14.3387874",
+                    netAmount = "14.3394628",
+                    fee = "0.0000000"
+                }
+            } ,
+            new
+            {
+                assetCode = "XLM",
+                blockchain = "Stellar Network",
+                paymentAmount = "50",
+                settlement = new
+                {
+                    assetId = "EURT:GAP5LETOV6YIE62YAM56STDANPRDO7ZFDBGSNHJQIYGGKSMOZAHOOS2S",
+                    amount = "14.3904448",
+                    netAmount = "14.3394628",
+                    fee = "0.0000000"
+                }
+            }
+        }
+    };
+    return result;
+})
+.WithName("Coinqvest-PostCheckout");
+
+app.MapPost("/coinqvest/checkout-commit", (Coinqvest.RequestComplete request) =>
+{
+    var id = Guid.NewGuid().ToString();
+    var result = new
+    {
+        depositInstructions = new
+        {
+            blockchain = "Ethereum",
+            assetCode = request.AssetCode,
+            amount = "0.0056804",
+            address = "0xc85eBb197c8212C09B7d0905C3ce9e3fCe324F0B"
+        },
+        settlement = new
+        {
+            assetId = "USD:GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX",
+            amount = "19.2514345"
+        },
+        expirationTime = "2020-02-26T18:49:33+00:00",
+        checkoutId = request.CheckoutId,
+    };
+    return result;
+})
+.WithName("Coinqvest-PostCheckoutResolve");
+
+app.MapPost("coinqvest/webhook", async ([FromQuery] string id, [FromQuery] string cryptocurrency, [FromBody] Coinqvest.Request request) =>
+{
+    var totalAmount = request.Charge.LineItems.Select(e => e.NetAmount).Sum();
+    var sendRequest = new
+    {
+        eventType = "CHECKOUT_COMPLETED",
+        data = new
+        {
+            checkout = new
+            {
+                id = id,
+                timestamp = DateTime.Now,
+                state = "COMPLETED",
+                type = "HOSTED",
+                origin = "API",
+                settlementAssetId = $"{request.Charge.Currency}:GDUKMGUGDZQK6YHYA5Z6AY2G4XDSZPSZ3SW5UN3ARVMO6QSRDWP5YLEX",
+                settlementAmountRequired = $"{totalAmount}",
+                settlementAmountReceived = $"{totalAmount}",
+                settlementAmountFeePaid = "0",
+                sourceAssetId = $"{cryptocurrency}:GBDEVU63Y6NTHJQQZIKVTC23NWLQVP3WJ2RI2OTSJTNYOIGICST6DUXR",
+                sourceAmountRequired = "0.0069518",
+                sourceAmountReceived = "0.0069518",
+                sourceBlockchain = "Ethereum",
+                sourceBlockchainAssetCode = "ETH",
+                blockchainTransactions = new List<object> {
+                    new
+                    {
+                        type = "ORIGIN",
+                        typeDescription = "Blockchain payment transaction initiated by customer.",
+                        blockchain = $"network {cryptocurrency}",
+                        blockchainAssetCode = $"{cryptocurrency}",
+                        tx = $"{Guid.NewGuid()}",
+                        amount = "0.0069518",
+                        amountAssetCode = $"{cryptocurrency}"
+                    },
+                    new
+                    {
+                        type = "TRANSFER",
+                        typeDescription = $"Asset issuer fund transfer from native blockchain to {cryptocurrency} Network.",
+                        blockchain = $"network {cryptocurrency}",
+                        blockchainAssetCode = $"blockchain asset {cryptocurrency}",
+                        tx = $"{Guid.NewGuid()}",
+                        amount = "0.0069518",
+                        amountAssetCode = $"{cryptocurrency}"
+                    },
+                    new
+                    {
+                        type = "SETTLEMENT",
+                        typeDescription = $"{cryptocurrency} transaction crediting your COINQVEST merchant account.",
+                        blockchain = $"network {cryptocurrency}",
+                        blockchainAssetCode = $"blockchain asset {cryptocurrency}",
+                        tx = $"{Guid.NewGuid()}",
+                        amount = $"{totalAmount}",
+                        amountAssetCode = $"{request.Charge.Currency}"
+                    }
+                },
+                payload = new
+                {
+                    charge = request.Charge
+                }
+            }
+        }
+    };
+    var response = await WebhookRequest.Request(JsonSerializer.Serialize(sendRequest));
+    return response;
+})
+.WithName("Coinqvest-PostWebhook");
+
+#endregion
+
+
+
 app.Run();
 
 
@@ -936,6 +1101,34 @@ struct BitPay
         public string Phone { get; set; }
     }
 
+}
+
+struct Coinqvest
+{
+    internal class Request
+    {
+        public CoinqvestCharge Charge { get; set; }
+        public string Webhook { get; set; }
+    }
+
+    internal class CoinqvestCharge
+    {
+        public string Currency { get; set; }
+        public Item[] LineItems { get; set; }
+    }
+
+    internal class Item
+    {
+        public string Description { get; set; }
+        public int NetAmount { get; set; }
+        public int Quantity { get; set; }
+    }
+
+    internal class RequestComplete
+    {
+        public string CheckoutId { get; set; }
+        public string AssetCode { get; set; }
+    }
 }
 
 internal class WebhookRequest
