@@ -1071,6 +1071,202 @@ app.MapPost("coinqvest/webhook", async ([FromQuery] string id, [FromQuery] strin
 #endregion
 
 
+#region Coinbase
+
+app.MapPost("/coinbase/charges", (Coinbase.CoinbaseCharge request) =>
+{
+    var id = Guid.NewGuid().ToString();
+    var date = DateTime.Now;
+    var result = new
+    {
+        data = new
+        {
+            id = id,
+            resource = "charge",
+            code = "66BEOV2A",
+            name = request.Name,
+            description = request.Description,
+            logo_url = "https://commerce.coinbase.com/charges/ybjknds.png",
+            hosted_url = "https://commerce.coinbase.com/charges/66BEOV2A",
+            created_at = date,
+            expires_at = date.AddHours(1),
+            timeline = new List<object>
+            {
+                new
+                {
+                    time = date,
+                    status = "NEW"
+                }
+            },
+            metadata = new
+            {
+                customer_id = "id_1005",
+                customer_name = "Satoshi Nakamoto"
+            },
+            pricing_type = request.Pricing_type,
+            pricing = new
+            {
+                local = request.Local_price,
+                bitcoin = new { amount = "1.00", currency = "BTC" },
+                ethereum = new { amount = "10.00", currency = "ETH" }
+            },
+            payments = new List<object>(),
+            payment_threshold = new
+            {
+                overpayment_absolute_threshold = new { amount = "5.00", currency = "USD" },
+                overpayment_relative_threshold = "0.05",
+                underpayment_absolute_threshold = new
+                {
+                    amount = "5.00",
+                    currency = "USD"
+                },
+                underpayment_relative_threshold = "0.05"
+            },
+            addresses = new
+            {
+                bitcoin = "mymZkiXhQNd6VWWG7VGSVdDX9bKmviti3U",
+                ethereum = "0x419f91df39951fd4e8acc8f1874b01c0c78ceba6"
+            },
+            redirect_url = "https://charge/completed/page",
+            cancel_url = "https://charge/canceled/page"
+        }
+    };
+    return result;
+})
+.WithName("Coinbase-PostCharge");
+
+app.MapPost("/coinbase/charges/{chargeId}", ([FromRoute] string chargeId) =>
+{
+    var date = DateTime.Now;
+    var result = new
+    {
+        data = new
+        {
+            id = chargeId,
+            resource = "charge",
+            code = "66BEOV2A",
+            //name = request.Name,
+            //description = request.Description,
+            logo_url = "https://commerce.coinbase.com/charges/ybjknds.png",
+            hosted_url = "https://commerce.coinbase.com/charges/66BEOV2A",
+            created_at = date,
+            expires_at = date.AddHours(1),
+            timeline = new List<object>() {
+                new
+                {
+                    time = date,
+                    status = "NEW"
+                },
+                new
+                {
+                    time = DateTime.Now,
+                    status = "RESOLVED"
+                }
+            },
+            metadata = new
+            {
+                customer_id = "id_1005",
+                customer_name = "Satoshi Nakamoto"
+            },
+            //pricing_type = request.Pricing_type,
+            pricing = new
+            {
+                //local = request.Local_price,
+                bitcoin = new { amount = "1.00", currency = "BTC" },
+                ethereum = new { amount = "10.00", currency = "ETH" }
+            },
+            payment_threshold = new
+            {
+                overpayment_absolute_threshold = new { amount = "5.00", currency = "USD" },
+                overpayment_relative_threshold = "0.05",
+                underpayment_absolute_threshold = new
+                {
+                    amount = "5.00",
+                    currency = "USD"
+                },
+                underpayment_relative_threshold = "0.05"
+            },
+            applied_threshold = new { amount = "5.00", currency = "USD" },
+            applied_threshold_type = "RELATIVE",
+            payments = new List<object>() {
+                new {
+                    network = "ethereum",
+                    transaction_id = "0x0000000000000000000000000000000000000000000000000000000000000000",
+                    status = "CONFIRMED",
+                    detected_at = date,
+                    value = new {
+                        local = new { amount = "100.0", currency = "USD" },
+                        crypto = new { amount = "10.00", currency = "ETH" }
+                    },
+                    block = new {
+                        height = 100,
+                        hash = "0x0000000000000000000000000000000000000000000000000000000000000000",
+                        confirmations_accumulated = 8,
+                        confirmations_required = 2
+                    }
+                }
+            },
+            addresses = new
+            {
+                bitcoin = "mymZkiXhQNd6VWWG7VGSVdDX9bKmviti3U",
+                ethereum = "0x419f91df39951fd4e8acc8f1874b01c0c78ceba6"
+            },
+            redirect_url = "https://charge/completed/page",
+            cancel_url = "https://charge/canceled/page"
+        }
+    };
+    return result;
+})
+.WithName("Coinbase-PostChargeResolve");
+
+app.MapPost("coinbase/webhook", async ([FromQuery] string id, [FromQuery] string cryptocurrency, [FromBody] Coinbase.CoinbaseCharge request) =>
+{
+    var date = DateTime.Now;
+    var sendRequest = new
+    {
+        id = id,
+        scheduled_for = "2017-01-31T20:50:02Z",
+        Event = new
+        {
+            id = Guid.NewGuid().ToString(),
+            resource = "event",
+            type = "charge:confirmed",
+            api_version = "2018-03-22",
+            created_at = date,
+            data = new
+            {
+                code = "66BEOV2A",
+                name = "The Sovereign Individual",
+                description = "Mastering the Transition to the Information Age",
+                hosted_url = "https://commerce.coinbase.com/charges/66BEOV2A",
+                created_at = date,
+                expires_at = date.AddHours(1),
+                timeline = new List<object>
+                {
+                    new
+                    {
+                        time = date,
+                        status = "NEW"
+                    }
+                },
+                metadata = new { },
+                pricing_type = request.Pricing_type,
+                payments = new List<object>(),
+                addresses = new
+                {
+                    bitcoin = "mymZkiXhQNd6VWWG7VGSVdDX9bKmviti3U",
+                    ethereum = "0x419f91df39951fd4e8acc8f1874b01c0c78ceba6"
+                }
+            }
+        }
+    };
+    var response = await WebhookRequest.Request(JsonSerializer.Serialize(sendRequest));
+    return response;
+})
+.WithName("Coinbase-PostWebhook");
+
+#endregion
+
 
 app.Run();
 
@@ -1128,6 +1324,31 @@ struct Coinqvest
     {
         public string CheckoutId { get; set; }
         public string AssetCode { get; set; }
+    }
+}
+
+struct Coinbase
+{
+    internal class CoinbaseCharge
+    {
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Pricing_type { get; set; }
+        public Money Local_price { get; set; }
+        public Hash Metadata { get; set; }
+        public string Redirect_url { get; set; }
+        public string Cancel_url { get; set; }
+    }
+    internal class Money
+    {
+        public string Amount { get; set; }
+        public string Currency { get; set; }
+    }
+
+    internal class Hash
+    {
+        public string Customer_id { get; set; }
+        public string Customer_name { get; set; }
     }
 }
 
