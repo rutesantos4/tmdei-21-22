@@ -735,6 +735,178 @@ app.MapPost("bitpay/webhook", async ([FromQuery] string id, [FromQuery] string c
 
 #endregion
 
+
+#region CoinPayments
+
+app.MapPost("/coinpayments", ([FromQuery] string version,
+                              [FromQuery] string key,
+                              [FromQuery] string cmd,
+                              [FromQuery] int amount,
+                              [FromQuery] string currency1,
+                              [FromQuery] string currency2,
+                              [FromQuery] string buyer_email,
+                              [FromQuery] string address,
+                              [FromQuery] string buyer_name,
+                              [FromQuery] string item_name,
+                              [FromQuery] string item_number,
+                              [FromQuery] string ipn_url) =>
+{
+    var id = Guid.NewGuid().ToString();
+    object result = null;
+    if (cmd == "create_transaction")
+    {
+        result = new
+        {
+            error = "ok",
+            result = new
+            {
+                amount = amount,
+                address = address,
+                dest_tag = key,
+                txn_id = id,
+                confirms_needed = "10",
+                timeout = 9000,
+                checkout_url = $"https://www.coinpayments.net/index.php?cmd=checkout&id={id}&key={key}",
+                status_url = $"https://www.coinpayments.net/index.php?cmd=status&id={id}&key={key}",
+                qrcode_url = $"https://www.coinpayments.net/qrgen.php?id={id}&key={key}",
+            }
+        };
+    }
+    else if (cmd == "rates")
+    {
+        result = new
+        {
+            error = "ok",
+            result = new
+            {
+                BTC = new
+                {
+                    is_fiat = 0,
+                    rate_btc = "1.000000000000000000000000",
+                    last_update = "1375473661",
+                    tx_fee = "0.00100000",
+                    status = "online",
+                    image = "https://www.coinpayments.net/images/coins/BTC.png",
+                    name = "Bitcoin",
+                    confirms = "2",
+                    capabilities = new List<string> { "payments", "wallet", "transfers", "convert" }
+                },
+                LTC = new
+                {
+                    is_fiat = 0,
+                    rate_btc = "0.018343387500000000000000",
+                    last_update = "1518463609",
+                    tx_fee = "0.00100000",
+                    status = "online",
+                    name = "Litecoin",
+                    confirms = "3",
+                    capabilities = new List<string> { "payments", "wallet", "transfers", "convert" }
+                },
+                USD = new
+                {
+                    is_fiat = 1,
+                    rate_btc = "0.000114884285404190000000",
+                    last_update = "1518463609",
+                    tx_fee = "0.00000000",
+                    status = "online",
+                    name = "United States Dollar",
+                    confirms = "1",
+                    capabilities = new List<string>()
+                },
+                CAD = new
+                {
+                    is_fiat = 1,
+                    rate_btc = "0.000091601308947890000000",
+                    last_update = "1518463609",
+                    tx_fee = "0.00000000",
+                    status = "online",
+                    name = "Canadian Dollar",
+                    confirms = "1",
+                    capabilities = new List<string>()
+                },
+                MAID = new
+                {
+                    is_fiat = 0,
+                    rate_btc = "0.000049810000000000000000",
+                    last_update = "1518463609",
+                    tx_fee = "0.00000000",
+                    status = "online",
+                    name = "MaidSafeCoin",
+                    confirms = "2",
+                    capabilities = new List<string> { "payments", "wallet" }
+                },
+                XMR = new
+                {
+                    is_fiat = 0,
+                    rate_btc = "0.028198593333333000000000",
+                    last_update = "1518463609",
+                    tx_fee = "0.01000000",
+                    status = "online",
+                    name = "Monero",
+                    confirms = "3",
+                    capabilities = new List<string> { "payments", "wallet", "transfers", "dest_tag" }
+                },
+                LTCT = new
+                {
+                    is_fiat = 0,
+                    rate_btc = "1.000000000000000000000000",
+                    last_update = "1375473661",
+                    tx_fee = "0.00100000",
+                    status = "online",
+                    name = "Litecoin Testnet",
+                    confirms = "0",
+                    capabilities = new List<string> { "payments", "wallet", "transfers" }
+                }
+            }
+        };
+    }
+    return result;
+})
+.WithName("CoinPayments-PostTransaction");
+
+// CoinPayments webhook https://www.coinpayments.net/merchant-tools-ipn
+app.MapPost("/coinpayments/webhook", async (
+                              [FromQuery] string txn_id,
+                              [FromQuery] int amount,
+                              [FromQuery] int amount2,
+                              [FromQuery] string currency1,
+                              [FromQuery] string currency2,
+                              [FromQuery] string buyer_email,
+                              [FromQuery] string address,
+                              [FromQuery] string buyer_name,
+                              [FromQuery] string item_name,
+                              [FromQuery] string item_number) =>
+{
+    var sendRequest = new SortedList<string, string>()
+    {
+        { "ipn_version", "1.0" },
+        { "ipn_type", "api" },
+        { "ipn_mode", "hmac" },
+        { "ipn_id", Guid.NewGuid().ToString() },
+        { "merchant", "merchant ID" },
+        { "txn_id", "" },
+        { "item_name", item_name },
+        { "item_number", item_number },
+        { "amount1", amount.ToString() },
+        { "amount2", amount2.ToString() },
+        { "currency1", currency1 },
+        { "currency2", currency2 },
+        { "buyer_name", buyer_name },
+        { "buyer_email", buyer_email },
+        { "address", address },
+        { "status", "100" },
+        { "status_text", "Payment completed successfully" },
+        { "received_amount", amount2.ToString() },
+        { "received_confirms", "1" },
+    };
+    var response = await WebhookRequest.Request(JsonSerializer.Serialize(sendRequest));
+    return response;
+})
+.WithName("CoinPayments-PostWebhook");
+
+#endregion
+
+
 app.Run();
 
 
