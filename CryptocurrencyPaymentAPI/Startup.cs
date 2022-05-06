@@ -1,6 +1,8 @@
 ﻿namespace CryptocurrencyPaymentAPI
 {
     using CryptocurrencyPaymentAPI.Configurations;
+    using Microsoft.Extensions.Logging;
+    using static CryptocurrencyPaymentAPI.Configurations.DatabaseConfiguration;
 
     public class Startup
     {
@@ -14,7 +16,13 @@
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddSwaggerGen();
+
+            int chosenDB = Configuration.GetValue("ChosenDB", 0);
+            services.ConfigureDatabase((DataProvider)chosenDB, Configuration);
             services.ConfigureProject();
+            services.AddControllers();
+            services.AddMvc();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -24,6 +32,11 @@
             {
                 app.UseDeveloperExceptionPage();
             }
+
+
+            app.UseSwagger();
+
+            app.UseSwaggerUI();
 
             app.UseHttpsRedirection();
 
