@@ -33,6 +33,7 @@
                 app.UseDeveloperExceptionPage();
             }
 
+            loggerFactory.AddLog4Net();
 
             app.UseSwagger();
 
