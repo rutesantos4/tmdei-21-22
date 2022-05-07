@@ -2,8 +2,9 @@
 {
     public class CreatePaymentTransactionDto
     {
-        public float Amount { get; set; }
+        public double Amount { get; set; }
         public string FiatCurrency { get; set; }
+        public string CryptoCurrency { get; set; }
         public string TransactionReference { get; set; }
     }
 }

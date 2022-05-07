@@ -1,6 +1,7 @@
 ﻿namespace CryptocurrencyPaymentAPI.Repositories
 {
     using CryptocurrencyPaymentAPI.Model.Entities;
+    using CryptocurrencyPaymentAPI.Model.ValueObjects;
     using Microsoft.EntityFrameworkCore;
 
     public class DatabaseContext : DbContext
@@ -11,6 +12,11 @@
 
         public DatabaseContext()
         {
+        }
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.Entity<Conversion>();
+            base.OnModelCreating(modelBuilder);
         }
 
         public DbSet<Transaction> Transactions { get; set; }

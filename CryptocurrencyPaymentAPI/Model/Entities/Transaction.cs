@@ -12,6 +12,6 @@
         public string PaymentGatewayTransactionId { get; set; }
         public List<Action> History { get; set; }
 
-        public Merchant Merchant { get; set; }
+        public string MerchantId { get; set; }
     }
 }

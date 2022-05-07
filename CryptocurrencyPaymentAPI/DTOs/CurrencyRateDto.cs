@@ -3,7 +3,7 @@
     public class CurrencyRateDto
     {
         public string Currency { get; set; }
-        public float Amount { get; set; }
-        public float Rate { get; set; }
+        public double Amount { get; set; }
+        public double Rate { get; set; }
     }
 }

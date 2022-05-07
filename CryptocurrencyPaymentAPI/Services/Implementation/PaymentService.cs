@@ -16,20 +16,23 @@
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         private readonly ITransactionRepository transactionRepository;
+        private readonly ICryptoGatewayFactory cryptoGatewayFactory;
 
-        public PaymentService(ITransactionRepository transactionRepository)
+        public PaymentService(ITransactionRepository transactionRepository, ICryptoGatewayFactory cryptoGatewayFactory)
         {
             this.transactionRepository = transactionRepository;
+            this.cryptoGatewayFactory = cryptoGatewayFactory;
         }
 
         public async Task<GetRatesDto> CreatePaymentTransaction(CreatePaymentTransactionDto createPaymentTransaction)
         {
+            // TODO - Validation of request
             log.Info($"Create Payment transaction \n{JsonConvert.SerializeObject(createPaymentTransaction, Formatting.Indented)}");
-            ICryptoGatewayService cryptoGatewayService = new CryptoGatewayFactory().GetCryptoGatewayService();
+            var cryptoGatewayService = cryptoGatewayFactory.GetCryptoGatewayService();
 
-            log.Info($"Getting Rates");
-            var rates = cryptoGatewayService.GetCurrencyRates();
-            log.Info($"Got {rates?.CurrencyRates?.Count} Rates");
+            log.Info($"Getting Rate");
+            var rates = cryptoGatewayService.GetCurrencyRates(createPaymentTransaction);
+            log.Info($"Got Rate '{rates?.CurrencyRate}'");
 
             log.Info($"Building Transaction");
             var transaction = new Transaction()
@@ -48,18 +51,19 @@
                             Amount = createPaymentTransaction.Amount,
                             Currency = createPaymentTransaction.FiatCurrency
                         },
-                        CryptoCurrencies = rates?.CurrencyRates?.Select(y => new Money()
+                        CryptoCurrency = new Money()
                         {
-                            Currency = y.Currency,
-                            Amount = y.Amount,
-                        })?.ToList() ?? new List<Money>(),
+                            Currency = rates?.CurrencyRate?.Currency ?? string.Empty,
+                            Amount = rates?.CurrencyRate?.Amount ?? 0,
+                        },
                         ExpiryDate = DateTime.UtcNow.AddMinutes(1)
                     }
                 },
                 TransactionState = Model.Enums.TransactionState.CurrencyConverted,
                 PaymentGatewayTransactionId = rates?.PaymentGatewayTransactionId ?? string.Empty,
                 TransactionType = Model.Enums.TransactionType.Payment,
-                TransactionReference = createPaymentTransaction.TransactionReference
+                TransactionReference = createPaymentTransaction.TransactionReference,
+                MerchantId = "TODO"
             };
             log.Info($"Built Transaction");
 
@@ -71,10 +75,16 @@
             {
                 Amount = createPaymentTransaction.Amount,
                 FiatCurrency = createPaymentTransaction.FiatCurrency,
-                Rates = rates?.CurrencyRates?.Select(x => new CurrencyRateDto())?.ToList() ?? new List<CurrencyRateDto>(),
+                Rate = new CurrencyRateDto()
+                {
+                    Amount = rates?.CurrencyRate?.Amount ?? 0,
+                    Currency = rates?.CurrencyRate?.Currency ?? string.Empty,
+                    Rate = rates?.CurrencyRate?.Rate ?? 0,
+                },
                 TransactionId = transaction.DomainIdentifier
             };
 
+            log.Info($"Created Payment transaction \n{JsonConvert.SerializeObject(result, Formatting.Indented)}");
             return result;
         }
     }

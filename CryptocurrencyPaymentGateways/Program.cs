@@ -28,7 +28,6 @@ app.MapGet("/bitpay/rates/{basecurrency}", ([FromRoute] string basecurrency) =>
     var id = Guid.NewGuid().ToString();
     var result = new
     {
-        test = id,
         data = new List<object>(){
             new {
                 code = "BTC",

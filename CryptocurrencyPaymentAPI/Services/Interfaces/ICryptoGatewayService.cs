@@ -6,6 +6,6 @@
     public interface ICryptoGatewayService
     {
         PaymentGatewayName GetPaymentGatewayEnum();
-        CurrencyConvertedDto GetCurrencyRates();
+        CurrencyConvertedDto GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction);
     }
 }

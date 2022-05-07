@@ -1,6 +1,6 @@
 ﻿namespace CryptocurrencyPaymentAPI.Model.Entities
 {
-    public class Merchant
+    public class Merchant : BaseEntity
     {
         public string MerchantName { get; set; }
     }
