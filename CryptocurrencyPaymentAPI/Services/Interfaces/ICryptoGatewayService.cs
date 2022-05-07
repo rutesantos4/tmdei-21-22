@@ -7,5 +7,6 @@
     {
         PaymentGatewayName GetPaymentGatewayEnum();
         CurrencyConvertedDto GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction);
+        bool ServiceWorking();
     }
 }

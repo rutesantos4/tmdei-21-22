@@ -3,13 +3,10 @@
     using CryptocurrencyPaymentAPI.DTOs;
     using CryptocurrencyPaymentAPI.DTOs.Request;
     using CryptocurrencyPaymentAPI.Model.Enums;
-    using CryptocurrencyPaymentAPI.Services.Interfaces;
     using CryptocurrencyPaymentAPI.Utils;
 
-    public class BitPayService : ICryptoGatewayService
+    public class BitPayService : ACryptoGatewayService
     {
-        private readonly string ConverCurrencyEndPoint;
-        private readonly string CreateTransactionEndPoint;
         private readonly IRestClient restClient;
 
         public BitPayService(IRestClient restClient)
@@ -19,73 +16,33 @@
             CreateTransactionEndPoint = "https://localhost:7054/bitpay/invoices/";
         }
 
-        public CurrencyConvertedDto GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction)
+        public override CurrencyConvertedDto GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction)
         {
-            // TODO - Call external service
+            // TODO - Bitpay was an endpoint that retrieves the rate for a cryptocurrency/fiat pair
+            // (https://bitpay.com/api/?csharp#rest-api-resources-rates-retrieve-all-the-rates-for-a-given-cryptocurrency )
             var currencyRates = restClient.Get<BitPayRates>($"{ConverCurrencyEndPoint}{createPaymentTransaction.FiatCurrency}",
                 string.Empty,
                 out var responseHeaders);
 
-            //var currencyRates = new BitPayRates()
-            //{
-            //    Data = new List<BitPayRate>() {
-            //        new BitPayRate {
-            //            Code = "BTC",
-            //            Name = "Bitcoin",
-            //            Rate = 1
-            //        },
-            //        new BitPayRate {
-            //            Code = "BCH",
-            //            Name = "Bitcoin Cash",
-            //            Rate = 50.77
-            //        },
-            //        new BitPayRate {
-            //            Code = "USD",
-            //            Name = "US Dollar",
-            //            Rate = 41248.11
-            //        },
-            //        new BitPayRate {
-            //            Code = "EUR",
-            //            Name = "Eurozone Euro",
-            //            Rate = 33823.04
-            //        },
-            //        new BitPayRate {
-            //            Code = "GBP",
-            //            Name = "Pound Sterling",
-            //            Rate = 29011.49
-            //        },
-            //        new BitPayRate {
-            //            Code = "JPY",
-            //            Name = "Japanese Yen",
-            //            Rate = 4482741
-            //        }
-            //    }
-            //};
-
-            var currencyRate = currencyRates.Data.FirstOrDefault(e => 
+            var currencyRate = currencyRates.Data.FirstOrDefault(e =>
                 string.Equals(e.Code, createPaymentTransaction.CryptoCurrency, StringComparison.OrdinalIgnoreCase));
 
             return new CurrencyConvertedDto()
             {
                 CurrencyRate = new CurrencyRateDto()
                 {
-                    Currency = currencyRate?.Code ?? String.Empty,
+                    Currency = currencyRate?.Code ?? string.Empty,
                     Rate = currencyRate?.Rate ?? 0,
                     Amount = createPaymentTransaction.Amount * (currencyRate?.Rate ?? 0),
                 }
             };
         }
 
-        public PaymentGatewayName GetPaymentGatewayEnum()
+        public override PaymentGatewayName GetPaymentGatewayEnum()
         {
             return PaymentGatewayName.BitPay;
         }
 
-        public bool ServiceWorking()
-        {
-            // TODO - Call external service
-            return true;
-        }
 
         #region Entities
         protected class BitPayRates

@@ -18,7 +18,15 @@
         {
             // TODO - Get correct CryptoGateway
             // TODO - It will get a list of possible gateways, do ping and return one
-            return new BitPayService(restClient);
+            var gateway = new BitPayService(restClient);
+            if (gateway.ServiceWorking())
+            {
+                return gateway;
+            }
+            else
+            {
+                throw new InvalidOperationException("No services available to process transaction");
+            }
         }
 
         }
