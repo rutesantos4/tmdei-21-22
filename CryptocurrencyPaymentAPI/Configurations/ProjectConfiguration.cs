@@ -4,7 +4,8 @@
     {
         public static IServiceCollection ConfigureProject(this IServiceCollection services)
         {
-            RepositoryConfiguration.ConfigureRepositories(services);
+            services.ConfigureRepositories();
+            services.ConfigureServices();
 
             return services;
         }
