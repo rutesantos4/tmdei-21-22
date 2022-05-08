@@ -13,7 +13,7 @@
         {
         }
 
-        public T Get<T>(string URL, string path, out Dictionary<string, string> responseHeaders, Dictionary<string, string> headers = null)
+        public T Get<T>(string URL, string path, out Dictionary<string, string> responseHeaders, Dictionary<string, string>? headers = null)
         {
             try
             {
@@ -27,7 +27,7 @@
             }
         }
 
-        public string Get(string URL, string path, out Dictionary<string, string> responseHeaders, Dictionary<string, string> headers = null)
+        public string Get(string URL, string path, out Dictionary<string, string> responseHeaders, Dictionary<string, string>? headers = null)
         {
             log.Info("GET Resquest to: " + URL);
             using HttpClient client = GetClient(URL, headers);
@@ -35,7 +35,7 @@
             return ReadResponse(client.GetAsync(path).Result, out responseHeaders);
         }
 
-        public T2 Post<T1, T2>(string URL, string path, T1 payload, out Dictionary<string, string> responseHeaders, Dictionary<string, string> headers = null)
+        public T2 Post<T1, T2>(string URL, string path, T1 payload, out Dictionary<string, string> responseHeaders, Dictionary<string, string>? headers = null)
         {
             try
             {
@@ -49,7 +49,7 @@
             }
         }
 
-        public string Post<T>(string URL, string path, T payload, out Dictionary<string, string> responseHeaders, Dictionary<string, string> headers = null)
+        public string Post<T>(string URL, string path, T payload, out Dictionary<string, string> responseHeaders, Dictionary<string, string>? headers = null)
         {
             log.Info("POST Resquest to: " + URL);
             using HttpClient client = GetClient(URL, headers);

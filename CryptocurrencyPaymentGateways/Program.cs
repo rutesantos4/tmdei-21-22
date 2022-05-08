@@ -23,6 +23,8 @@ app.UseHttpsRedirection();
 
 #region BitPay
 
+// TODO - Bitpay has an endpoint that retrieves the rate for a cryptocurrency/fiat pair
+// (https://bitpay.com/api/?csharp#rest-api-resources-rates-retrieve-all-the-rates-for-a-given-cryptocurrency )
 app.MapGet("/bitpay/rates/{basecurrency}", ([FromRoute] string basecurrency) =>
 {
     var id = Guid.NewGuid().ToString();

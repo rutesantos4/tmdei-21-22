@@ -1,6 +1,7 @@
 ﻿namespace CryptocurrencyPaymentAPI
 {
     using CryptocurrencyPaymentAPI.Configurations;
+    using CryptocurrencyPaymentAPI.Middlewares;
     using Microsoft.Extensions.Logging;
     using static CryptocurrencyPaymentAPI.Configurations.DatabaseConfiguration;
 
@@ -34,6 +35,8 @@
             }
 
             loggerFactory.AddLog4Net();
+
+            app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.UseSwagger();
 
