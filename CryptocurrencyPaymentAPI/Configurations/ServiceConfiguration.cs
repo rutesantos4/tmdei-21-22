@@ -10,6 +10,8 @@
         internal static IServiceCollection ConfigureServices(this IServiceCollection services)
         {
             services.AddTransient<IPaymentService, PaymentService>();
+            services.AddTransient<ITransactionService, TransactionService>();
+            services.AddTransient<IDecisionConfigurationService, DecisionConfigurationService>();
 
             services.AddTransient<ICryptoGatewayFactory, CryptoGatewayFactory>();
             services.AddTransient<IRestClient, RestClient>();

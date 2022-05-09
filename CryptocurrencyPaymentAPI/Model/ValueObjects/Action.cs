@@ -7,6 +7,6 @@
         public ActionType ActionName { get; set; }
         public DateTime DateTime { get; set; }
         public bool Success { get; set; }
-        public Detail Detail { get; set; }
+        public Detail Detail { get; set; } = new Detail();
     }
 }

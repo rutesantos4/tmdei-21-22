@@ -2,8 +2,8 @@
 {
     public class CurrencyInfo : ValueObject
     {
-        public string CriptoCurrency { get; set; }
-        public string FiatCurrency { get; set; }
+        public string CriptoCurrency { get; set; } = string.Empty;
+        public string FiatCurrency { get; set; } = string.Empty;
         //public string Rate { get; set; }
     }
 }

@@ -5,11 +5,10 @@
     using CryptocurrencyPaymentAPI.Model.Entities;
     using CryptocurrencyPaymentAPI.Model.Enums;
 
-    public interface ICryptoGatewayService
+    public interface ITransactionService
     {
         PaymentGatewayName GetPaymentGatewayEnum();
-        CurrencyConvertedDto? GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction);
+        CurrencyConvertedDto GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction);
         Transaction CreateTransaction(ConfirmPaymentTransactionDto transaction, string paymentGatewayTransactionId);
-        bool ServiceWorking();
     }
 }

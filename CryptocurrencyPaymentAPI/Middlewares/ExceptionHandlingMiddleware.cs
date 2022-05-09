@@ -36,6 +36,12 @@
                         message = exception.ErrorCollection;
                         break;
 
+                    case ServiceUnavailableException exception:
+                        // custom application error
+                        response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
+                        message = exception.Message;
+                        break;
+
                     default:
                         // unhandled error
                         response.StatusCode = (int)HttpStatusCode.InternalServerError;

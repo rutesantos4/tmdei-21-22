@@ -5,7 +5,7 @@
 
     public interface ICryptoGatewayFactory
     {
-        ICryptoGatewayService GetCryptoGatewayService();
+        List<ICryptoGatewayService> GetCryptoGatewayServices();
         ICryptoGatewayService GetCryptoGatewayService(PaymentGatewayName paymentGateway);
     }
 }

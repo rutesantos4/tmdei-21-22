@@ -1,7 +1,9 @@
 ﻿namespace CryptocurrencyPaymentAPI.Validations.Exceptions
 {
     using CryptocurrencyPaymentAPI.Validations.ValidationMessages;
+    using System.Runtime.Serialization;
 
+    [Serializable]
     public class ValidationException : Exception
     {
         private const string BaseMessage = "Invalid operation, check the collection of errors for more details.";
@@ -26,6 +28,12 @@
             : base(message)
         {
             ErrorCollection = errorCollection;
+        }
+
+        protected ValidationException(SerializationInfo serializationInfo, StreamingContext streamingContext) 
+            : base(serializationInfo, streamingContext)
+        {
+            ErrorCollection = new ApplicationErrorCollection();
         }
     }
 }

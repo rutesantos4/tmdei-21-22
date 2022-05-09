@@ -1,5 +1,6 @@
 ﻿namespace CryptocurrencyPaymentAPI.Utils
 {
+    using CryptocurrencyPaymentAPI.Validations.Exceptions;
     using log4net;
     using Newtonsoft.Json;
     using System.Net.Http.Headers;
