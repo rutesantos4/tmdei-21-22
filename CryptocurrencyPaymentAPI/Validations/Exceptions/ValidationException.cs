@@ -10,24 +10,12 @@
 
         public ApplicationErrorCollection ErrorCollection { get; }
 
-        public ValidationException()
-            : base(BaseMessage)
-        {
-            ErrorCollection = new ApplicationErrorCollection();
-        }
-
         public ValidationException(ValidationResult validationResult)
             : base(BaseMessage)
         {
             ErrorCollection = new ApplicationErrorCollection(
                 BaseMessage,
                 validationResult.Messages.Select(x => x.Message).ToList());
-        }
-
-        public ValidationException(ApplicationErrorCollection errorCollection, string message)
-            : base(message)
-        {
-            ErrorCollection = errorCollection;
         }
 
         protected ValidationException(SerializationInfo serializationInfo, StreamingContext streamingContext) 
