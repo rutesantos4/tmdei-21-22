@@ -1,0 +1,35 @@
+﻿namespace CryptocurrencyPaymentAPI.Services.Implementation
+{
+    using CryptocurrencyPaymentAPI.DTOs;
+    using CryptocurrencyPaymentAPI.DTOs.Request;
+    using CryptocurrencyPaymentAPI.Model.Entities;
+    using CryptocurrencyPaymentAPI.Model.Enums;
+    using CryptocurrencyPaymentAPI.Services.Interfaces;
+    using CryptocurrencyPaymentAPI.Utils;
+
+    public class CoinbaseService : ACryptoGatewayService
+    {
+        public CoinbaseService(IRestClient restClient, IConfiguration configuration, IPing pinger) : base()
+        {
+            ConverCurrencyEndPoint = configuration.GetSection("CoinbaseConfig:ConvertCurrencyEndPoint").Value;
+            CreateTransactionEndPoint = configuration.GetSection("CoinbaseConfig:CreateTransactionEndPoint").Value;
+            RestClient = restClient;
+            Pinger = pinger;
+        }
+
+        public override Transaction CreateTransaction(ConfirmPaymentTransactionDto transaction, string paymentGatewayTransactionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override CurrencyConvertedDto GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override PaymentGatewayName GetPaymentGatewayEnum()
+        {
+            return PaymentGatewayName.Coinbase;
+        }
+    }
+}

@@ -4,6 +4,7 @@
     using CryptocurrencyPaymentAPI.DTOs.Request;
     using CryptocurrencyPaymentAPI.Model.Entities;
     using CryptocurrencyPaymentAPI.Model.Enums;
+    using CryptocurrencyPaymentAPI.Services.Interfaces;
     using CryptocurrencyPaymentAPI.Utils;
     using log4net;
     using Newtonsoft.Json;
@@ -12,13 +13,13 @@
     public class BitPayService : ACryptoGatewayService
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
-        private readonly IRestClient restClient;
 
-        public BitPayService(IRestClient restClient, IConfiguration configuration)
+        public BitPayService(IRestClient restClient, IConfiguration configuration, IPing pinger) : base()
         {
-            this.restClient = restClient;
+            RestClient = restClient;
             ConverCurrencyEndPoint = configuration.GetSection("BitPayConfig:ConvertCurrencyEndPoint").Value;
             CreateTransactionEndPoint = configuration.GetSection("BitPayConfig:CreateTransactionEndPoint").Value;
+            Pinger = pinger;
         }
 
         public override Transaction CreateTransaction(ConfirmPaymentTransactionDto transaction, string paymentGatewayTransactionId)
@@ -30,18 +31,18 @@
         {
             try
             {
-                var currencyRates = restClient.Get<BitPayRates>($"{ConverCurrencyEndPoint}{createPaymentTransaction.FiatCurrency}",
+                var currencyRates = RestClient.Get<BitPayRates>($"{ConverCurrencyEndPoint}{createPaymentTransaction.FiatCurrency}",
                     string.Empty,
                     out var responseHeaders);
 
-                if (currencyRates == null)
+                if (currencyRates == null || currencyRates.Data == null)
                 {
                     return null;
                 }
 
                 log.Info($"Rates returned payment gateway\n{JsonConvert.SerializeObject(currencyRates, Formatting.Indented)}");
 
-                var currencyRate = currencyRates?.Data.FirstOrDefault(e =>
+                var currencyRate = currencyRates.Data.FirstOrDefault(e =>
                     string.Equals(e.Code, createPaymentTransaction.CryptoCurrency, StringComparison.OrdinalIgnoreCase));
 
                 if (currencyRate == null)
@@ -74,12 +75,12 @@
 
 
         #region Entities
-        protected class BitPayRates
+        public class BitPayRates
         {
             public List<BitPayRate> Data { get; set; } = new List<BitPayRate>();
         }
 
-        protected class BitPayRate
+        public class BitPayRate
         {
             public string Code { get; set; } = string.Empty;
             public string Name { get; set; } = string.Empty;

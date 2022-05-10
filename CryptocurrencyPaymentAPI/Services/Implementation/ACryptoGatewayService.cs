@@ -5,6 +5,7 @@
     using CryptocurrencyPaymentAPI.Model.Entities;
     using CryptocurrencyPaymentAPI.Model.Enums;
     using CryptocurrencyPaymentAPI.Services.Interfaces;
+    using CryptocurrencyPaymentAPI.Utils;
     using log4net;
     using System.Net.NetworkInformation;
     using System.Reflection;
@@ -15,30 +16,45 @@
 
         public string ConverCurrencyEndPoint { get; set; } = string.Empty;
         public string CreateTransactionEndPoint { get; set; } = string.Empty;
+        public IPing? Pinger { get; set; }
+        public IRestClient? RestClient { get; set; } = null;
 
         public abstract Transaction CreateTransaction(ConfirmPaymentTransactionDto transaction, string paymentGatewayTransactionId);
         public abstract CurrencyConvertedDto? GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction);
         public abstract PaymentGatewayName GetPaymentGatewayEnum();
+
         public bool ServiceWorking()
         {
             bool pingable = false;
-            using (Ping pinger = new())
+            if (Pinger == null)
             {
-                try
+                log.Error("Pinger is null");
+                pingable = false;
+            }
+            else
+            {
+                using (Pinger)
                 {
-                    Uri uri = new(ConverCurrencyEndPoint);
-                    PingReply reply = pinger.Send(uri.Host);
-                    pingable = reply.Status == IPStatus.Success;
-                }
-                catch (PingException ex)
-                {
-                    log.Error(ex.Message);
-                }
-                finally
-                {
-                    if (pinger != null)
+                    try
                     {
-                        pinger.Dispose();
+                        Uri uri = new(ConverCurrencyEndPoint);
+                        PingReply reply = Pinger.Send(uri.Host);
+                        pingable = reply.Status == IPStatus.Success;
+                    }
+                    catch (PingException ex)
+                    {
+                        log.Error(ex.Message);
+                    }
+                    catch (Exception ex)
+                    {
+                        log.Error($"Unexpected exception {ex.Message}");
+                    }
+                    finally
+                    {
+                        if (Pinger != null)
+                        {
+                            Pinger.Dispose();
+                        }
                     }
                 }
             }

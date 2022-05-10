@@ -13,14 +13,17 @@
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         private readonly IConfiguration configuration;
+        private readonly IPing ping;
         private readonly IRestClient restClient;
         private readonly IDecisionConfigurationService decisionConfigurationService;
 
         public CryptoGatewayFactory(IConfiguration configuration,
+            IPing ping,
             IRestClient restClient,
             IDecisionConfigurationService decisionConfigurationService)
         {
             this.configuration = configuration;
+            this.ping = ping;
             this.restClient = restClient;
             this.decisionConfigurationService = decisionConfigurationService;
         }
@@ -68,10 +71,10 @@
         {
             return paymentGateway switch
             {
-                PaymentGatewayName.BitPay => new BitPayService(restClient, configuration),
-                PaymentGatewayName.Coinbase => new CoinbaseService(restClient, configuration),
-                PaymentGatewayName.Coinqvest => new CoinqvestService(restClient, configuration),
-                PaymentGatewayName.CoinPayments => new CoinPaymentsService(restClient, configuration),
+                PaymentGatewayName.BitPay => new BitPayService(restClient, configuration, ping),
+                PaymentGatewayName.Coinbase => new CoinbaseService(restClient, configuration, ping),
+                PaymentGatewayName.Coinqvest => new CoinqvestService(restClient, configuration, ping),
+                PaymentGatewayName.CoinPayments => new CoinPaymentsService(restClient, configuration, ping),
                 _ => throw new NotImplementedException()
             };
         }

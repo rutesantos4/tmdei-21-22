@@ -15,6 +15,7 @@
 
             services.AddTransient<ICryptoGatewayFactory, CryptoGatewayFactory>();
             services.AddTransient<IRestClient, RestClient>();
+            services.AddTransient<IPing, Ping>();
 
             return services;
         }
