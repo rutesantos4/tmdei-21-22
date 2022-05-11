@@ -245,6 +245,7 @@
         public void OnServiceWorking_GivenNullPinger_ShouldReturnFalse()
         {
             // Arrange
+            var service = new BitPayService(restClientMock.Object, configurationMock.Object, null);
 
             // Act
             var result = service.ServiceWorking();
@@ -270,6 +271,7 @@
         {
             // Arrange
             pingMock.Setup(x => x.Send(It.IsAny<string>())).Throws(new System.NullReferenceException(fixture.Create<string>()));
+            
             // Act
             var result = service.ServiceWorking();
 
