@@ -36,10 +36,7 @@
         public void OnCreatePaymentTransaction_GivenAnAblePaymentGateway_ShouldReturnRate()
         {
             // Arrange
-            var action = fixture.Create<Conversion>();
-            var transaction = fixture.Build<Transaction>()
-                .With(e => e.History, new List<Action>() { action })
-                .Create();
+            var transaction = fixture.Create<Transaction>();
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
             var currencyConvertedDto = fixture.Create<CurrencyConvertedDto>();
             transactionServiceMock

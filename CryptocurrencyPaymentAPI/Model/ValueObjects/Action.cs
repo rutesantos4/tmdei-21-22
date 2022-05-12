@@ -7,6 +7,9 @@
         public ActionType ActionName { get; set; }
         public DateTime DateTime { get; set; }
         public bool Success { get; set; }
-        public Detail Detail { get; set; } = new Detail();
+
+
+        public string Reason { get; set; }
+        public string Message { get; set; }
     }
 }

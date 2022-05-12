@@ -32,9 +32,9 @@
             {
                 DomainIdentifier = Guid.NewGuid().ToString(),
                 PaymentGateway = paymentGatewayName,
-                History = new List<Action>()
+                Details = new Detail()
                 {
-                    new Conversion()
+                    Conversion = new Conversion()
                     {
                         ActionName = ActionType.Convert,
                         DateTime = DateTime.UtcNow,

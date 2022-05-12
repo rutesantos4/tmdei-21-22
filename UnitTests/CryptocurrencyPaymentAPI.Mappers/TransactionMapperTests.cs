@@ -42,16 +42,15 @@
             entity.PaymentGatewayTransactionId.Should().Be(dtoConvertion.PaymentGatewayTransactionId);
             entity.TransactionReference.Should().Be(dto.TransactionReference);
             entity.MerchantId.Should().Be("TODO");
-            entity.History.Should().NotBeNullOrEmpty();
-            entity.History.Should().HaveCount(1);
-            entity.History[0].Should().BeOfType<Conversion>();
-            entity.History[0].ActionName.Should().Be(ActionType.Convert);
-            entity.History[0].DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.MaxValue);
-            entity.History[0].Success.Should().BeTrue();
-            ((Conversion)entity.History[0]).FiatCurrency.Amount.Should().Be(dto.Amount);
-            ((Conversion)entity.History[0]).FiatCurrency.Currency.Should().Be(dto.FiatCurrency);
-            ((Conversion)entity.History[0]).CryptoCurrency.Amount.Should().Be(dtoConvertion.CurrencyRate.Amount);
-            ((Conversion)entity.History[0]).CryptoCurrency.Currency.Should().Be(dtoConvertion.CurrencyRate.Currency);
+            entity.Details.Should().NotBeNull();
+            entity.Details.Conversion.Should().BeOfType<Conversion>();
+            entity.Details.Conversion.ActionName.Should().Be(ActionType.Convert);
+            entity.Details.Conversion.DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.MaxValue);
+            entity.Details.Conversion.Success.Should().BeTrue();
+            entity.Details.Conversion.FiatCurrency.Amount.Should().Be(dto.Amount);
+            entity.Details.Conversion.FiatCurrency.Currency.Should().Be(dto.FiatCurrency);
+            entity.Details.Conversion.CryptoCurrency.Amount.Should().Be(dtoConvertion.CurrencyRate.Amount);
+            entity.Details.Conversion.CryptoCurrency.Currency.Should().Be(dtoConvertion.CurrencyRate.Currency);
         }
 
         [TestMethod]
@@ -71,12 +70,11 @@
             entity.Should().BeEquivalentTo(new Transaction());
         }
 
-
         [TestMethod]
         public void GivenValidTransaction_ShouldMap()
         {
             //Arrange
-            var entity = fixture.Build<Transaction>().Without(e => e.History).Create();
+            var entity = fixture.Build<Transaction>().Without(e => e.Details).Create();
             var dtoCreation = fixture.Create<CreatePaymentTransactionDto>();
             var dtoConvertion = fixture.Create<CurrencyConvertedDto>();
 

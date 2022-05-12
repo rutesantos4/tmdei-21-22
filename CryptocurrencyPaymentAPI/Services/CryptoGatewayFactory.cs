@@ -55,7 +55,7 @@
                     throw new ServiceUnavailableException("available");
                 }
 
-                log.Info($"Got '{string.Join(",", listAvailablePaymentGateways)}' as available Cryptocurrency payment gateways");
+                log.Info($"Got '{string.Join(",", listAvailablePaymentGateways.Select(x => x.GetPaymentGatewayEnum()))}' as available Cryptocurrency payment gateways");
                 return listAvailablePaymentGateways;
 
             }
