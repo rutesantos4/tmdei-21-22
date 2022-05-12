@@ -6,5 +6,6 @@
     public interface IPaymentService
     {
         Task<GetRatesDto> CreatePaymentTransaction(CreatePaymentTransactionDto createPaymentTransaction);
+        Task<GetTransactionDto> GetTransaction(string transactionId);
     }
 }

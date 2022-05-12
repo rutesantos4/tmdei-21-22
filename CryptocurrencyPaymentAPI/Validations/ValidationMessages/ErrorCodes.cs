@@ -6,5 +6,7 @@
         public static readonly ValidationMessage MissingCryptoCurrency = new(101, "Missing Cryptocurrency.");
         public static readonly ValidationMessage InvalidAmount = new(102, "Amount must be bigger than zero.");
         public static readonly ValidationMessage InvalidCryptoCurrency = new(103, "Cryptocurrency is invalid.");
+
+        public static readonly ValidationMessage InvalidTransaction = new(200, "Transaction does not exists.");
     }
 }

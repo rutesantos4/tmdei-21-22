@@ -51,5 +51,22 @@
             log.Info($"Created Payment transaction \n{JsonConvert.SerializeObject(result, Formatting.Indented)}");
             return result;
         }
+
+        public async Task<GetTransactionDto> GetTransaction(string transactionId)
+        {
+            log.Info($"Get transaction '{transactionId}'");
+
+            log.Info($"Getting transaction '{transactionId}' from DB");
+            var transaction = await transactionRepository.GetByDomainIdentifier(transactionId);
+            log.Info($"Got transaction '{transactionId}' from DB");
+
+            log.Info("Validating request");
+            paymentValidation.ValidateTransactionGet(transaction);
+
+            var result = transaction.ToDto();
+
+            log.Info($"Got transaction \n{JsonConvert.SerializeObject(result, Formatting.Indented)}");
+            return result;
+        }
     }
 }

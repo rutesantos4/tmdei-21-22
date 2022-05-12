@@ -25,5 +25,13 @@
             log.Info("Create Payment transaction");
             return Ok(await transactionService.CreatePaymentTransaction(createPaymentTransaction));
         }
+
+        [HttpGet("{transactionId}")]
+        public async Task<ActionResult<GetTransactionDto>> GetTransaction(
+            [FromRoute] string transactionId)
+        {
+            log.Info($"Confirm Payment transaction '{transactionId}'");
+            return Ok(await transactionService.GetTransaction(transactionId));
+        }
     }
 }

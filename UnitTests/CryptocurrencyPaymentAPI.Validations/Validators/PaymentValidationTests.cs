@@ -3,6 +3,7 @@
     using AutoFixture;
     using FluentAssertions;
     using global::CryptocurrencyPaymentAPI.DTOs.Request;
+    using global::CryptocurrencyPaymentAPI.Model.Entities;
     using global::CryptocurrencyPaymentAPI.Validations.Exceptions;
     using global::CryptocurrencyPaymentAPI.Validations.Validators.Implementation;
     using global::CryptocurrencyPaymentAPI.Validations.Validators.Interfaces;
@@ -86,6 +87,32 @@
 
             // Assert
             validation.Should().Throw<ValidationException>();
+        }
+
+        [TestMethod]
+        public void OnValidateTransactionCreationGet_GivenANullTransaction_ShouldThrowException()
+        {
+            // Arrange
+            Transaction? entity = null;
+
+            // Act
+            var validation = () => paymentValidator.ValidateTransactionGet(entity);
+
+            // Assert
+            validation.Should().Throw<ValidationException>();
+        }
+
+        [TestMethod]
+        public void OnValidateTransactionCreationGet_GivenAValidTransaction_ShouldNotThrowException()
+        {
+            // Arrange
+            var entity = fixture.Build<Transaction>().Without(e => e.Details).Create();
+
+            // Act
+            var validation = () => paymentValidator.ValidateTransactionGet(entity);
+
+            // Assert
+            validation.Should().NotThrow<ValidationException>();
         }
     }
 }
