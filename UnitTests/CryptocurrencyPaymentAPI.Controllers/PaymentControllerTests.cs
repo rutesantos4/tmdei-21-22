@@ -43,5 +43,24 @@
             result.Should().NotBeNull();
             result.Value.Should().BeEquivalentTo(expected);
         }
+
+        [TestMethod]
+        public async Task OnGetTransaction_GivenValidRequest_ShouldReturnOkGetTransactionDto()
+        {
+            // Arrange
+            var expected = fixture.Create<GetTransactionDto>();
+            paymentServiceMock
+                .Setup(e => e.GetTransaction(It.IsAny<string>()))
+                .ReturnsAsync(expected);
+
+            // Act
+            var actionResult = await controller.GetTransaction(It.IsAny<string>());
+
+            // Assert
+            paymentServiceMock.Verify();
+            var result = actionResult.Result as OkObjectResult;
+            result.Should().NotBeNull();
+            result.Value.Should().BeEquivalentTo(expected);
+        }
     }
 }

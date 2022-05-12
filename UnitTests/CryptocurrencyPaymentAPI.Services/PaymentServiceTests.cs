@@ -4,15 +4,14 @@
     using FluentAssertions;
     using global::CryptocurrencyPaymentAPI.DTOs;
     using global::CryptocurrencyPaymentAPI.DTOs.Request;
+    using global::CryptocurrencyPaymentAPI.DTOs.Response;
     using global::CryptocurrencyPaymentAPI.Model.Entities;
-    using global::CryptocurrencyPaymentAPI.Model.ValueObjects;
     using global::CryptocurrencyPaymentAPI.Repositories.Interfaces;
     using global::CryptocurrencyPaymentAPI.Services.Implementation;
     using global::CryptocurrencyPaymentAPI.Services.Interfaces;
     using global::CryptocurrencyPaymentAPI.Validations.Validators.Interfaces;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
-    using System.Collections.Generic;
 
     [TestClass]
     public class PaymentServiceTests
@@ -54,6 +53,26 @@
             transactionServiceMock.Verify(x => x.GetCurrencyRates(It.IsAny<CreatePaymentTransactionDto>()), Times.Once);
             paymentValidationMock.Verify(x => x.ValidatePaymentTransactionCreation(createPaymentTransactionDto), Times.Once);
             transactionRepositoryMock.Verify(x => x.Add(It.IsAny<Transaction>()), Times.Once);
+            result.Should().NotBeNull();
+        }
+
+        [TestMethod]
+        public void OnGetTransaction_GivenAnExistingTransaction_ShouldReturnRate()
+        {
+            // Arrange
+            var transaction = fixture.Create<Transaction>();
+            paymentValidationMock.Setup(x => x.ValidateTransactionGet(transaction));
+
+            transactionRepositoryMock
+                .Setup(x => x.GetByDomainIdentifier(It.IsAny<string>()))
+                .ReturnsAsync(transaction);
+
+            // Act
+            var result = paymentService.GetTransaction(It.IsAny<string>());
+
+            // Assert
+            paymentValidationMock.Verify(x => x.ValidateTransactionGet(transaction), Times.Once);
+            transactionRepositoryMock.Verify(x => x.GetByDomainIdentifier(It.IsAny<string>()), Times.Once);
             result.Should().NotBeNull();
         }
     }
