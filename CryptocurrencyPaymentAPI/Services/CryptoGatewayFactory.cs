@@ -50,8 +50,7 @@
                     .Where(e => e.ServiceWorking())
                     .ToList();
 
-                if (listAvailablePaymentGateways == null
-                    || listAvailablePaymentGateways.Count == 0)
+                if (listAvailablePaymentGateways.Count == 0)
                 {
                     throw new ServiceUnavailableException("available");
                 }
