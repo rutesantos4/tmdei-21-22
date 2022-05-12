@@ -6,6 +6,7 @@
     using global::CryptocurrencyPaymentAPI.DTOs.Request;
     using global::CryptocurrencyPaymentAPI.DTOs.Response;
     using global::CryptocurrencyPaymentAPI.Mappers;
+    using global::CryptocurrencyPaymentAPI.Mappers.Utils;
     using global::CryptocurrencyPaymentAPI.Model.Entities;
     using global::CryptocurrencyPaymentAPI.Model.Enums;
     using global::CryptocurrencyPaymentAPI.Model.ValueObjects;
@@ -23,7 +24,7 @@
         }
 
         [TestMethod]
-        public void GivenValidCreatePaymentTransactionDto_ShouldMap()
+        public void GivenValidCreatePaymentTransactionDto_ShouldMapTransaction()
         {
             //Arrange
             var dto = fixture.Create<CreatePaymentTransactionDto>();
@@ -54,7 +55,7 @@
         }
 
         [TestMethod]
-        public void GivenInvalidCreatePaymentTransactionDto_ShouldntMap()
+        public void GivenInvalidCreatePaymentTransactionDto_ShouldntMapTransaction()
         {
             //Arrange
             CreatePaymentTransactionDto? dto = null;
@@ -71,7 +72,7 @@
         }
 
         [TestMethod]
-        public void GivenValidTransaction_ShouldMap()
+        public void GivenValidTransaction_ShouldMapGetRatesDto()
         {
             //Arrange
             var entity = fixture.Build<Transaction>().Without(e => e.Details).Create();
@@ -94,7 +95,7 @@
         }
 
         [TestMethod]
-        public void GivenInvalidTransaction_ShouldntMap()
+        public void GivenInvalidTransaction_ShouldntMapGetRatesDto()
         {
             //Arrange
             Transaction? entity = null;
@@ -108,6 +109,47 @@
             dto.Should().NotBeNull();
             dto.Should().BeOfType<GetRatesDto>();
             dto.Should().BeEquivalentTo(new GetRatesDto());
+        }
+
+        [TestMethod]
+        public void GivenValidTransaction_ShouldMapGetTransactionDto()
+        {
+            //Arrange
+            var entity = fixture.Create<Transaction>();
+
+            //Act
+            var dto = entity.ToDto();
+
+            //Assert
+            dto.Should().NotBeNull();
+            dto.Should().BeOfType<GetTransactionDto>();
+            dto.Should().BeEquivalentTo(entity, o => o
+                .ExcludingMissingMembers()
+                .Excluding(e => e.TransactionReference)
+                .Excluding(e => e.TransactionState)
+                .Excluding(e => e.TransactionType)
+                .Excluding(e => e.PaymentGateway)
+                .Excluding(e => e.Details.Conversion.ActionName));
+            dto.TransactionReference.Should().Be(entity.DomainIdentifier);
+            dto.MerchantTransactionReference.Should().Be(entity.TransactionReference);
+            dto.TransactionState.Should().Be(EnumDescriptionHelper.GetEnumValueAsString(entity.TransactionState));
+            dto.TransactionType.Should().Be(EnumDescriptionHelper.GetEnumValueAsString(entity.TransactionType));
+            dto.PaymentGateway.Should().Be(EnumDescriptionHelper.GetEnumValueAsString(entity.PaymentGateway));
+        }
+
+        [TestMethod]
+        public void GivenInvalidTransaction_ShouldntMapGetTransactionDto()
+        {
+            //Arrange
+            Transaction? entity = null;
+
+            //Act
+            var dto = entity.ToDto();
+
+            //Assert
+            dto.Should().NotBeNull();
+            dto.Should().BeOfType<GetTransactionDto>();
+            dto.Should().BeEquivalentTo(new GetTransactionDto());
         }
     }
 }
