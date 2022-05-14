@@ -18,7 +18,7 @@ The context of this thesis lies in the exploration activity of an emerging techn
 
 1. [Sonarqube docker](https://docs.sonarqube.org/latest/setup/get-started-2-minutes) running (or locally running) with port `9000`;
 2. [SonarScanner for .NET](https://docs.sonarqube.org/latest/analysis/scan/sonarscanner-for-msbuild/) installed;
-3. [Coverlet](https://github.com/coverlet-coverage/coverlet) package installed in the test project (`UnitTests`);
+3. [Coverlet](https://github.com/coverlet-coverage/coverlet) package installed in the test project (`UnitTests` and `IntegrationTests`);
 4. Sonarqube project created with the name `tmdei-21-22` (it should generate the token `fb1c385d78137a268807d5ed2aadcec09ba445b0`) and project key `fb1c385d78137a268807d5ed2aadcec09ba445b0`;
 
 
@@ -26,18 +26,22 @@ The context of this thesis lies in the exploration activity of an emerging techn
 
 Run the following command in the project directory (`/CryptocurrencyPaymentAPI`)
 
-1. Execute the tests and perform the code coverage
+1. Execute the tests and perform the code coverage of unit tests
 
 		dotnet test ../UnitTests/UnitTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
-2. Begin the SonarQube Analysis
+2. Execute the tests and perform the code coverage of unit tests
 
-		dotnet sonarscanner begin /k:"fb1c385d78137a268807d5ed2aadcec09ba445b0" /d:sonar.host.url="http://localhost:9000" /d:sonar.login="fb1c385d78137a268807d5ed2aadcec09ba445b0" /d:sonar.cs.opencover.reportsPaths="..\UnitTests\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests*.cs"
+	dotnet test ../IntegrationTests/IntegrationTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
-3. Build the solution
+3. Begin the SonarQube Analysis
+
+		dotnet sonarscanner begin /k:"fb1c385d78137a268807d5ed2aadcec09ba445b0" /d:sonar.host.url="http://localhost:9000" /d:sonar.login="fb1c385d78137a268807d5ed2aadcec09ba445b0" /d:sonar.cs.opencover.reportsPaths="..\UnitTests\coverage.opencover.xml,..\IntegrationTests\coverage.opencover.xml" /d:sonar.coverage.exclusions="**Tests*.cs"
+
+4. Build the solution
 
 		dotnet build
 
-4. End the SonarQube Analysis and publish it
+5. End the SonarQube Analysis and publish it
 
 		dotnet sonarscanner end /d:sonar.login="fb1c385d78137a268807d5ed2aadcec09ba445b0"
