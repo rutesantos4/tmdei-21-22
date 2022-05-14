@@ -7,7 +7,7 @@
     {
         internal static IServiceCollection ConfigureRepositories(this IServiceCollection services)
         {
-            services.AddTransient<ITransactionRepository, TransactionRepository>();
+            services.AddScoped<ITransactionRepository, TransactionRepository>();
 
             return services;
         }

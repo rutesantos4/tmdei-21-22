@@ -63,7 +63,9 @@
                             Currency = dtoConvertion?.CurrencyRate?.Currency ?? string.Empty,
                             Amount = dtoConvertion?.CurrencyRate?.Amount ?? 0,
                         },
-                        ExpiryDate = DateTime.UtcNow.AddMinutes(1)
+                        ExpiryDate = DateTime.UtcNow.AddMinutes(1),
+                        Message = null,
+                        Reason = null
                     }
                 },
                 TransactionState = TransactionState.CurrencyConverted,

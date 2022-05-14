@@ -49,9 +49,23 @@
                         break;
                 }
 
-                var result = JsonSerializer.Serialize(new { message });
+                var result = JsonSerializer.Serialize(new ExceptionResult(message));
                 await response.WriteAsync(result);
             }
+        }
+    }
+
+    public class ExceptionResult
+    {
+        public object Message { get; set; }
+
+        public ExceptionResult()
+        {
+        }
+
+        public ExceptionResult(object message)
+        {
+            Message = message;
         }
     }
 }

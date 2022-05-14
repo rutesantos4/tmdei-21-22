@@ -49,7 +49,6 @@
             factory = new CryptoGatewayFactory(configurationMock.Object, pingMock.Object, restClientMock.Object, decisionConfigurationServiceMock.Object);
         }
 
-        // TODO - Tests
         [TestMethod]
         public void OnGetCryptoGatewayServices_GivenAValidList_ShouldReturnAList()
         {
@@ -97,7 +96,7 @@
         public void OnGetCryptoGatewayServices_GivenAEmptyList_ShouldThrowExpection()
         {
             // Arrange
-            List<PaymentGatewayName> listPossiblePaymentGateways = new List<PaymentGatewayName>();
+            List<PaymentGatewayName> listPossiblePaymentGateways = new();
 
             decisionConfigurationServiceMock
                 .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<string>(), It.IsAny<string>()))

@@ -5,7 +5,9 @@ VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CryptocurrencyPaymentAPI", "CryptocurrencyPaymentAPI.csproj", "{920B4485-7E8C-40A6-8C61-9E1C6FF9A1BC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "..\UnitTests\UnitTests.csproj", "{E060B24C-CB0F-408D-BC48-53EF7CD393E2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UnitTests", "..\UnitTests\UnitTests.csproj", "{E060B24C-CB0F-408D-BC48-53EF7CD393E2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "..\IntegrationTests\IntegrationTests.csproj", "{057A9849-B5F3-4FFB-BDF2-50506070F2EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{E060B24C-CB0F-408D-BC48-53EF7CD393E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E060B24C-CB0F-408D-BC48-53EF7CD393E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E060B24C-CB0F-408D-BC48-53EF7CD393E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{057A9849-B5F3-4FFB-BDF2-50506070F2EC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{057A9849-B5F3-4FFB-BDF2-50506070F2EC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{057A9849-B5F3-4FFB-BDF2-50506070F2EC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{057A9849-B5F3-4FFB-BDF2-50506070F2EC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

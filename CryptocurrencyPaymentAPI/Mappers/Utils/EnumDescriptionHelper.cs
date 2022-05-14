@@ -7,7 +7,9 @@
     {
         public static string GetEnumValueAsString<T>(this T stateEnum)
         {
-            var state = stateEnum?.ToString() ?? string.Empty;
+            if(stateEnum == null || stateEnum.GetType() == null) { return string.Empty; }
+            var state = stateEnum.ToString() ?? string.Empty;
+            if (stateEnum.GetType().GetField(state) == null) { return state; }
             return GetValue(stateEnum.GetType().GetField(state), state);
         }
 
@@ -17,7 +19,7 @@
 
             if (customAttributes.Length > 0)
             {
-                return (customAttributes[0] as DescriptionAttribute).Description;
+                return ((DescriptionAttribute)customAttributes[0]).Description;
             }
             return state;
         }

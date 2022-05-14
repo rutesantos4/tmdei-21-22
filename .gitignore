@@ -381,3 +381,4 @@ MigrationBackup/
 
 # End of https://www.toptal.com/developers/gitignore/api/sonarqube							  
 UnitTests/coverage.opencover.xml
+IntegrationTests/coverage.opencover.xml
