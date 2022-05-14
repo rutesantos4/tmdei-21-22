@@ -5,5 +5,6 @@
         public string? Currency { get; set; }
         public double Amount { get; set; }
         public double Rate { get; set; }
+        public DateTime ExpiryDate { get; set; }
     }
 }

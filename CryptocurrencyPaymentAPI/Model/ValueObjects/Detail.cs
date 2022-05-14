@@ -2,6 +2,7 @@
 {
     public class Detail : ValueObject
     {
-        public Conversion Conversion { get; set; }
+        public ConversionAction Conversion { get; set; }
+        public InitAction Init { get; set; }
     }
 }

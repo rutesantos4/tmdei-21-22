@@ -27,6 +27,21 @@
             validationResult.ShouldThrowValidationException();
         }
 
+        public void ValidateTransactionConfirm(Transaction transaction)
+        {
+            var validationResult = new ValidationResult();
+
+            if (transaction is null)
+            {
+                validationResult.AddMessages(ErrorCodes.InvalidTransaction);
+            } else if(transaction.Details.Conversion.ExpiryDate < DateTime.Today)
+            {
+                validationResult.AddMessages(ErrorCodes.ConversionRateExpired);
+            }
+
+            validationResult.ShouldThrowValidationException();
+        }
+
         public void ValidateTransactionGet(Transaction transaction)
         {
             var validationResult = new ValidationResult();

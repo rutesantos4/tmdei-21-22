@@ -24,7 +24,7 @@
         public void GivenValidConversion_ShouldMap()
         {
             //Arrange
-            var entity = fixture.Create<Conversion>();
+            var entity = fixture.Create<ConversionAction>();
 
             //Act
             var dto = entity.ToDto();
@@ -40,7 +40,7 @@
         public void GivenInvalidConversion_ShouldntMap()
         {
             //Arrange
-            Conversion? entity = null;
+            ConversionAction? entity = null;
 
             //Act
             var dto = entity.ToDto();

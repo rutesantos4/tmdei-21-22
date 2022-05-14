@@ -2,7 +2,6 @@
 {
     using CryptocurrencyPaymentAPI.DTOs;
     using CryptocurrencyPaymentAPI.DTOs.Request;
-    using CryptocurrencyPaymentAPI.Model.Entities;
     using CryptocurrencyPaymentAPI.Model.Enums;
     using CryptocurrencyPaymentAPI.Services.Interfaces;
     using CryptocurrencyPaymentAPI.Utils;
@@ -16,10 +15,11 @@
 
         public string ConverCurrencyEndPoint { get; set; } = string.Empty;
         public string CreateTransactionEndPoint { get; set; } = string.Empty;
+        public string NotificationEndPoint { get; set; } = string.Empty;
         public IPing? Pinger { get; set; }
         public IRestClient? RestClient { get; set; } = null;
 
-        public abstract Transaction CreateTransaction(ConfirmPaymentTransactionDto transaction, string paymentGatewayTransactionId);
+        public abstract PaymentCreatedDto? CreateTransaction(ConfirmPaymentTransactionDto confirmTransactionDto);
         public abstract CurrencyConvertedDto? GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction);
         public abstract PaymentGatewayName GetPaymentGatewayEnum();
 

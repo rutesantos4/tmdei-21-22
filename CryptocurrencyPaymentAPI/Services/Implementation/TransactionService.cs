@@ -2,10 +2,10 @@
 {
     using CryptocurrencyPaymentAPI.DTOs;
     using CryptocurrencyPaymentAPI.DTOs.Request;
-    using CryptocurrencyPaymentAPI.Model.Entities;
     using CryptocurrencyPaymentAPI.Model.Enums;
     using CryptocurrencyPaymentAPI.Services.Interfaces;
     using CryptocurrencyPaymentAPI.Validations.Exceptions;
+    using CryptocurrencyPaymentAPI.Validations.ValidationMessages;
     using log4net;
     using Newtonsoft.Json;
     using System.Reflection;
@@ -21,9 +21,21 @@
             this.cryptoGatewayFactory = cryptoGatewayFactory;
         }
 
-        public Transaction CreateTransaction(ConfirmPaymentTransactionDto transaction, string paymentGatewayTransactionId)
+        public PaymentCreatedDto CreateTransaction(ConfirmPaymentTransactionDto confirmTransaction)
         {
-            throw new NotImplementedException();
+            var cryptoGatewayService = cryptoGatewayFactory.GetCryptoGatewayService(confirmTransaction.PaymentGateway);
+            log.Info($"Creating transaction");
+
+            var response = cryptoGatewayService.CreateTransaction(confirmTransaction);
+
+            if(response == null)
+            {
+                var validationResult = new ValidationResult();
+                validationResult.AddMessages(ErrorCodes.OperationInvalid);
+                throw new ValidationException(validationResult);
+            }
+            log.Info($"Got transaction\n{JsonConvert.SerializeObject(response, Formatting.Indented)}");
+            return response;
         }
 
         public CurrencyConvertedDto GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction)

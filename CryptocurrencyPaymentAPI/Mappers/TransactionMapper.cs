@@ -17,12 +17,7 @@
             {
                 Amount = dtoCreation.Amount,
                 FiatCurrency = dtoCreation.FiatCurrency,
-                Rate = new CurrencyRateDto()
-                {
-                    Amount = dtoConvertion?.CurrencyRate?.Amount ?? 0,
-                    Currency = dtoConvertion?.CurrencyRate?.Currency ?? string.Empty,
-                    Rate = dtoConvertion?.CurrencyRate?.Rate ?? 0,
-                },
+                Rate = dtoConvertion.CurrencyRate,
                 TransactionId = entity.DomainIdentifier
             };
 
@@ -48,7 +43,7 @@
                 PaymentGateway = paymentGatewayName,
                 Details = new Detail()
                 {
-                    Conversion = new Conversion()
+                    Conversion = new ConversionAction()
                     {
                         ActionName = ActionType.Convert,
                         DateTime = DateTime.UtcNow,
@@ -63,7 +58,7 @@
                             Currency = dtoConvertion?.CurrencyRate?.Currency ?? string.Empty,
                             Amount = dtoConvertion?.CurrencyRate?.Amount ?? 0,
                         },
-                        ExpiryDate = DateTime.UtcNow.AddMinutes(1),
+                        ExpiryDate = DateTime.UtcNow.AddMinutes(5),// TODO - This is wrong
                         Message = null,
                         Reason = null
                     }

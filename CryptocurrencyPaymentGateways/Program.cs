@@ -107,13 +107,13 @@ app.MapPost("/bitpay/invoices", (BitPay.Invoice request) =>
             transactions = new List<object>(),
             transactionSpeed = "medium",
             buyer = request.Buyer,
-            redirectURL = "https://merchantwebsite.com/shop/return",
+            redirectURL = request.RedirectURL,//"https://merchantwebsite.com/shop/return",
             refundAddresses = new List<object>(),
             refundAddressRequestPending = false,
-            buyerProvidedEmail = request.Buyer.Email,
+            buyerProvidedEmail = request.Buyer?.Email,
             buyerProvidedInfo = new
             {
-                emailAddress = request.Buyer.Email
+                emailAddress = request.Buyer?.Email
             },
             paymentSubtotals = new
             {
@@ -1276,7 +1276,7 @@ struct BitPay
 {
     internal class Invoice
     {
-        public int Price { get; set; }
+        public double Price { get; set; }
         public string Currency { get; set; }
         public string OrderId { get; set; }
         public string NotificationURL { get; set; }

@@ -44,7 +44,7 @@
             entity.TransactionReference.Should().Be(dto.TransactionReference);
             entity.MerchantId.Should().Be("TODO");
             entity.Details.Should().NotBeNull();
-            entity.Details.Conversion.Should().BeOfType<Conversion>();
+            entity.Details.Conversion.Should().BeOfType<ConversionAction>();
             entity.Details.Conversion.ActionName.Should().Be(ActionType.Convert);
             entity.Details.Conversion.DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.MaxValue);
             entity.Details.Conversion.Success.Should().BeTrue();
@@ -129,7 +129,8 @@
                 .Excluding(e => e.TransactionState)
                 .Excluding(e => e.TransactionType)
                 .Excluding(e => e.PaymentGateway)
-                .Excluding(e => e.Details.Conversion.ActionName));
+                .Excluding(e => e.Details.Conversion.ActionName)
+                .Excluding(e => e.Details.Init));
             dto.TransactionReference.Should().Be(entity.DomainIdentifier);
             dto.MerchantTransactionReference.Should().Be(entity.TransactionReference);
             dto.TransactionState.Should().Be(EnumDescriptionHelper.GetEnumValueAsString(entity.TransactionState));

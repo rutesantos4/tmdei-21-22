@@ -1,6 +1,6 @@
 ﻿namespace CryptocurrencyPaymentAPI.Model.ValueObjects
 {
-    public class Conversion : Action
+    public class ConversionAction : Action
     {
         public DateTime ExpiryDate { get; set; }
         public Money FiatCurrency { get; set; } = new Money();

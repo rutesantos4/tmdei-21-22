@@ -29,7 +29,9 @@
             //Assert
             dto.Should().NotBeNull();
             dto.Should().BeOfType<GetDetailDto>();
-            dto.Should().BeEquivalentTo(entity, o => o.ExcludingMissingMembers().Excluding(o => o.Conversion.ActionName));
+            dto.Should().BeEquivalentTo(entity, o => o.ExcludingMissingMembers()
+            .Excluding(o => o.Conversion.ActionName)
+            .Excluding(o => o.Init));
         }
 
         [TestMethod]

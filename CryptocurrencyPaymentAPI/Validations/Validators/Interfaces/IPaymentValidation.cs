@@ -7,5 +7,6 @@
     {
         void ValidatePaymentTransactionCreation(CreatePaymentTransactionDto dto);
         void ValidateTransactionGet(Transaction transaction);
+        void ValidateTransactionConfirm(Transaction transaction);
     }
 }

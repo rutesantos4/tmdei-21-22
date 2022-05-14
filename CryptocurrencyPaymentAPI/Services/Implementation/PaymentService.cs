@@ -27,6 +27,43 @@
             this.transactionService = transactionService;
         }
 
+        public async Task<GetTransactionDto> ConfirmPaymentTransaction(string transactionId)
+        {
+            log.Info($"Confirm Payment transaction '{transactionId}'");
+
+            log.Info($"Getting transaction '{transactionId}' from DB");
+            var transaction = await transactionRepository.GetByDomainIdentifier(transactionId);
+            log.Info($"Got transaction '{transactionId}' from DB");
+
+            log.Info("Validating request");
+            paymentValidation.ValidateTransactionConfirm(transaction);
+
+            var confirmPaymentTransactionDTO = new ConfirmPaymentTransactionDto()
+            {
+                Amount = transaction.Details.Conversion.FiatCurrency.Amount,
+                FiatCurrency = transaction.Details.Conversion.FiatCurrency.Currency,
+                CryptoCurrency = transaction.Details.Conversion.CryptoCurrency.Currency,
+                PaymentGatewayTransactionId = transaction.PaymentGatewayTransactionId,
+                PaymentGateway = transaction.PaymentGateway,
+            };
+            log.Info($"Creating Transaction on gateway \n{JsonConvert.SerializeObject(confirmPaymentTransactionDTO, Formatting.Indented)}");
+            var paymentCreatedDto = transactionService.CreateTransaction(confirmPaymentTransactionDTO);
+
+            log.Info($"Setting Transaction '{transaction.DomainIdentifier}'");
+            transaction.PaymentGatewayTransactionId = paymentCreatedDto.PaymentGatewayTransactionId;
+            transaction.Details.Init = paymentCreatedDto.ToEntity();
+
+            log.Info($"Updating Transaction '{transaction.DomainIdentifier}' to DB");
+            transaction = await transactionRepository.Update(transaction);
+            log.Info($"Updated Transaction '{transaction.DomainIdentifier}' to DB");
+
+            //TODO - Create a new DTO for this action
+            var result = transaction.ToDto();
+
+            log.Info($"Got transaction \n{JsonConvert.SerializeObject(result, Formatting.Indented)}");
+            return result;
+        }
+
         public async Task<GetRatesDto> CreatePaymentTransaction(CreatePaymentTransactionDto createPaymentTransaction)
         {
             log.Info($"Create Payment transaction \n{JsonConvert.SerializeObject(createPaymentTransaction, Formatting.Indented)}");

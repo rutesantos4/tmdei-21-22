@@ -10,7 +10,8 @@
             ? new GetDetailDto()
             : new GetDetailDto
             {
-                Conversion = entity.Conversion.ToDto()
+                Conversion = entity.Conversion.ToDto(),
+                Init = entity.Init.ToDto()
             };
     }
 }

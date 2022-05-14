@@ -169,6 +169,7 @@
             Assert.NotNull(responseMessage.Rate.Amount);
             Assert.NotNull(responseMessage.Rate.Currency);
             Assert.NotEmpty(responseMessage.Rate.Currency);
+            Assert.NotNull(responseMessage.Rate.ExpiryDate);
         }
 
         [Fact]
@@ -207,6 +208,7 @@
             Assert.NotNull(responseMessage.Details.Conversion.CryptoCurrency);
             Assert.Equal(responseMessageCreate.Rate.Currency, responseMessage.Details.Conversion.CryptoCurrency.Currency);
             Assert.Equal(responseMessageCreate.Rate.Amount, responseMessage.Details.Conversion.CryptoCurrency.Amount);
+            Assert.Null(responseMessage.Details.Init);
         }
 
         [Fact]

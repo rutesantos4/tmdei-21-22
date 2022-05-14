@@ -4,7 +4,6 @@
 
     public class GetConversionActionDto : GetActionDto
     {
-        // GetConversionActionDto
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public DateTime? ExpiryDate { get; set; }
 

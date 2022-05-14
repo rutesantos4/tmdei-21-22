@@ -10,9 +10,9 @@
 
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string Reason { get; set; } = string.Empty;
+        public string? Reason { get; set; } = string.Empty;
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
-        public string Message { get; set; } = string.Empty;
+        public string? Message { get; set; } = string.Empty;
     }
 }

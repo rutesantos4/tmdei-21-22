@@ -15,7 +15,8 @@
         }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<Conversion>();
+            modelBuilder.Entity<ConversionAction>();
+            modelBuilder.Entity<InitAction>();
             base.OnModelCreating(modelBuilder);
         }
 

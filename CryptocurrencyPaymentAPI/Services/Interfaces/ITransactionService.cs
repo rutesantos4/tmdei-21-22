@@ -9,6 +9,6 @@
     {
         PaymentGatewayName GetPaymentGatewayEnum();
         CurrencyConvertedDto GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction);
-        Transaction CreateTransaction(ConfirmPaymentTransactionDto transaction, string paymentGatewayTransactionId);
+        PaymentCreatedDto CreateTransaction(ConfirmPaymentTransactionDto confirmTransaction);
     }
 }

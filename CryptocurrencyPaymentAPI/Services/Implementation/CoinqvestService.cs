@@ -2,7 +2,6 @@
 {
     using CryptocurrencyPaymentAPI.DTOs;
     using CryptocurrencyPaymentAPI.DTOs.Request;
-    using CryptocurrencyPaymentAPI.Model.Entities;
     using CryptocurrencyPaymentAPI.Model.Enums;
     using CryptocurrencyPaymentAPI.Services.Interfaces;
     using CryptocurrencyPaymentAPI.Utils;
@@ -18,7 +17,7 @@
             Pinger = pinger;
         }
 
-        public override Transaction CreateTransaction(ConfirmPaymentTransactionDto transaction, string paymentGatewayTransactionId)
+        public override PaymentCreatedDto CreateTransaction(ConfirmPaymentTransactionDto transaction)
         {
             throw new NotImplementedException();
         }
