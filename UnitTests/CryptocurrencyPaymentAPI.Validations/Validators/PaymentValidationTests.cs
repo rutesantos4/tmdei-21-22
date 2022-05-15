@@ -106,7 +106,7 @@
         public void OnValidateTransactionCreationGet_GivenAValidTransaction_ShouldNotThrowException()
         {
             // Arrange
-            var entity = fixture.Build<Transaction>().Without(e => e.Details).Create();
+            var entity = fixture.Create<Transaction>();
 
             // Act
             var validation = () => paymentValidator.ValidateTransactionGet(entity);

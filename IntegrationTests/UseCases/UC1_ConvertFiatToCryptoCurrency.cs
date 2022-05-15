@@ -201,6 +201,8 @@
             Assert.NotEmpty(responseMessage.PaymentGateway);
             Assert.NotNull(responseMessage.Details);
             Assert.NotNull(responseMessage.Details.Conversion);
+            Assert.Null(responseMessage.Details.Conversion.Reason);
+            Assert.Null(responseMessage.Details.Conversion.Message);
             Assert.NotNull(responseMessage.Details.Conversion.ExpiryDate);
             Assert.NotNull(responseMessage.Details.Conversion.FiatCurrency);
             Assert.Equal(responseMessageCreate.FiatCurrency, responseMessage.Details.Conversion.FiatCurrency.Currency);

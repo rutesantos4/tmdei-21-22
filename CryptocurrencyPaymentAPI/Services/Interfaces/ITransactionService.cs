@@ -2,7 +2,6 @@
 {
     using CryptocurrencyPaymentAPI.DTOs;
     using CryptocurrencyPaymentAPI.DTOs.Request;
-    using CryptocurrencyPaymentAPI.Model.Entities;
     using CryptocurrencyPaymentAPI.Model.Enums;
 
     public interface ITransactionService

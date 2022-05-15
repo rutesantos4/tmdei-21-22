@@ -28,7 +28,7 @@
             ? new InitAction()
             : new InitAction()
             {
-                ActionName = ActionType.Convert,
+                ActionName = ActionType.Init,
                 DateTime = DateTime.UtcNow,
                 Success = true,
                 ExpiryDate = dto.ExpiryDate,

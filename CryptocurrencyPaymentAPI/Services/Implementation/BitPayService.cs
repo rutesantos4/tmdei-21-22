@@ -146,7 +146,7 @@
             public double Rate { get; set; }
         }
 
-        internal class InvoiceRequest
+        public class InvoiceRequest
         {
             public double Price { get; set; }
             public string Currency { get; set; }
@@ -154,12 +154,12 @@
             public string Token { get; set; }
         }
 
-        internal class InvoiceResponse
+        public class InvoiceResponse
         {
             public InvoiceResponseData Data { get; set; }
         }
 
-        internal class InvoiceResponseData
+        public class InvoiceResponseData
         {
             public string URL { get; set; }
             public string Status { get; set; }
@@ -171,7 +171,7 @@
             public PaymentCodes PaymentCodes { get; set; }
         }
 
-        internal class PaymentDisplayTotals
+        public class PaymentDisplayTotals
         {
             public string BTC { get; set; }
             public string BCH { get; set; }
@@ -186,7 +186,7 @@
             public string WBTC { get; set; }
         }
 
-        internal class PaymentCodes
+        public class PaymentCodes
         {
             public URIBIP72 BTC { get; set; }
             public URIBIP72 BCH { get; set; }
@@ -201,26 +201,26 @@
             public URIEIP681b WBTC { get; set; }
         }
 
-        internal class URIBIP72
+        public class URIBIP72
         {
             //"BTC", "BCH" and "DOGE"
             public string BIP72b { get; set; }
             public string BIP73 { get; set; }
         }
 
-        internal class URIEIP681
+        public class URIEIP681
         {
             //"ETH"
             public string EIP681 { get; set; }
         }
 
-        internal class URIEIP681b
+        public class URIEIP681b
         {
             //"GUSD", "PAX", "BUSD", "USDC", "DAI" and "WBTC"
             public string EIP681b { get; set; }
         }
 
-        internal class URIBIP73
+        public class URIBIP73
         {
             //"XRP"
             public string BIP72b { get; set; }

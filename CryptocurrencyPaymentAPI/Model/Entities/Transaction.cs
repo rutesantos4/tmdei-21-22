@@ -10,7 +10,6 @@
         public TransactionType TransactionType { get; set; }
         public PaymentGatewayName PaymentGateway { get; set; }
         public string PaymentGatewayTransactionId { get; set; } = string.Empty;
-        //public List<Action> History { get; set; } = new List<Action>();
         public Detail Details { get; set; } = new Detail();
 
         public string MerchantId { get; set; } = string.Empty;

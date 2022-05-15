@@ -21,6 +21,16 @@
                 TransactionId = entity.DomainIdentifier
             };
 
+        public static GetInitTransactionDto ToDtoInit(this Transaction entity) =>
+            entity is null
+            ? new GetInitTransactionDto()
+            : new GetInitTransactionDto()
+            {
+                TransactionId = entity.DomainIdentifier,
+                ExpiryDate = entity.Details.Init.ExpiryDate,
+                PaymentInfo = entity.Details.Init.PaymentInfo
+            };
+
         public static GetTransactionDto ToDto(this Transaction entity) =>
             entity is null
             ? new GetTransactionDto()
@@ -58,10 +68,11 @@
                             Currency = dtoConvertion?.CurrencyRate?.Currency ?? string.Empty,
                             Amount = dtoConvertion?.CurrencyRate?.Amount ?? 0,
                         },
-                        ExpiryDate = DateTime.UtcNow.AddMinutes(5),// TODO - This is wrong
+                        ExpiryDate = DateTime.UtcNow.AddMinutes(10),// TODO - This is wrong
                         Message = null,
                         Reason = null
-                    }
+                    },
+                    Init = null
                 },
                 TransactionState = TransactionState.CurrencyConverted,
                 PaymentGatewayTransactionId = dtoConvertion?.PaymentGatewayTransactionId ?? string.Empty,

@@ -17,10 +17,12 @@
             return await GetQueryable()
                 .Include(entity => entity.Details)
                     .ThenInclude(entity => entity.Conversion)
-                    .ThenInclude(entity => entity.FiatCurrency)
+                        .ThenInclude(entity => entity.FiatCurrency)
                 .Include(entity => entity.Details)
                     .ThenInclude(entity => entity.Conversion)
-                    .ThenInclude(entity => entity.CryptoCurrency)
+                        .ThenInclude(entity => entity.CryptoCurrency)
+                .Include(entity => entity.Details)
+                    .ThenInclude(entity => entity.Init)
                 .FirstOrDefaultAsync(e => e.DomainIdentifier == domainIdentifier);
         }
     }

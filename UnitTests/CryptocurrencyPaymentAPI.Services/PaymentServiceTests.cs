@@ -47,7 +47,7 @@
                 .ReturnsAsync(transaction);
 
             // Act
-            var result = paymentService.CreatePaymentTransaction(createPaymentTransactionDto);
+            var result = paymentService.ConvertFiatToCryptocurrency(createPaymentTransactionDto);
 
             // Assert
             transactionServiceMock.Verify(x => x.GetCurrencyRates(It.IsAny<CreatePaymentTransactionDto>()), Times.Once);
@@ -57,7 +57,7 @@
         }
 
         [TestMethod]
-        public void OnGetTransaction_GivenAnExistingTransaction_ShouldReturnRate()
+        public void OnGetTransaction_GivenAnExistingTransaction_ShouldReturnTransaction()
         {
             // Arrange
             var transaction = fixture.Create<Transaction>();

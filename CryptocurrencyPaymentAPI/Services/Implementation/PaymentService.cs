@@ -27,7 +27,7 @@
             this.transactionService = transactionService;
         }
 
-        public async Task<GetTransactionDto> ConfirmPaymentTransaction(string transactionId)
+        public async Task<GetInitTransactionDto> CreatePaymentTransaction(string transactionId)
         {
             log.Info($"Confirm Payment transaction '{transactionId}'");
 
@@ -52,19 +52,19 @@
             log.Info($"Setting Transaction '{transaction.DomainIdentifier}'");
             transaction.PaymentGatewayTransactionId = paymentCreatedDto.PaymentGatewayTransactionId;
             transaction.Details.Init = paymentCreatedDto.ToEntity();
+            transaction.TransactionState = Model.Enums.TransactionState.Initialized;
 
             log.Info($"Updating Transaction '{transaction.DomainIdentifier}' to DB");
             transaction = await transactionRepository.Update(transaction);
             log.Info($"Updated Transaction '{transaction.DomainIdentifier}' to DB");
 
-            //TODO - Create a new DTO for this action
-            var result = transaction.ToDto();
+            var result = transaction.ToDtoInit();
 
             log.Info($"Got transaction \n{JsonConvert.SerializeObject(result, Formatting.Indented)}");
             return result;
         }
 
-        public async Task<GetRatesDto> CreatePaymentTransaction(CreatePaymentTransactionDto createPaymentTransaction)
+        public async Task<GetRatesDto> ConvertFiatToCryptocurrency(CreatePaymentTransactionDto createPaymentTransaction)
         {
             log.Info($"Create Payment transaction \n{JsonConvert.SerializeObject(createPaymentTransaction, Formatting.Indented)}");
 

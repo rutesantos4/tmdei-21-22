@@ -2,7 +2,7 @@
 {
     public class Detail : ValueObject
     {
-        public ConversionAction Conversion { get; set; }
-        public InitAction Init { get; set; }
+        public ConversionAction Conversion { get; set; } = new ConversionAction();
+        public InitAction? Init { get; set; }
     }
 }

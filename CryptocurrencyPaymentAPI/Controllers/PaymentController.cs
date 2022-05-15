@@ -23,14 +23,14 @@
         public async Task<ActionResult<GetRatesDto>> CreatePaymentTransaction([FromBody] CreatePaymentTransactionDto createPaymentTransaction)
         {
             log.Info("Create Payment transaction");
-            return Ok(await transactionService.CreatePaymentTransaction(createPaymentTransaction));
+            return Ok(await transactionService.ConvertFiatToCryptocurrency(createPaymentTransaction));
         }
 
         [HttpPost("{transactionId}")]
-        public async Task<ActionResult<GetTransactionDto>> ConfirmPaymentTransaction([FromRoute] string transactionId)
+        public async Task<ActionResult<GetInitTransactionDto>> ConfirmPaymentTransaction([FromRoute] string transactionId)
         {
             log.Info($"Confirm Payment transaction '{transactionId}'");
-            return Ok(await transactionService.ConfirmPaymentTransaction(transactionId));
+            return Ok(await transactionService.CreatePaymentTransaction(transactionId));
         }
 
         [HttpGet("{transactionId}")]
