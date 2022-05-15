@@ -33,7 +33,7 @@
                     NotificationURL = NotificationEndPoint,
                 };
 
-                var response = RestClient.Post<InvoiceRequest, InvoiceResponse>(CreateTransactionEndPoint,
+                var response = RestClient?.Post<InvoiceRequest, InvoiceResponse>(CreateTransactionEndPoint,
                     string.Empty,
                     request,
                     out var responseHeaders);
@@ -72,7 +72,7 @@
         {
             try
             {
-                var currencyRates = RestClient.Get<BitPayRates>($"{ConverCurrencyEndPoint}{createPaymentTransaction.FiatCurrency}",
+                var currencyRates = RestClient?.Get<BitPayRates>($"{ConverCurrencyEndPoint}{createPaymentTransaction.FiatCurrency}",
                     string.Empty,
                     out var responseHeaders);
 
@@ -149,83 +149,83 @@
         public class InvoiceRequest
         {
             public double Price { get; set; }
-            public string Currency { get; set; }
-            public string NotificationURL { get; set; }
-            public string Token { get; set; }
+            public string Currency { get; set; } = string.Empty;
+            public string NotificationURL { get; set; } = string.Empty;
+            public string Token { get; set; } = string.Empty;
         }
 
         public class InvoiceResponse
         {
-            public InvoiceResponseData Data { get; set; }
+            public InvoiceResponseData Data { get; set; } = new InvoiceResponseData();
         }
 
         public class InvoiceResponseData
         {
-            public string URL { get; set; }
-            public string Status { get; set; }
+            public string URL { get; set; } = string.Empty;
+            public string Status { get; set; } = string.Empty;
             public long InvoiceTime { get; set; }
             public long ExpirationTime { get; set; }
             public long CurrentTime { get; set; }
-            public string Id { get; set; }
-            public PaymentDisplayTotals PaymentDisplayTotals { get; set; }
-            public PaymentCodes PaymentCodes { get; set; }
+            public string Id { get; set; } = string.Empty;
+            public PaymentDisplayTotals PaymentDisplayTotals { get; set; } = new PaymentDisplayTotals();
+            public PaymentCodes PaymentCodes { get; set; } = new PaymentCodes();
         }
 
         public class PaymentDisplayTotals
         {
-            public string BTC { get; set; }
-            public string BCH { get; set; }
-            public string ETH { get; set; }
-            public string GUSD { get; set; }
-            public string PAX { get; set; }
-            public string BUSD { get; set; }
-            public string USDC { get; set; }
-            public string XRP { get; set; }
-            public string DOGE { get; set; }
-            public string DAI { get; set; }
-            public string WBTC { get; set; }
+            public string BTC { get; set; } = string.Empty;
+            public string BCH { get; set; } = string.Empty;
+            public string ETH { get; set; } = string.Empty;
+            public string GUSD { get; set; } = string.Empty;
+            public string PAX { get; set; } = string.Empty;
+            public string BUSD { get; set; } = string.Empty;
+            public string USDC { get; set; } = string.Empty;
+            public string XRP { get; set; } = string.Empty;
+            public string DOGE { get; set; } = string.Empty;
+            public string DAI { get; set; } = string.Empty;
+            public string WBTC { get; set; } = string.Empty;
         }
 
         public class PaymentCodes
         {
-            public URIBIP72 BTC { get; set; }
-            public URIBIP72 BCH { get; set; }
-            public URIEIP681 ETH { get; set; }
-            public URIEIP681b GUSD { get; set; }
-            public URIEIP681b PAX { get; set; }
-            public URIEIP681b BUSD { get; set; }
-            public URIEIP681b USDC { get; set; }
-            public URIBIP73 XRP { get; set; }
-            public URIBIP72 DOGE { get; set; }
-            public URIEIP681b DAI { get; set; }
-            public URIEIP681b WBTC { get; set; }
+            public Uribip72 BTC { get; set; } = new Uribip72();
+            public Uribip72 BCH { get; set; } = new Uribip72();
+            public Urieip681 ETH { get; set; } = new Urieip681();
+            public Urieip681B GUSD { get; set; } = new Urieip681B();
+            public Urieip681B PAX { get; set; } = new Urieip681B();
+            public Urieip681B BUSD { get; set; } = new Urieip681B();
+            public Urieip681B USDC { get; set; } = new Urieip681B();
+            public Uribip73 XRP { get; set; } = new Uribip73();
+            public Uribip72 DOGE { get; set; } = new Uribip72();
+            public Urieip681B DAI { get; set; } = new Urieip681B();
+            public Urieip681B WBTC { get; set; } = new Urieip681B();
         }
 
-        public class URIBIP72
+        public class Uribip72
         {
             //"BTC", "BCH" and "DOGE"
-            public string BIP72b { get; set; }
-            public string BIP73 { get; set; }
+            public string BIP72b { get; set; } = string.Empty;
+            public string BIP73 { get; set; } = string.Empty;
         }
 
-        public class URIEIP681
+        public class Urieip681
         {
             //"ETH"
-            public string EIP681 { get; set; }
+            public string EIP681 { get; set; } = string.Empty;
         }
 
-        public class URIEIP681b
+        public class Urieip681B
         {
             //"GUSD", "PAX", "BUSD", "USDC", "DAI" and "WBTC"
-            public string EIP681b { get; set; }
+            public string EIP681b { get; set; } = string.Empty;
         }
 
-        public class URIBIP73
+        public class Uribip73
         {
             //"XRP"
-            public string BIP72b { get; set; }
-            public string BIP73 { get; set; }
-            public string RIP681 { get; set; }
+            public string BIP72b { get; set; } = string.Empty;
+            public string BIP73 { get; set; } = string.Empty;
+            public string RIP681 { get; set; } = string.Empty;
         }
         #endregion
     }

@@ -17,7 +17,7 @@
             Pinger = pinger;
         }
 
-        public override PaymentCreatedDto CreateTransaction(ConfirmPaymentTransactionDto transaction)
+        public override PaymentCreatedDto CreateTransaction(ConfirmPaymentTransactionDto confirmTransactionDto)
         {
             throw new NotImplementedException();
         }
