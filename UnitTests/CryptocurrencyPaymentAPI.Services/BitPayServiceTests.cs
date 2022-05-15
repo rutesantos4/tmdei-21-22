@@ -47,6 +47,176 @@
             service = new BitPayService(restClientMock.Object, configurationMock.Object, pingMock.Object);
         }
 
+        [DataTestMethod]
+        [DynamicData(nameof(OnCreateTransaction_GivenAValidTransaction_ShouldReturnTransaction_DataProvider), DynamicDataSourceType.Method)]
+        public void OnCreateTransaction_GivenAValidTransaction_ShouldReturnTransaction(string cryptocurrency, Func<InvoiceResponseData, string> getPaymentLink)
+        {
+            // Arrange
+            var confirmPaymentTransactionDto = fixture.Build<ConfirmPaymentTransactionDto>().With(x => x.CryptoCurrency, cryptocurrency).Create();
+            var invoiceResponse = fixture.Create<InvoiceResponse>();
+
+            Dictionary<string, string> responseHeaders;
+            restClientMock
+                .Setup(x =>
+                            x.Post<InvoiceRequest, InvoiceResponse>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<InvoiceRequest>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()
+                                               )
+                ).Returns(invoiceResponse);
+
+            var expected = new PaymentCreatedDto()
+            {
+                CreateDate = new DateTime(invoiceResponse.Data.CurrentTime),
+                ExpiryDate = new DateTime(invoiceResponse.Data.ExpirationTime),
+                PaymentGatewayTransactionId = invoiceResponse.Data.Id,
+                PaymentLink = getPaymentLink(invoiceResponse.Data)
+            };
+
+            // Act
+            var result = service.CreateTransaction(confirmPaymentTransactionDto);
+
+            // Assert
+            restClientMock.Verify(x =>
+                x.Post<InvoiceRequest, InvoiceResponse>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<InvoiceRequest>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()), Times.Once);
+
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(expected);
+        }
+
+        [TestMethod]
+        public void OnCreateTransaction_GivenANullResponse_ShouldReturnNull()
+        {
+            // Arrange
+            var confirmPaymentTransactionDto = fixture.Build<ConfirmPaymentTransactionDto>().With(x => x.CryptoCurrency, "BTC").Create();
+            InvoiceResponse? invoiceResponse = null;
+
+            Dictionary<string, string> responseHeaders;
+            restClientMock
+                .Setup(x =>
+                            x.Post<InvoiceRequest, InvoiceResponse>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<InvoiceRequest>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()
+                                               )
+                ).Returns(invoiceResponse);
+
+            // Act
+            var result = service.CreateTransaction(confirmPaymentTransactionDto);
+
+            // Assert
+            restClientMock.Verify(x =>
+                x.Post<InvoiceRequest, InvoiceResponse>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<InvoiceRequest>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()), Times.Once);
+
+            result.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void OnCreateTransaction_GivenANullData_ShouldReturnNull()
+        {
+            // Arrange
+            var confirmPaymentTransactionDto = fixture.Build<ConfirmPaymentTransactionDto>().With(x => x.CryptoCurrency, "BTC").Create();
+            InvoiceResponseData? invoiceResponseData = null;
+            var invoiceResponse = fixture.Build<InvoiceResponse>().With(x => x.Data, invoiceResponseData).Create();
+
+            Dictionary<string, string> responseHeaders;
+            restClientMock
+                .Setup(x =>
+                            x.Post<InvoiceRequest, InvoiceResponse>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<InvoiceRequest>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()
+                                               )
+                ).Returns(invoiceResponse);
+
+            // Act
+            var result = service.CreateTransaction(confirmPaymentTransactionDto);
+
+            // Assert
+            restClientMock.Verify(x =>
+                x.Post<InvoiceRequest, InvoiceResponse>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<InvoiceRequest>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()), Times.Once);
+
+            result.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void OnCreateTransaction_GivenAInvalidTransaction_ShouldReturnNull()
+        {
+            // Arrange
+            var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
+            var invoiceResponse = fixture.Create<InvoiceResponse>();
+
+            Dictionary<string, string> responseHeaders;
+            restClientMock
+                .Setup(x =>
+                            x.Post<InvoiceRequest, InvoiceResponse>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<InvoiceRequest>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()
+                                               )
+                ).Returns(invoiceResponse);
+
+            // Act
+            var result = service.CreateTransaction(confirmPaymentTransactionDto);
+
+            // Assert
+            restClientMock.Verify(x =>
+                x.Post<InvoiceRequest, InvoiceResponse>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<InvoiceRequest>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()), Times.Once);
+
+            result.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void OnCreateTransaction_GivenAnException_ShouldReturnNull()
+        {
+            // Arrange
+            var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
+
+            Dictionary<string, string> responseHeaders;
+            restClientMock
+                .Setup(x =>
+                            x.Post<InvoiceRequest, InvoiceResponse>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<InvoiceRequest>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()
+                                               )
+                ).Throws(new Exception());
+
+            // Act
+            var result = service.CreateTransaction(confirmPaymentTransactionDto);
+
+            // Assert
+            restClientMock.Verify(x =>
+                x.Post<InvoiceRequest, InvoiceResponse>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<InvoiceRequest>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()), Times.Once);
+
+            result.Should().BeNull();
+        }
+
         [TestMethod]
         public void OnGetCurrencyRates_GivenAValidRate_ShouldReturnRate()
         {
@@ -216,7 +386,7 @@
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
-                ).Throws(new System.Exception());
+                ).Throws(new Exception());
 
             // Act
             var result = service.GetCurrencyRates(createPaymentTransactionDto);
@@ -308,6 +478,42 @@
 
             // Assert
             result.Should().BeTrue();
+        }
+
+        private static IEnumerable<object[]> OnCreateTransaction_GivenAValidTransaction_ShouldReturnTransaction_DataProvider()
+        {
+            Func<InvoiceResponseData, string> btc = response => response.PaymentCodes.BTC.BIP72b;
+            yield return new object[] { "BTC", btc };
+
+            Func<InvoiceResponseData, string> bch = response => response.PaymentCodes.BCH.BIP72b;
+            yield return new object[] { "BCH", bch };
+
+            Func<InvoiceResponseData, string> eth = response => response.PaymentCodes.ETH.EIP681;
+            yield return new object[] { "ETH", eth };
+
+            Func<InvoiceResponseData, string> gusd = response => response.PaymentCodes.GUSD.EIP681b;
+            yield return new object[] { "GUSD", gusd };
+
+            Func<InvoiceResponseData, string> pax = response => response.PaymentCodes.PAX.EIP681b;
+            yield return new object[] { "PAX", pax };
+
+            Func<InvoiceResponseData, string> busd = response => response.PaymentCodes.BUSD.EIP681b;
+            yield return new object[] { "BUSD", busd };
+
+            Func<InvoiceResponseData, string> usdc = response => response.PaymentCodes.USDC.EIP681b;
+            yield return new object[] { "USDC", usdc };
+
+            Func<InvoiceResponseData, string> xrp = response => response.PaymentCodes.XRP.BIP72b;
+            yield return new object[] { "XRP", xrp };
+
+            Func<InvoiceResponseData, string> doge = response => response.PaymentCodes.DOGE.BIP72b;
+            yield return new object[] { "DOGE", doge };
+
+            Func<InvoiceResponseData, string> dai = response => response.PaymentCodes.DAI.EIP681b;
+            yield return new object[] { "DAI", dai };
+
+            Func<InvoiceResponseData, string> wbtc = response => response.PaymentCodes.WBTC.EIP681b;
+            yield return new object[] { "WBTC", wbtc };
         }
     }
 }

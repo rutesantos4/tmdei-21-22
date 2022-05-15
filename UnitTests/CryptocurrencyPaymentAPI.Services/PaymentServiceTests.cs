@@ -36,6 +36,37 @@
         {
             // Arrange
             var transaction = fixture.Create<Transaction>();
+            var paymentCreatedDto = fixture.Create<PaymentCreatedDto>();
+            transactionServiceMock
+                .Setup(x => x.CreateTransaction(It.IsAny<ConfirmPaymentTransactionDto>()))
+                .Returns(paymentCreatedDto);
+
+            transactionRepositoryMock
+                .Setup(x => x.GetByDomainIdentifier(transaction.DomainIdentifier))
+                .ReturnsAsync(transaction);
+
+            transactionRepositoryMock
+                .Setup(x => x.Update(transaction))
+                .ReturnsAsync(transaction);
+
+            paymentValidationMock
+                .Setup(x => x.ValidateTransactionConfirm(transaction));
+
+            // Act
+            var result = paymentService.CreatePaymentTransaction(transaction.DomainIdentifier);
+
+            // Assert
+            transactionServiceMock.Verify(x => x.CreateTransaction(It.IsAny<ConfirmPaymentTransactionDto>()), Times.Once);
+            paymentValidationMock.Verify(x => x.ValidateTransactionConfirm(transaction), Times.Once);
+            transactionRepositoryMock.Verify(x => x.GetByDomainIdentifier(transaction.DomainIdentifier), Times.Once);
+            result.Should().NotBeNull();
+        }
+
+        [TestMethod]
+        public void OnConvertFiatToCryptocurrency_GivenAnAblePaymentGateway_ShouldReturnRate()
+        {
+            // Arrange
+            var transaction = fixture.Create<Transaction>();
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
             var currencyConvertedDto = fixture.Create<CurrencyConvertedDto>();
             transactionServiceMock

@@ -152,5 +152,39 @@
             dto.Should().BeOfType<GetTransactionDto>();
             dto.Should().BeEquivalentTo(new GetTransactionDto());
         }
+
+        [TestMethod]
+        public void GivenValidTransaction_ShouldMapGetInitTransactionDto()
+        {
+            //Arrange
+            var entity = fixture.Create<Transaction>();
+
+            //Act
+            var dto = entity.ToDtoInit();
+
+            //Assert
+            dto.Should().NotBeNull();
+            dto.Should().BeOfType<GetInitTransactionDto>();
+            dto.Should().BeEquivalentTo(entity, o => o
+                .ExcludingMissingMembers());
+            dto.TransactionId.Should().Be(entity.DomainIdentifier);
+            dto.ExpiryDate.Should().Be(entity.Details.Init.ExpiryDate);
+            dto.PaymentInfo.Should().Be(entity.Details.Init.PaymentInfo);
+        }
+
+        [TestMethod]
+        public void GivenInvalidTransaction_ShouldntMapGetInitTransactionDto()
+        {
+            //Arrange
+            Transaction? entity = null;
+
+            //Act
+            var dto = entity.ToDtoInit();
+
+            //Assert
+            dto.Should().NotBeNull();
+            dto.Should().BeOfType<GetInitTransactionDto>();
+            dto.Should().BeEquivalentTo(new GetInitTransactionDto());
+        }
     }
 }

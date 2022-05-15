@@ -29,6 +29,58 @@
         }
 
         [TestMethod]
+        public void OnCreateTransaction_GivenAnAblePaymentGateway_ShouldPaymentCreatedDto()
+        {
+            // Arrange
+            var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
+            var paymentCreatedDto = fixture.Create<PaymentCreatedDto>();
+            var paymentGatewayMock = new Mock<ICryptoGatewayService>();
+            paymentGatewayMock
+                .Setup(x => x.CreateTransaction(confirmPaymentTransactionDto))
+                .Returns(paymentCreatedDto);
+
+            cryptoGatewayFactoryMock
+                .Setup(x => x.GetCryptoGatewayService(confirmPaymentTransactionDto.PaymentGateway))
+                .Returns(paymentGatewayMock.Object);
+
+            // Act
+            var result = transactionService.CreateTransaction(confirmPaymentTransactionDto);
+
+            // Assert
+            paymentGatewayMock.Verify();
+            cryptoGatewayFactoryMock.Verify();
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(paymentCreatedDto);
+        }
+
+        [TestMethod]
+        public void OnCreateTransaction_GivenAnNoAblePaymentGateway_ShouldThrowException()
+        {
+            // Arrange
+            var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
+            PaymentCreatedDto? paymentCreatedDto = null;
+            var paymentGatewayMock = new Mock<ICryptoGatewayService>();
+            paymentGatewayMock
+                .Setup(x => x.CreateTransaction(confirmPaymentTransactionDto))
+                .Returns(paymentCreatedDto);
+
+            cryptoGatewayFactoryMock
+                .Setup(x => x.GetCryptoGatewayService(confirmPaymentTransactionDto.PaymentGateway))
+                .Returns(paymentGatewayMock.Object);
+
+            // Act
+            var result = () => transactionService.CreateTransaction(confirmPaymentTransactionDto);
+
+            // Assert
+            paymentGatewayMock.Verify();
+            cryptoGatewayFactoryMock.Verify();
+            result.Should()
+                .Throw<ValidationException>()
+                .WithMessage($"Invalid operation, check the collection of errors for more details.");
+        }
+
+
+        [TestMethod]
         public void OnGetCurrencyRates_GivenAnAblePaymentGateway_ShouldReturnRate()
         {
             // Arrange
