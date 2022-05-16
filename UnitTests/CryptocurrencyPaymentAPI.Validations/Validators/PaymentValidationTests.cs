@@ -206,5 +206,51 @@
             // Assert
             validation.Should().NotThrow<ValidationException>();
         }
+
+        [TestMethod]
+        public void OnValidateTransactionNotification_GivenANullTransaction_ShouldThrowException()
+        {
+            // Arrange
+            Transaction? entity = null;
+
+            // Act
+            var validation = () => paymentValidator.ValidateTransactionNotification(entity);
+
+            // Assert
+            validation.Should().Throw<ValidationException>();
+        }
+
+        [TestMethod]
+        public void OnValidateTransactionNotification_GivenAInvalidTransactionState_ShouldThrowException()
+        {
+            // Arrange
+            var status = fixture.Create<Generator<TransactionState>>().First(s => TransactionState.Initialized != s);
+            var entity = fixture
+                .Build<Transaction>()
+                .With(e => e.TransactionState, status)
+                .Create();
+
+            // Act
+            var validation = () => paymentValidator.ValidateTransactionNotification(entity);
+
+            // Assert
+            validation.Should().Throw<ValidationException>();
+        }
+
+        [TestMethod]
+        public void OnValidateTransactionNotification_GivenAValidTransaction_ShouldNotThrowException()
+        {
+            // Arrange
+            var entity = fixture
+                .Build<Transaction>()
+                .With(e => e.TransactionState, TransactionState.Initialized)
+                .Create();
+
+            // Act
+            var validation = () => paymentValidator.ValidateTransactionNotification(entity);
+
+            // Assert
+            validation.Should().NotThrow<ValidationException>();
+        }
     }
 }
