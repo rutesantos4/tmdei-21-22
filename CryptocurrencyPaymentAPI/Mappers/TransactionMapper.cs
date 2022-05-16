@@ -79,7 +79,8 @@
                         Message = null,
                         Code = null
                     },
-                    Init = null
+                    Init = null,
+                    Debit = null
                 },
                 TransactionState = TransactionState.CurrencyConverted,
                 PaymentGatewayTransactionId = dtoConvertion?.PaymentGatewayTransactionId ?? string.Empty,

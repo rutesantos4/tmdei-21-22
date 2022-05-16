@@ -52,6 +52,8 @@
             entity.Details.Conversion.FiatCurrency.Currency.Should().Be(dto.FiatCurrency);
             entity.Details.Conversion.CryptoCurrency.Amount.Should().Be(dtoConvertion.CurrencyRate.Amount);
             entity.Details.Conversion.CryptoCurrency.Currency.Should().Be(dtoConvertion.CurrencyRate.Currency);
+            entity.Details.Init.Should().BeNull();
+            entity.Details.Debit.Should().BeNull();
         }
 
         [TestMethod]
@@ -127,7 +129,8 @@
                 .Excluding(e => e.TransactionType)
                 .Excluding(e => e.PaymentGateway)
                 .Excluding(e => e.Details.Conversion.ActionName)
-                .Excluding(e => e.Details.Init));
+                .Excluding(e => e.Details.Init)
+                .Excluding(e => e.Details.Debit));
             dto.TransactionReference.Should().Be(entity.DomainIdentifier);
             dto.MerchantTransactionReference.Should().Be(entity.TransactionReference);
             dto.TransactionState.Should().Be(EnumDescriptionHelper.GetEnumValueAsString(entity.TransactionState));
