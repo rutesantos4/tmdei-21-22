@@ -4,12 +4,14 @@
     using FluentAssertions;
     using global::CryptocurrencyPaymentAPI.DTOs.Request;
     using global::CryptocurrencyPaymentAPI.Model.Entities;
+    using global::CryptocurrencyPaymentAPI.Model.Enums;
     using global::CryptocurrencyPaymentAPI.Model.ValueObjects;
     using global::CryptocurrencyPaymentAPI.Validations.Exceptions;
     using global::CryptocurrencyPaymentAPI.Validations.Validators.Implementation;
     using global::CryptocurrencyPaymentAPI.Validations.Validators.Interfaces;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
+    using System.Linq;
 
     [TestClass]
     public class PaymentValidationTests
@@ -136,7 +138,7 @@
             // Arrange
             var conversion = fixture
                 .Build<ConversionAction>()
-                .With(x => x.ExpiryDate, new System.DateTime(2022, 05, 10, 22, 35, 5))
+                .With(x => x.ExpiryDate, new DateTime(2022, 05, 10, 22, 35, 5))
                 .Create();
             var details = fixture
                 .Build<Detail>()
@@ -145,6 +147,32 @@
             var entity = fixture
                 .Build<Transaction>()
                 .With(e => e.Details, details)
+                .Create();
+
+            // Act
+            var validation = () => paymentValidator.ValidateTransactionConfirm(entity);
+
+            // Assert
+            validation.Should().Throw<ValidationException>();
+        }
+
+        [TestMethod]
+        public void OnValidateTransactionConfirm_GivenAInvalidTransactionState_ShouldThrowException()
+        {
+            // Arrange
+            var status = fixture.Create<Generator<TransactionState>>().First(s => TransactionState.CurrencyConverted != s);
+            var conversion = fixture
+                .Build<ConversionAction>()
+                .With(x => x.ExpiryDate, new DateTime(2022, 05, 10, 22, 35, 5))
+                .Create();
+            var details = fixture
+                .Build<Detail>()
+                .With(x => x.Conversion, conversion)
+                .Create();
+            var entity = fixture
+                .Build<Transaction>()
+                .With(e => e.Details, details)
+                .With(e => e.TransactionState, status)
                 .Create();
 
             // Act
@@ -169,6 +197,7 @@
             var entity = fixture
                 .Build<Transaction>()
                 .With(e => e.Details, details)
+                .With(e => e.TransactionState, TransactionState.CurrencyConverted)
                 .Create();
 
             // Act

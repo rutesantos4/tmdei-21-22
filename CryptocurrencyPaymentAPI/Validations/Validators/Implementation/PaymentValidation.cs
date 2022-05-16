@@ -2,6 +2,7 @@
 {
     using CryptocurrencyPaymentAPI.DTOs.Request;
     using CryptocurrencyPaymentAPI.Model.Entities;
+    using CryptocurrencyPaymentAPI.Model.Enums;
     using CryptocurrencyPaymentAPI.Validations.ValidationMessages;
     using CryptocurrencyPaymentAPI.Validations.Validators.Interfaces;
 
@@ -34,9 +35,12 @@
             if (transaction is null)
             {
                 validationResult.AddMessages(ErrorCodes.InvalidTransaction);
-            } else if(transaction.Details.Conversion.ExpiryDate < DateTime.Today)
+            } else
             {
-                validationResult.AddMessages(ErrorCodes.ConversionRateExpired);
+                if (!transaction.TransactionState.Equals(TransactionState.CurrencyConverted))
+                    validationResult.AddMessages(ErrorCodes.TransactionStateConverted);
+                else if (transaction.Details.Conversion.ExpiryDate < DateTime.Today)
+                    validationResult.AddMessages(ErrorCodes.ConversionRateExpired);
             }
 
             validationResult.ShouldThrowValidationException();

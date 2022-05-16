@@ -11,5 +11,6 @@
 
         public static readonly ValidationMessage OperationInvalid = new(300, "Transaction was not possible to be processed by payment gateway.");
         public static readonly ValidationMessage ConversionRateExpired = new(301, "Convertion Rate expired. Please perform convertion again.");
+        public static readonly ValidationMessage TransactionStateConverted = new(302, "Transaction State is wrong, it should be CurrencyConverted.");
     }
 }
