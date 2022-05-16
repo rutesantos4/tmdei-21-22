@@ -19,7 +19,7 @@
         }
 
         [HttpPost("bitpay/{transactionId}")]
-        public async Task<ActionResult> CreatePaymentTransaction([FromRoute] string transactionId,
+        public async Task<ActionResult> BitPayPaymentTransactionNotification([FromRoute] string transactionId,
             [FromBody] InvoiceResponseData bitpayNotification)
         {
             log.Info("Bitpay Payment transaction Notification");
