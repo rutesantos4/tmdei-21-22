@@ -8,5 +8,8 @@
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public GetInitActionDto? Init { get; set; }
+
+        [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
+        public GetDebitActionDto? Debit { get; set; }
     }
 }

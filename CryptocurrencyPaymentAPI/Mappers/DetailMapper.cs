@@ -11,7 +11,8 @@
             : new GetDetailDto
             {
                 Conversion = entity.Conversion.ToDto(),
-                Init = entity.Init.ToDto()
+                Init = entity.Init.ToDto(),
+                Debit = entity.Debit.ToDto()
             };
     }
 }

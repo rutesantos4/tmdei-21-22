@@ -31,7 +31,8 @@
             dto.Should().BeOfType<GetDetailDto>();
             dto.Should().BeEquivalentTo(entity, o => o.ExcludingMissingMembers()
             .Excluding(o => o.Conversion.ActionName)
-            .Excluding(o => o.Init.ActionName));
+            .Excluding(o => o.Init.ActionName)
+            .Excluding(o => o.Debit.ActionName));
         }
 
         [TestMethod]

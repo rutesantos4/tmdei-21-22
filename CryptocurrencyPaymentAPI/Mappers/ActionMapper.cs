@@ -51,6 +51,20 @@
                 Message = entity.Message,
             };
 
+        public static GetDebitActionDto? ToDto(this DebitAction entity) =>
+            entity is null
+            ? null
+            : new GetDebitActionDto()
+            {
+                ActionName = EnumDescriptionHelper.GetEnumValueAsString(entity.ActionName),
+                DateTime = entity.DateTime,
+                Success = entity.Success,
+                CryptoCurrency = entity.CurrencyInfo.CryptoCurrency,
+                FiatCurrency = entity.CurrencyInfo.FiatCurrency,
+                Reason = entity.Code,
+                Message = entity.Message,
+            };
+
         private static string GetPaymentInfo(PaymentCreatedDto dto)
         {
             return !string.IsNullOrWhiteSpace(dto.PaymentLink) ? dto.PaymentLink : dto.WalletId;

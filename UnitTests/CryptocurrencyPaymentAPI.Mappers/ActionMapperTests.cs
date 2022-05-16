@@ -141,5 +141,34 @@
             entity.Should().BeOfType<InitAction>();
             entity.Should().BeEquivalentTo(new InitAction());
         }
+
+        [TestMethod]
+        public void GivenValidDebit_ShouldMap()
+        {
+            //Arrange
+            var entity = fixture.Create<DebitAction>();
+
+            //Act
+            var dto = entity.ToDto();
+
+            //Assert
+            dto.Should().NotBeNull();
+            dto.Should().BeOfType<GetDebitActionDto>();
+            dto.Should().BeEquivalentTo(entity, o => o.ExcludingMissingMembers().Excluding(x => x.ActionName));
+            dto.ActionName.Should().Be(EnumDescriptionHelper.GetEnumValueAsString(entity.ActionName));
+        }
+
+        [TestMethod]
+        public void GivenInvalidDebit_ShouldntMap()
+        {
+            //Arrange
+            DebitAction? entity = null;
+
+            //Act
+            var dto = entity.ToDto();
+
+            //Assert
+            dto.Should().BeNull();
+        }
     }
 }
