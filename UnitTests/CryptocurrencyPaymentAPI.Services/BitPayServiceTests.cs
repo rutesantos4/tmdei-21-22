@@ -53,7 +53,15 @@
         {
             // Arrange
             var confirmPaymentTransactionDto = fixture.Build<ConfirmPaymentTransactionDto>().With(x => x.CryptoCurrency, cryptocurrency).Create();
-            var invoiceResponse = fixture.Create<InvoiceResponse>();
+            var invoiceResponseData = fixture
+                .Build<InvoiceResponseData >()
+                .With(x => x.CurrentTime, DateTimeOffset.Now.ToUnixTimeMilliseconds())
+                .With(x => x.ExpirationTime, DateTimeOffset.Now.AddMinutes(15).ToUnixTimeMilliseconds())
+                .Create();
+            var invoiceResponse = fixture
+                .Build<InvoiceResponse>()
+                .With(x => x.Data, invoiceResponseData)
+                .Create();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
@@ -68,8 +76,8 @@
 
             var expected = new PaymentCreatedDto()
             {
-                CreateDate = new DateTime(invoiceResponse.Data.CurrentTime),
-                ExpiryDate = new DateTime(invoiceResponse.Data.ExpirationTime),
+                CreateDate = DateTimeUtils.UnixTimeMillisecondsToDateTime(invoiceResponse.Data.CurrentTime),
+                ExpiryDate = DateTimeUtils.UnixTimeMillisecondsToDateTime(invoiceResponse.Data.ExpirationTime),
                 PaymentGatewayTransactionId = invoiceResponse.Data.Id,
                 PaymentLink = getPaymentLink(invoiceResponse.Data)
             };

@@ -170,6 +170,10 @@
             Assert.NotNull(responseMessage.Rate.Currency);
             Assert.NotEmpty(responseMessage.Rate.Currency);
             Assert.NotNull(responseMessage.Rate.ExpiryDate);
+            Assert.Equal(DateTime.UtcNow.Day, responseMessage.Rate.ExpiryDate.Day);
+            Assert.Equal(DateTime.UtcNow.Month, responseMessage.Rate.ExpiryDate.Month);
+            Assert.Equal(DateTime.UtcNow.Year, responseMessage.Rate.ExpiryDate.Year);
+            Assert.Equal(DateTime.UtcNow.Hour, responseMessage.Rate.ExpiryDate.Hour);
         }
 
         [Fact]

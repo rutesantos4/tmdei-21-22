@@ -107,6 +107,10 @@
             Assert.NotNull(responseMessage.PaymentInfo);
             Assert.NotEmpty(responseMessage.PaymentInfo);
             Assert.NotNull(responseMessage.ExpiryDate);
+            Assert.Equal(DateTime.UtcNow.Day, responseMessage.ExpiryDate.Value.Day);
+            Assert.Equal(DateTime.UtcNow.Month, responseMessage.ExpiryDate.Value.Month);
+            Assert.Equal(DateTime.UtcNow.Year, responseMessage.ExpiryDate.Value.Year);
+            Assert.Equal(DateTime.UtcNow.Hour, responseMessage.ExpiryDate.Value.Hour);
         }
 
         [Fact]

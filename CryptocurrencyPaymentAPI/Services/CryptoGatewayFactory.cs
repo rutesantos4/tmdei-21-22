@@ -61,7 +61,13 @@
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
+                if (ex is ValidationException || ex is ServiceUnavailableException)
+                {
+                    log.Error(ex.Message);
+                } else
+                {
+                    log.Error($"Unexpected exception {ex.Message}");
+                }
                 throw;
             }
         }

@@ -95,9 +95,9 @@ app.MapPost("/bitpay/invoices", (BitPay.Invoice request) =>
             price = request.Price,
             currency = request.Currency,
             orderId = request.OrderId,
-            invoiceTime = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
-            expirationTime = DateTimeOffset.Now.ToUnixTimeMilliseconds() + TimeSpan.FromSeconds(15).Milliseconds,
-            currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
+            invoiceTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+            expirationTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + TimeSpan.FromSeconds(15).Milliseconds,
+            currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
             id = id,
             lowFeeDetected = false,
             amountPaid = 0,
@@ -514,9 +514,9 @@ app.MapPost("bitpay/webhook", async ([FromQuery] string id, [FromQuery] string c
         status = "confirmed",
         price = request.Price,
         currency = request.Currency,
-        invoiceTime = DateTimeOffset.Now.ToUnixTimeMilliseconds(), //Should be the same as response
-        expirationTime = DateTimeOffset.Now.ToUnixTimeMilliseconds(), //Should be the same as response
-        currentTime = DateTimeOffset.Now.ToUnixTimeMilliseconds(),
+        invoiceTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), //Should be the same as response
+        expirationTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), //Should be the same as response
+        currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
         exceptionStatus = false,
         buyerFields = new
         {
@@ -1012,7 +1012,7 @@ app.MapPost("coinqvest/webhook", async ([FromQuery] string id, [FromQuery] strin
             checkout = new
             {
                 id = id,
-                timestamp = DateTime.Now,
+                timestamp = DateTime.UtcNow,
                 state = "COMPLETED",
                 type = "HOSTED",
                 origin = "API",
@@ -1077,7 +1077,7 @@ app.MapPost("coinqvest/webhook", async ([FromQuery] string id, [FromQuery] strin
 app.MapPost("/coinbase/charges", (Coinbase.CoinbaseCharge request) =>
 {
     var id = Guid.NewGuid().ToString();
-    var date = DateTime.Now;
+    var date = DateTime.UtcNow;
     var result = new
     {
         data = new
@@ -1138,7 +1138,7 @@ app.MapPost("/coinbase/charges", (Coinbase.CoinbaseCharge request) =>
 
 app.MapPost("/coinbase/charges/{chargeId}", ([FromRoute] string chargeId) =>
 {
-    var date = DateTime.Now;
+    var date = DateTime.UtcNow;
     var result = new
     {
         data = new
@@ -1160,7 +1160,7 @@ app.MapPost("/coinbase/charges/{chargeId}", ([FromRoute] string chargeId) =>
                 },
                 new
                 {
-                    time = DateTime.Now,
+                    time = DateTime.UtcNow,
                     status = "RESOLVED"
                 }
             },
@@ -1222,7 +1222,7 @@ app.MapPost("/coinbase/charges/{chargeId}", ([FromRoute] string chargeId) =>
 
 app.MapPost("coinbase/webhook", async ([FromQuery] string id, [FromQuery] string cryptocurrency, [FromBody] Coinbase.CoinbaseCharge request) =>
 {
-    var date = DateTime.Now;
+    var date = DateTime.UtcNow;
     var sendRequest = new
     {
         id = id,

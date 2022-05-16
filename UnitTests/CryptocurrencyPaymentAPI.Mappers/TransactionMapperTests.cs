@@ -46,7 +46,7 @@
             entity.Details.Should().NotBeNull();
             entity.Details.Conversion.Should().BeOfType<ConversionAction>();
             entity.Details.Conversion.ActionName.Should().Be(ActionType.Convert);
-            entity.Details.Conversion.DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.MaxValue);
+            entity.Details.Conversion.DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromMinutes(15));
             entity.Details.Conversion.Success.Should().BeTrue();
             entity.Details.Conversion.FiatCurrency.Amount.Should().Be(dto.Amount);
             entity.Details.Conversion.FiatCurrency.Currency.Should().Be(dto.FiatCurrency);
@@ -75,23 +75,22 @@
         public void GivenValidTransaction_ShouldMapGetRatesDto()
         {
             //Arrange
-            var entity = fixture.Build<Transaction>().Without(e => e.Details).Create();
-            var dtoCreation = fixture.Create<CreatePaymentTransactionDto>();
-            var dtoConvertion = fixture.Create<CurrencyConvertedDto>();
+            var entity = fixture.Create<Transaction>();
 
             //Act
-            var dto = entity.ToDto(dtoCreation, dtoConvertion);
+            var dto = entity.ToDtoRates();
 
             //Assert
             dto.Should().NotBeNull();
             dto.Should().BeOfType<GetRatesDto>();
             dto.TransactionId.Should().Be(entity.DomainIdentifier);
-            dto.Amount.Should().Be(dtoCreation.Amount);
-            dto.FiatCurrency.Should().Be(dtoCreation.FiatCurrency);
+            dto.Amount.Should().Be(entity.Details.Conversion.FiatCurrency.Amount);
+            dto.FiatCurrency.Should().Be(entity.Details.Conversion.FiatCurrency.Currency);
             dto.Rate.Should().NotBeNull();
-            dto.Rate.Amount.Should().Be(dtoConvertion.CurrencyRate.Amount);
-            dto.Rate.Currency.Should().Be(dtoConvertion.CurrencyRate.Currency);
-            dto.Rate.Rate.Should().Be(dtoConvertion.CurrencyRate.Rate);
+            dto.Rate.Amount.Should().Be(entity.Details.Conversion.CryptoCurrency.Amount);
+            dto.Rate.Currency.Should().Be(entity.Details.Conversion.CryptoCurrency.Currency);
+            dto.Rate.Rate.Should().Be(entity.Details.Conversion.Rate);
+            dto.Rate.ExpiryDate.Should().Be(entity.Details.Conversion.ExpiryDate);
         }
 
         [TestMethod]
@@ -99,11 +98,9 @@
         {
             //Arrange
             Transaction? entity = null;
-            var dtoCreation = fixture.Create<CreatePaymentTransactionDto>();
-            var dtoConvertion = fixture.Create<CurrencyConvertedDto>();
 
             //Act
-            var dto = entity.ToDto(dtoCreation, dtoConvertion);
+            var dto = entity.ToDtoRates();
 
             //Assert
             dto.Should().NotBeNull();

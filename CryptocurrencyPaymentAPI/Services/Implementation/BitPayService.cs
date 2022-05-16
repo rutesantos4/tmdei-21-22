@@ -30,7 +30,7 @@
                 {
                     Currency = confirmTransactionDto.FiatCurrency,
                     Price = confirmTransactionDto.Amount,
-                    NotificationURL = NotificationEndPoint,
+                    NotificationURL = NotificationEndPoint + confirmTransactionDto.TransactionId,
                 };
 
                 var response = RestClient?.Post<InvoiceRequest, InvoiceResponse>(CreateTransactionEndPoint,
@@ -55,15 +55,15 @@
 
                 return new PaymentCreatedDto()
                 {
-                    CreateDate = new DateTime(response.Data.CurrentTime), //TODO - Dateis wrong
-                    ExpiryDate = new DateTime(response.Data.ExpirationTime), //TODO - Dateis wrong
+                    CreateDate = DateTimeUtils.UnixTimeMillisecondsToDateTime(response.Data.CurrentTime),
+                    ExpiryDate = DateTimeUtils.UnixTimeMillisecondsToDateTime(response.Data.ExpirationTime),
                     PaymentGatewayTransactionId = response.Data.Id,
                     PaymentLink = paymentLink
                 };
             }
             catch (Exception ex)
             {
-                log.Error(ex.Message);
+                log.Error($"Unexpected exception {ex.Message}");
                 return null;
             }
         }
@@ -104,7 +104,7 @@
             } 
             catch (Exception ex)
             {
-                log.Error(ex.Message);
+                log.Error($"Unexpected exception {ex.Message}");
                 return null;
             }
         }

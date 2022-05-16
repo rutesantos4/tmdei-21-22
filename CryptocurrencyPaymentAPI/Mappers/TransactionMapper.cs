@@ -10,15 +10,21 @@
 
     public static class TransactionMapper
     {
-        public static GetRatesDto ToDto(this Transaction entity, CreatePaymentTransactionDto dtoCreation, CurrencyConvertedDto dtoConvertion) =>
+        public static GetRatesDto ToDtoRates(this Transaction entity) =>
             entity is null
             ? new GetRatesDto()
             : new GetRatesDto()
             {
-                Amount = dtoCreation.Amount,
-                FiatCurrency = dtoCreation.FiatCurrency,
-                Rate = dtoConvertion.CurrencyRate,
-                TransactionId = entity.DomainIdentifier
+                Amount = entity.Details.Conversion.FiatCurrency.Amount,
+                FiatCurrency = entity.Details.Conversion.FiatCurrency.Currency,
+                Rate = new CurrencyRateDto()
+                {
+                    Amount = entity.Details.Conversion.CryptoCurrency.Amount,
+                    Currency = entity.Details.Conversion.CryptoCurrency.Currency,
+                    Rate = entity.Details.Conversion.Rate,
+                    ExpiryDate = entity.Details.Conversion.ExpiryDate
+                },
+                TransactionId = entity.DomainIdentifier,
             };
 
         public static GetInitTransactionDto ToDtoInit(this Transaction entity) =>
@@ -68,7 +74,8 @@
                             Currency = dtoConvertion?.CurrencyRate?.Currency ?? string.Empty,
                             Amount = dtoConvertion?.CurrencyRate?.Amount ?? 0,
                         },
-                        ExpiryDate = DateTime.UtcNow.AddMinutes(10),// TODO - This is wrong
+                        ExpiryDate = DateTime.UtcNow.AddMinutes(10),
+                        Rate = dtoConvertion?.CurrencyRate?.Rate ?? 0,
                         Message = null,
                         Reason = null
                     },

@@ -45,6 +45,7 @@
                 CryptoCurrency = transaction.Details.Conversion.CryptoCurrency.Currency,
                 PaymentGatewayTransactionId = transaction.PaymentGatewayTransactionId,
                 PaymentGateway = transaction.PaymentGateway,
+                TransactionId = transaction.DomainIdentifier
             };
             log.Info($"Creating Transaction on gateway \n{JsonConvert.SerializeObject(confirmPaymentTransactionDTO, Formatting.Indented)}");
             var paymentCreatedDto = transactionService.CreateTransaction(confirmPaymentTransactionDTO);
@@ -83,7 +84,7 @@
             transaction = await transactionRepository.Add(transaction);
             log.Info($"Added Transaction '{transaction.DomainIdentifier}' to DB");
 
-            var result = transaction.ToDto(createPaymentTransaction, rates);
+            var result = transaction.ToDtoRates();
 
             log.Info($"Created Payment transaction \n{JsonConvert.SerializeObject(result, Formatting.Indented)}");
             return result;

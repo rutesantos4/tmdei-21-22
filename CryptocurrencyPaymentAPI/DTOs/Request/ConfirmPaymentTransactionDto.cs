@@ -7,6 +7,7 @@
         public double Amount { get; set; }
         public string FiatCurrency { get; set; } = string.Empty;
         public string CryptoCurrency { get; set; } = string.Empty;
+        public string TransactionId { get; set; } = string.Empty;
 
 
         public string? RedirectURL { get; set; }
