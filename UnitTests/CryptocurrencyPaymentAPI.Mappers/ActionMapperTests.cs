@@ -100,7 +100,7 @@
             entity.ExpiryDate.Should().Be(dto.ExpiryDate);
             entity.PaymentInfo.Should().Be(dto.PaymentLink);
             entity.Message.Should().BeNull();
-            entity.Reason.Should().BeNull();
+            entity.Code.Should().BeNull();
         }
 
         [TestMethod]
@@ -124,7 +124,7 @@
             entity.ExpiryDate.Should().Be(dto.ExpiryDate);
             entity.PaymentInfo.Should().Be(dto.WalletId);
             entity.Message.Should().BeNull();
-            entity.Reason.Should().BeNull();
+            entity.Code.Should().BeNull();
         }
 
         [TestMethod]

@@ -163,12 +163,15 @@
         {
             public string URL { get; set; } = string.Empty;
             public string Status { get; set; } = string.Empty;
+            public string Currency { get; set; } = string.Empty;
             public long InvoiceTime { get; set; }
             public long ExpirationTime { get; set; }
             public long CurrentTime { get; set; }
             public string Id { get; set; } = string.Empty;
             public PaymentDisplayTotals PaymentDisplayTotals { get; set; } = new PaymentDisplayTotals();
             public PaymentCodes PaymentCodes { get; set; } = new PaymentCodes();
+            public string TransactionCurrency { get; set; } = string.Empty;
+            public string ExceptionStatus { get; set; } = string.Empty;
         }
 
         public class PaymentDisplayTotals
@@ -227,6 +230,7 @@
             public string BIP73 { get; set; } = string.Empty;
             public string RIP681 { get; set; } = string.Empty;
         }
+
         #endregion
     }
 }

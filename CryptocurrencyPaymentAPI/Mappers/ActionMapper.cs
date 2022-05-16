@@ -19,7 +19,7 @@
                 ExpiryDate = entity.ExpiryDate,
                 FiatCurrency = entity.FiatCurrency.ToDto(),
                 CryptoCurrency = entity.CryptoCurrency.ToDto(),
-                Reason = entity.Reason,
+                Reason = entity.Code,
                 Message = entity.Message,
             };
 
@@ -34,7 +34,7 @@
                 ExpiryDate = dto.ExpiryDate,
                 PaymentInfo = GetPaymentInfo(dto),
                 Message = null,
-                Reason = null
+                Code = null
             };
 
         public static GetInitActionDto? ToDto(this InitAction entity) =>
@@ -47,7 +47,7 @@
                 Success = entity.Success,
                 ExpiryDate = entity.ExpiryDate,
                 PaymentInfo = entity.PaymentInfo,
-                Reason = entity.Reason,
+                Reason = entity.Code,
                 Message = entity.Message,
             };
 

@@ -12,5 +12,10 @@
         public static readonly ValidationMessage OperationInvalid = new(300, "Transaction was not possible to be processed by payment gateway.");
         public static readonly ValidationMessage ConversionRateExpired = new(301, "Convertion Rate expired. Please perform convertion again.");
         public static readonly ValidationMessage TransactionStateConverted = new(302, "Transaction State is wrong, it should be CurrencyConverted.");
+
+        public static readonly ValidationMessage TransactionStateInitialized = new(400, "Transaction State is wrong, it should be Initialized.");
+        public static readonly ValidationMessage TransactionExpired = new(401, "Transaction expired.");
+        public static readonly ValidationMessage TransactionOverPaid = new(402, "Transaction was overpaid by the customer.");
+        public static readonly ValidationMessage TransactionUnderPaid = new(403, "Transaction was underpaid by the customer.");
     }
 }

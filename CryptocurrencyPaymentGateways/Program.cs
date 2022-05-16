@@ -518,18 +518,7 @@ app.MapPost("bitpay/webhook", async ([FromQuery] string id, [FromQuery] string c
         expirationTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(), //Should be the same as response
         currentTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
         exceptionStatus = false,
-        buyerFields = new
-        {
-            buyerName = request.Buyer.Name,
-            buyerAddress1 = request.Buyer.Address1,
-            buyerAddress2 = request.Buyer.Address2,
-            buyerCity = request.Buyer.Locality,
-            buyerZip = request.Buyer.PostalCode,
-            buyerCountry = request.Buyer.Country,
-            buyerPhone = request.Buyer.Phone,
-            buyerNotify = false,
-            buyerEmail = request.Buyer.Email
-        },
+        buyerFields = request.Buyer,
         paymentSubtotals = new
         {
             BTC = 17500,

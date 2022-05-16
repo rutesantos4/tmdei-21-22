@@ -77,7 +77,7 @@
                         ExpiryDate = DateTime.UtcNow.AddMinutes(10),
                         Rate = dtoConvertion?.CurrencyRate?.Rate ?? 0,
                         Message = null,
-                        Reason = null
+                        Code = null
                     },
                     Init = null
                 },

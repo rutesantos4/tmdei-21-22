@@ -35,7 +35,8 @@
             if (transaction is null)
             {
                 validationResult.AddMessages(ErrorCodes.InvalidTransaction);
-            } else
+            }
+            else
             {
                 if (!transaction.TransactionState.Equals(TransactionState.CurrencyConverted))
                     validationResult.AddMessages(ErrorCodes.TransactionStateConverted);
@@ -53,6 +54,22 @@
             if (transaction is null)
             {
                 validationResult.AddMessages(ErrorCodes.InvalidTransaction);
+            }
+
+            validationResult.ShouldThrowValidationException();
+        }
+
+        public void ValidateTransactionNotification(Transaction transaction)
+        {
+            var validationResult = new ValidationResult();
+
+            if (transaction is null)
+            {
+                validationResult.AddMessages(ErrorCodes.InvalidTransaction);
+            }
+            else if (!transaction.TransactionState.Equals(TransactionState.Initialized))
+            {
+                validationResult.AddMessages(ErrorCodes.TransactionStateInitialized);
             }
 
             validationResult.ShouldThrowValidationException();

@@ -4,5 +4,6 @@
     {
         public ConversionAction Conversion { get; set; } = new ConversionAction();
         public InitAction? Init { get; set; }
+        public DebitAction? Debit { get; set; }
     }
 }

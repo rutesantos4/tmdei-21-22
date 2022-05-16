@@ -26,6 +26,7 @@
                 .With(e => e.IsDeleted, false)
                 .With(e => e.DomainIdentifier, TransactionRateExpired)
                 .With(e => e.Details, details)
+                .With(e => e.TransactionState, CryptocurrencyPaymentAPI.Model.Enums.TransactionState.CurrencyConverted)
                 .Create();
             db.Transactions.Add(entity);
             db.SaveChanges();
