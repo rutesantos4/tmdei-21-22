@@ -5,6 +5,7 @@
     using Microsoft.AspNetCore.Mvc;
     using System.Reflection;
     using static CryptocurrencyPaymentAPI.Services.Implementation.BitPayService;
+    using static CryptocurrencyPaymentAPI.Services.Implementation.CoinbaseService;
 
     [ApiController]
     [Route("[controller]")]
@@ -24,6 +25,15 @@
         {
             log.Info("Bitpay Payment transaction Notification");
             await notificationService.ProcessBitPayTransaction(transactionId, bitpayNotification);
+            return Ok();
+        }
+
+        [HttpPost("coinbase/{transactionId}")]
+        public async Task<ActionResult> CoinbasePaymentTransactionNotification([FromRoute] string transactionId,
+            [FromBody] CoinbaseChargeResponse coinbaseNotification)
+        {
+            log.Info("Bitpay Payment transaction Notification");
+            await notificationService.ProcessCoinbaseTransaction(transactionId, coinbaseNotification);
             return Ok();
         }
     }

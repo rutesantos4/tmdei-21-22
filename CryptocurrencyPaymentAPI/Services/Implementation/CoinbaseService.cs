@@ -182,6 +182,7 @@
         {
             public DateTime Time { get; set; }
             public string Status { get; set; } = string.Empty;
+            public string Context { get; set; } = string.Empty;
         }
         #endregion
     }

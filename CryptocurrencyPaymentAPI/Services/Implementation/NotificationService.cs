@@ -41,5 +41,23 @@
             log.Info($"Updated Transaction '{transaction.DomainIdentifier}' to DB");
         }
 
+        public async Task ProcessCoinbaseTransaction(string transactionId, CoinbaseService.CoinbaseChargeResponse coinbaseNotification)
+        {
+            log.Info($"Process Coinbase Transaction '{transactionId}'\n{JsonConvert.SerializeObject(coinbaseNotification, Formatting.Indented)}");
+
+            log.Info($"Getting transaction '{transactionId}' from DB");
+            var transaction = await transactionRepository.GetByDomainIdentifier(transactionId);
+            log.Info($"Got transaction '{transactionId}' from DB");
+
+            log.Info("Validating request");
+            paymentValidation.ValidateTransactionNotification(transaction);
+
+            log.Info($"Setting Transaction '{transaction.DomainIdentifier}'");
+            transaction = transaction.CoinbaseNotificationToEntity(coinbaseNotification);
+
+            log.Info($"Updating Transaction '{transaction.DomainIdentifier}' to DB");
+            transaction = await transactionRepository.Update(transaction);
+            log.Info($"Updated Transaction '{transaction.DomainIdentifier}' to DB");
+        }
     }
 }

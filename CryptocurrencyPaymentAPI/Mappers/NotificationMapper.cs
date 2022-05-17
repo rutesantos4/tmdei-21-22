@@ -9,42 +9,60 @@
     {
         public static Transaction BitPayNotificationToEntity(this Transaction transaction, BitPayService.InvoiceResponseData notification)
         {
-            if (notification.Status.Equals("confirmed", StringComparison.OrdinalIgnoreCase)
-                || notification.Status.Equals("complete", StringComparison.OrdinalIgnoreCase))
+            if (new string[] { "confirmed", "complete" }.Contains(notification.Status))
             {
-                transaction.TransactionState = TransactionState.Transmitted;
-                transaction.Details.Debit = new Model.ValueObjects.DebitAction()
-                {
-                    ActionName = ActionType.Debit,
-                    DateTime = DateTime.UtcNow,
-                    Success = true,
-                    CurrencyInfo = new Model.ValueObjects.CurrencyInfo()
-                    {
-                        FiatCurrency = transaction.Details.Conversion.FiatCurrency.Currency,
-                        CryptoCurrency = transaction.Details.Conversion.CryptoCurrency.Currency,
-                    },
-                    Message = null,
-                    Code = null
-                };
+                return GetSuccessTransaction(transaction);
             }
-            else
+            var validationMessage = GetValidationMessage(notification);
+            return GetFailedTransaction(transaction, validationMessage);
+        }
+
+        public static Transaction CoinbaseNotificationToEntity(this Transaction transaction, CoinbaseService.CoinbaseChargeResponse notification)
+        {
+            var lastTime = notification.Data.Timeline.OrderBy(x => x.Time).Last();
+            if (new string[] { "RESOLVED", "COMPLETED" }.Contains(lastTime.Status.ToUpper()))
             {
-                var validationMessage = GetValidationMessage(notification);
-                transaction.TransactionState = TransactionState.Failed;
-                transaction.Details.Debit = new Model.ValueObjects.DebitAction()
-                {
-                    ActionName = ActionType.Debit,
-                    DateTime = DateTime.UtcNow,
-                    Success = false,
-                    CurrencyInfo = null,
-                    Message = validationMessage.Message,
-                    Code = validationMessage.Code.ToString(),
-                };
+                return GetSuccessTransaction(transaction);
             }
+            var validationMessage = GetValidationMessage(lastTime);
+            return GetFailedTransaction(transaction, validationMessage);
+        }
+
+        private static Transaction GetSuccessTransaction(Transaction transaction)
+        {
+            transaction.TransactionState = TransactionState.Transmitted;
+            transaction.Details.Debit = new Model.ValueObjects.DebitAction()
+            {
+                ActionName = ActionType.Debit,
+                DateTime = DateTime.UtcNow,
+                Success = true,
+                CurrencyInfo = new Model.ValueObjects.CurrencyInfo()
+                {
+                    FiatCurrency = transaction.Details.Conversion.FiatCurrency.Currency,
+                    CryptoCurrency = transaction.Details.Conversion.CryptoCurrency.Currency,
+                },
+                Message = null,
+                Code = null
+            };
             return transaction;
         }
 
-        private static ValidationMessage GetValidationMessage(BitPayService.InvoiceResponseData notification)
+        private static Transaction GetFailedTransaction(Transaction transaction, ValidationMessage validationMessage)
+        {
+            transaction.TransactionState = TransactionState.Failed;
+            transaction.Details.Debit = new Model.ValueObjects.DebitAction()
+            {
+                ActionName = ActionType.Debit,
+                DateTime = DateTime.UtcNow,
+                Success = false,
+                CurrencyInfo = null,
+                Message = validationMessage.Message,
+                Code = validationMessage.Code.ToString(),
+            };
+            return transaction;
+        }
+
+    private static ValidationMessage GetValidationMessage(BitPayService.InvoiceResponseData notification)
         {
             if (notification.ExceptionStatus.Equals("paidOver", StringComparison.OrdinalIgnoreCase))
             {
@@ -58,5 +76,21 @@
 
             return ErrorCodes.TransactionExpired;
         }
+
+        private static ValidationMessage GetValidationMessage(CoinbaseService.Timeline notification)
+        {
+            if (notification.Context.Equals("OVERPAID", StringComparison.OrdinalIgnoreCase))
+            {
+                return ErrorCodes.TransactionOverPaid;
+            }
+
+            if (notification.Context.Equals("UNDERPAID", StringComparison.OrdinalIgnoreCase))
+            {
+                return ErrorCodes.TransactionUnderPaid;
+            }
+
+            return ErrorCodes.TransactionExpired;
+        }
+
     }
 }
