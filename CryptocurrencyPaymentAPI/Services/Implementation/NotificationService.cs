@@ -1,5 +1,6 @@
 ﻿namespace CryptocurrencyPaymentAPI.Services.Implementation
 {
+    using CryptocurrencyPaymentAPI.Mappers;
     using CryptocurrencyPaymentAPI.Model.Enums;
     using CryptocurrencyPaymentAPI.Repositories.Interfaces;
     using CryptocurrencyPaymentAPI.Services.Interfaces;
@@ -34,58 +35,13 @@
             log.Info("Validating request");
             paymentValidation.ValidateTransactionNotification(transaction);
 
-
             log.Info($"Setting Transaction '{transaction.DomainIdentifier}'");
-            if (bitpayNotification.Status.Equals("confirmed", StringComparison.OrdinalIgnoreCase)
-                || bitpayNotification.Status.Equals("complete", StringComparison.OrdinalIgnoreCase))
-            {
-                transaction.TransactionState = TransactionState.Transmitted;
-                transaction.Details.Debit = new Model.ValueObjects.DebitAction()
-                {
-                    ActionName = ActionType.Debit,
-                    DateTime = DateTime.UtcNow,
-                    Success = true,
-                    CurrencyInfo = new Model.ValueObjects.CurrencyInfo()
-                    {
-                        FiatCurrency = bitpayNotification.Currency,
-                        CryptoCurrency = bitpayNotification.TransactionCurrency,
-                    },
-                    Message = null,
-                    Code = null
-                };
-            } else
-            {
-                var validationMessage = GetValidationMessage(bitpayNotification);
-                transaction.TransactionState = TransactionState.Failed;
-                transaction.Details.Debit = new Model.ValueObjects.DebitAction()
-                {
-                    ActionName = ActionType.Debit,
-                    DateTime = DateTime.UtcNow,
-                    Success = false,
-                    CurrencyInfo = null,
-                    Message = validationMessage.Message,
-                    Code = validationMessage.Code.ToString(),
-                };
-            }
+            transaction = transaction.BitPayNotificationToEntity(bitpayNotification);
 
             log.Info($"Updating Transaction '{transaction.DomainIdentifier}' to DB");
             transaction = await transactionRepository.Update(transaction);
             log.Info($"Updated Transaction '{transaction.DomainIdentifier}' to DB");
         }
-        
-        private static ValidationMessage GetValidationMessage(BitPayService.InvoiceResponseData bitpayNotification)
-        {
-            if (bitpayNotification.ExceptionStatus.Equals("paidOver", StringComparison.OrdinalIgnoreCase))
-            {
-                return ErrorCodes.TransactionOverPaid;
-            }
-            
-            if(bitpayNotification.ExceptionStatus.Equals("paidPartial", StringComparison.OrdinalIgnoreCase))
-            {
-                return ErrorCodes.TransactionUnderPaid;
-            }
 
-            return ErrorCodes.TransactionExpired;
-        }
     }
 }

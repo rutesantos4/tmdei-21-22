@@ -12,6 +12,7 @@
     using global::CryptocurrencyPaymentAPI.Validations.Validators.Interfaces;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
+    using System.Threading.Tasks;
 
     [TestClass]
     public class PaymentServiceTests
@@ -32,7 +33,7 @@
         }
 
         [TestMethod]
-        public void OnCreatePaymentTransaction_GivenAnAblePaymentGateway_ShouldReturnRate()
+        public async Task OnCreatePaymentTransaction_GivenAnAblePaymentGateway_ShouldReturnRateAsync()
         {
             // Arrange
             var transaction = fixture.Create<Transaction>();
@@ -53,17 +54,18 @@
                 .Setup(x => x.ValidateTransactionConfirm(transaction));
 
             // Act
-            var result = paymentService.CreatePaymentTransaction(transaction.DomainIdentifier);
+            var result = await paymentService.CreatePaymentTransaction(transaction.DomainIdentifier);
 
             // Assert
             transactionServiceMock.Verify(x => x.CreateTransaction(It.IsAny<ConfirmPaymentTransactionDto>()), Times.Once);
             paymentValidationMock.Verify(x => x.ValidateTransactionConfirm(transaction), Times.Once);
             transactionRepositoryMock.Verify(x => x.GetByDomainIdentifier(transaction.DomainIdentifier), Times.Once);
             result.Should().NotBeNull();
+            result.Should().BeOfType<GetInitTransactionDto>();
         }
 
         [TestMethod]
-        public void OnConvertFiatToCryptocurrency_GivenAnAblePaymentGateway_ShouldReturnRate()
+        public async Task OnConvertFiatToCryptocurrency_GivenAnAblePaymentGateway_ShouldReturnRateAsync()
         {
             // Arrange
             var transaction = fixture.Create<Transaction>();
@@ -78,17 +80,18 @@
                 .ReturnsAsync(transaction);
 
             // Act
-            var result = paymentService.ConvertFiatToCryptocurrency(createPaymentTransactionDto);
+            var result = await paymentService.ConvertFiatToCryptocurrency(createPaymentTransactionDto);
 
             // Assert
             transactionServiceMock.Verify(x => x.GetCurrencyRates(It.IsAny<CreatePaymentTransactionDto>()), Times.Once);
             paymentValidationMock.Verify(x => x.ValidatePaymentTransactionCreation(createPaymentTransactionDto), Times.Once);
             transactionRepositoryMock.Verify(x => x.Add(It.IsAny<Transaction>()), Times.Once);
             result.Should().NotBeNull();
+            result.Should().BeOfType<GetRatesDto>();
         }
 
         [TestMethod]
-        public void OnGetTransaction_GivenAnExistingTransaction_ShouldReturnTransaction()
+        public async Task OnGetTransaction_GivenAnExistingTransaction_ShouldReturnTransactionAsync()
         {
             // Arrange
             var transaction = fixture.Create<Transaction>();
@@ -99,12 +102,13 @@
                 .ReturnsAsync(transaction);
 
             // Act
-            var result = paymentService.GetTransaction(It.IsAny<string>());
+            var result = await paymentService.GetTransaction(It.IsAny<string>());
 
             // Assert
             paymentValidationMock.Verify(x => x.ValidateTransactionGet(transaction), Times.Once);
             transactionRepositoryMock.Verify(x => x.GetByDomainIdentifier(It.IsAny<string>()), Times.Once);
             result.Should().NotBeNull();
+            result.Should().BeOfType<GetTransactionDto>();
         }
     }
 }
