@@ -1,10 +1,8 @@
 ﻿namespace CryptocurrencyPaymentAPI.Services.Implementation
 {
     using CryptocurrencyPaymentAPI.Mappers;
-    using CryptocurrencyPaymentAPI.Model.Enums;
     using CryptocurrencyPaymentAPI.Repositories.Interfaces;
     using CryptocurrencyPaymentAPI.Services.Interfaces;
-    using CryptocurrencyPaymentAPI.Validations.ValidationMessages;
     using CryptocurrencyPaymentAPI.Validations.Validators.Interfaces;
     using log4net;
     using Newtonsoft.Json;

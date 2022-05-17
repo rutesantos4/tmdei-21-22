@@ -23,6 +23,9 @@
                         .ThenInclude(entity => entity.CryptoCurrency)
                 .Include(entity => entity.Details)
                     .ThenInclude(entity => entity.Init)
+                .Include(entity => entity.Details)
+                    .ThenInclude(entity => entity.Debit)
+                        .ThenInclude(entity => entity.CurrencyInfo)
                 .FirstOrDefaultAsync(e => e.DomainIdentifier == domainIdentifier);
         }
     }

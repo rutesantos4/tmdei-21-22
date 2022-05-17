@@ -9,6 +9,8 @@
     internal static class DBSetup
     {
         internal static readonly string TransactionRateExpired = "TransactionRateExpired";
+        internal static readonly string TransactionFailded = "TransactionFailded";
+        internal static readonly string TransactionTransmitted = "TransactionTransamitted";
 
         internal static void InitializeDbForTests(DatabaseContext db)
         {
@@ -29,6 +31,23 @@
                 .With(e => e.TransactionState, CryptocurrencyPaymentAPI.Model.Enums.TransactionState.CurrencyConverted)
                 .Create();
             db.Transactions.Add(entity);
+
+            var transactionFailed = fixture
+                .Build<Transaction>()
+                .With(e => e.IsDeleted, false)
+                .With(e => e.DomainIdentifier, TransactionFailded)
+                .With(e => e.TransactionState, CryptocurrencyPaymentAPI.Model.Enums.TransactionState.Failed)
+                .Create();
+            db.Transactions.Add(transactionFailed);
+
+            var transactionTransmitted = fixture
+                .Build<Transaction>()
+                .With(e => e.IsDeleted, false)
+                .With(e => e.DomainIdentifier, TransactionTransmitted)
+                .With(e => e.TransactionState, CryptocurrencyPaymentAPI.Model.Enums.TransactionState.Transmitted)
+                .Create();
+            db.Transactions.Add(transactionTransmitted);
+
             db.SaveChanges();
         }
 

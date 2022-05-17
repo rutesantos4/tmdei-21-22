@@ -89,10 +89,10 @@
             dto.Amount.Should().Be(entity.Details.Conversion.FiatCurrency.Amount);
             dto.FiatCurrency.Should().Be(entity.Details.Conversion.FiatCurrency.Currency);
             dto.Rate.Should().NotBeNull();
-            dto.Rate.Amount.Should().Be(entity.Details.Conversion.CryptoCurrency.Amount);
-            dto.Rate.Currency.Should().Be(entity.Details.Conversion.CryptoCurrency.Currency);
-            dto.Rate.Rate.Should().Be(entity.Details.Conversion.Rate);
-            dto.Rate.ExpiryDate.Should().Be(entity.Details.Conversion.ExpiryDate);
+            dto.Rate?.Amount.Should().Be(entity.Details.Conversion.CryptoCurrency.Amount);
+            dto.Rate?.Currency.Should().Be(entity.Details.Conversion.CryptoCurrency.Currency);
+            dto.Rate?.Rate.Should().Be(entity.Details.Conversion.Rate);
+            dto.Rate?.ExpiryDate.Should().Be(entity.Details.Conversion.ExpiryDate);
         }
 
         [TestMethod]
@@ -168,8 +168,8 @@
             dto.Should().BeEquivalentTo(entity, o => o
                 .ExcludingMissingMembers());
             dto.TransactionId.Should().Be(entity.DomainIdentifier);
-            dto.ExpiryDate.Should().Be(entity.Details.Init.ExpiryDate);
-            dto.PaymentInfo.Should().Be(entity.Details.Init.PaymentInfo);
+            dto.ExpiryDate.Should().Be(entity.Details.Init?.ExpiryDate);
+            dto.PaymentInfo.Should().Be(entity.Details.Init?.PaymentInfo);
         }
 
         [TestMethod]

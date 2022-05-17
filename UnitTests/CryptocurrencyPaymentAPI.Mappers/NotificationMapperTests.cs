@@ -41,13 +41,13 @@
             .Excluding(o => o.TransactionState));
             newEntity.TransactionState.Should().Be(TransactionState.Transmitted);
             newEntity.Details.Debit.Should().NotBeNull();
-            newEntity.Details.Debit.ActionName.Should().Be(ActionType.Debit);
-            newEntity.Details.Debit.DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
-            newEntity.Details.Debit.Success.Should().BeTrue();
-            newEntity.Details.Debit.Message.Should().BeNull();
-            newEntity.Details.Debit.Code.Should().BeNull();
-            newEntity.Details.Debit.CurrencyInfo.CryptoCurrency.Should().Be(entity.Details.Conversion.CryptoCurrency.Currency);
-            newEntity.Details.Debit.CurrencyInfo.FiatCurrency.Should().Be(entity.Details.Conversion.FiatCurrency.Currency);
+            newEntity.Details.Debit?.ActionName.Should().Be(ActionType.Debit);
+            newEntity.Details.Debit?.DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
+            newEntity.Details.Debit?.Success.Should().BeTrue();
+            newEntity.Details.Debit?.Message.Should().BeNull();
+            newEntity.Details.Debit?.Code.Should().BeNull();
+            newEntity.Details.Debit?.CurrencyInfo?.CryptoCurrency.Should().Be(entity.Details.Conversion.CryptoCurrency.Currency);
+            newEntity.Details.Debit?.CurrencyInfo?.FiatCurrency.Should().Be(entity.Details.Conversion.FiatCurrency.Currency);
         }
 
         [TestMethod]
@@ -71,12 +71,12 @@
             .Excluding(o => o.TransactionState));
             newEntity.TransactionState.Should().Be(TransactionState.Failed);
             newEntity.Details.Debit.Should().NotBeNull();
-            newEntity.Details.Debit.ActionName.Should().Be(ActionType.Debit);
-            newEntity.Details.Debit.DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
-            newEntity.Details.Debit.Success.Should().BeFalse();
-            newEntity.Details.Debit.Message.Should().Be(messageExpected);
-            newEntity.Details.Debit.Code.Should().Be(codeExpected);
-            newEntity.Details.Debit.CurrencyInfo.Should().BeNull();
+            newEntity.Details.Debit?.ActionName.Should().Be(ActionType.Debit);
+            newEntity.Details.Debit?.DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
+            newEntity.Details.Debit?.Success.Should().BeFalse();
+            newEntity.Details.Debit?.Message.Should().Be(messageExpected);
+            newEntity.Details.Debit?.Code.Should().Be(codeExpected);
+            newEntity.Details.Debit?.CurrencyInfo.Should().BeNull();
         }
 
         [TestMethod]

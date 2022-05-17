@@ -59,8 +59,8 @@
                 ActionName = EnumDescriptionHelper.GetEnumValueAsString(entity.ActionName),
                 DateTime = entity.DateTime,
                 Success = entity.Success,
-                CryptoCurrency = entity.CurrencyInfo.CryptoCurrency,
-                FiatCurrency = entity.CurrencyInfo.FiatCurrency,
+                CryptoCurrency = entity.CurrencyInfo?.CryptoCurrency,
+                FiatCurrency = entity.CurrencyInfo?.FiatCurrency,
                 Reason = entity.Code,
                 Message = entity.Message,
             };

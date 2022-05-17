@@ -159,21 +159,19 @@
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(responseMessage);
-            Assert.NotNull(responseMessage.TransactionId);
-            Assert.NotEmpty(responseMessage.TransactionId);
-            Assert.NotNull(responseMessage.Amount);
-            Assert.NotNull(responseMessage.FiatCurrency);
-            Assert.NotEmpty(responseMessage.FiatCurrency);
-            Assert.NotNull(responseMessage.Rate);
-            Assert.NotNull(responseMessage.Rate.Rate);
-            Assert.NotNull(responseMessage.Rate.Amount);
-            Assert.NotNull(responseMessage.Rate.Currency);
-            Assert.NotEmpty(responseMessage.Rate.Currency);
-            Assert.NotNull(responseMessage.Rate.ExpiryDate);
-            Assert.Equal(DateTime.UtcNow.Day, responseMessage.Rate.ExpiryDate.Day);
-            Assert.Equal(DateTime.UtcNow.Month, responseMessage.Rate.ExpiryDate.Month);
-            Assert.Equal(DateTime.UtcNow.Year, responseMessage.Rate.ExpiryDate.Year);
-            Assert.Equal(DateTime.UtcNow.Hour, responseMessage.Rate.ExpiryDate.Hour);
+            Assert.NotNull(responseMessage?.TransactionId);
+            Assert.NotEmpty(responseMessage?.TransactionId);
+            Assert.NotEqual(0, responseMessage?.Amount);
+            Assert.NotNull(responseMessage?.FiatCurrency);
+            Assert.NotEmpty(responseMessage?.FiatCurrency);
+            Assert.NotNull(responseMessage?.Rate);
+            Assert.NotEqual(0, responseMessage?.Rate?.Rate);
+            Assert.NotEqual(0, responseMessage?.Rate?.Amount);
+            Assert.NotNull(responseMessage?.Rate?.Currency);
+            Assert.NotEmpty(responseMessage?.Rate?.Currency);
+            Assert.Equal(DateTime.UtcNow.Day, responseMessage?.Rate?.ExpiryDate.Day);
+            Assert.Equal(DateTime.UtcNow.Month, responseMessage?.Rate?.ExpiryDate.Month);
+            Assert.Equal(DateTime.UtcNow.Year, responseMessage?.Rate?.ExpiryDate.Year);
         }
 
         [Fact]
@@ -197,24 +195,27 @@
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(responseMessage);
-            Assert.Equal("Payment", responseMessage.TransactionType);
-            Assert.Equal("CurrencyConverted", responseMessage.TransactionState);
-            Assert.Equal(dto.TransactionReference, responseMessage.MerchantTransactionReference);
-            Assert.Equal(responseMessageCreate.TransactionId, responseMessage.TransactionReference);
-            Assert.NotNull(responseMessage.PaymentGateway);
-            Assert.NotEmpty(responseMessage.PaymentGateway);
-            Assert.NotNull(responseMessage.Details);
-            Assert.NotNull(responseMessage.Details.Conversion);
-            Assert.Null(responseMessage.Details.Conversion.Reason);
-            Assert.Null(responseMessage.Details.Conversion.Message);
-            Assert.NotNull(responseMessage.Details.Conversion.ExpiryDate);
-            Assert.NotNull(responseMessage.Details.Conversion.FiatCurrency);
-            Assert.Equal(responseMessageCreate.FiatCurrency, responseMessage.Details.Conversion.FiatCurrency.Currency);
-            Assert.Equal(responseMessageCreate.Amount, responseMessage.Details.Conversion.FiatCurrency.Amount);
-            Assert.NotNull(responseMessage.Details.Conversion.CryptoCurrency);
-            Assert.Equal(responseMessageCreate.Rate.Currency, responseMessage.Details.Conversion.CryptoCurrency.Currency);
-            Assert.Equal(responseMessageCreate.Rate.Amount, responseMessage.Details.Conversion.CryptoCurrency.Amount);
-            Assert.Null(responseMessage.Details.Init);
+            Assert.Equal("Payment", responseMessage?.TransactionType);
+            Assert.Equal("CurrencyConverted", responseMessage?.TransactionState);
+            Assert.Equal(dto.TransactionReference, responseMessage?.MerchantTransactionReference);
+            Assert.Equal(responseMessageCreate.TransactionId, responseMessage?.TransactionReference);
+            Assert.NotNull(responseMessage?.PaymentGateway);
+            Assert.NotEmpty(responseMessage?.PaymentGateway);
+            Assert.NotNull(responseMessage?.Details);
+            Assert.NotNull(responseMessage?.Details.Conversion);
+            Assert.Null(responseMessage?.Details.Conversion.Reason);
+            Assert.Null(responseMessage?.Details.Conversion.Message);
+            Assert.NotNull(responseMessage?.Details.Conversion.ExpiryDate);
+            Assert.Equal(DateTime.UtcNow.Date, responseMessage?.Details.Conversion.DateTime.Date);
+            Assert.Equal(DateTime.UtcNow.Date, responseMessage?.Details.Conversion?.ExpiryDate?.Date);
+            Assert.NotNull(responseMessage?.Details.Conversion?.FiatCurrency);
+            Assert.Equal(responseMessageCreate.FiatCurrency, responseMessage?.Details.Conversion?.FiatCurrency?.Currency);
+            Assert.Equal(responseMessageCreate.Amount, responseMessage?.Details.Conversion?.FiatCurrency?.Amount);
+            Assert.NotNull(responseMessage?.Details.Conversion?.CryptoCurrency);
+            Assert.Equal(responseMessageCreate.Rate?.Currency, responseMessage?.Details.Conversion?.CryptoCurrency?.Currency);
+            Assert.Equal(responseMessageCreate.Rate?.Amount, responseMessage?.Details.Conversion?.CryptoCurrency?.Amount);
+            Assert.Null(responseMessage?.Details.Init);
+            Assert.Null(responseMessage?.Details.Debit);
         }
 
         [Fact]

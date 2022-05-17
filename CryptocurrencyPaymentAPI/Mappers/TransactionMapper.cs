@@ -33,8 +33,8 @@
             : new GetInitTransactionDto()
             {
                 TransactionId = entity.DomainIdentifier,
-                ExpiryDate = entity.Details.Init.ExpiryDate,
-                PaymentInfo = entity.Details.Init.PaymentInfo
+                ExpiryDate = entity.Details.Init?.ExpiryDate,
+                PaymentInfo = entity.Details.Init?.PaymentInfo
             };
 
         public static GetTransactionDto ToDto(this Transaction entity) =>

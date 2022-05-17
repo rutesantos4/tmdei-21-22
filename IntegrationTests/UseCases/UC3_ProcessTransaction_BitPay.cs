@@ -15,9 +15,10 @@
     using System.Text.Json;
     using System.Threading.Tasks;
     using Xunit;
+    using static CryptocurrencyPaymentAPI.Services.Implementation.BitPayService;
 
     [Collection("Integration Collection")]
-    public class UC2_CreatePaymentTransaction : IClassFixture<TestFixture<Startup>>
+    public class UC3_ProcessTransaction_BitPay : IClassFixture<TestFixture<Startup>>
     {
         /// <summary>
         /// Current HTTP Client being used to perform API requests
@@ -26,10 +27,10 @@
         private readonly IFixture fixture;
         private readonly TestFixture<Startup> testFixture;
 
-        private const string baseUrl = "/Payment/";
+        private const string baseUrl = "/notification/bitpay/";
         private const string errorBaseMessage = "Invalid operation, check the collection of errors for more details.";
 
-        public UC2_CreatePaymentTransaction(TestFixture<Startup> testFixture)
+        public UC3_ProcessTransaction_BitPay(TestFixture<Startup> testFixture)
         {
             this.testFixture = testFixture;
             httpClient = testFixture
@@ -46,9 +47,10 @@
         {
             // Arrange
             var transactionId = fixture.Create<string>();
+            var body = fixture.Create<InvoiceResponseData>();
 
             // Act
-            var response = await httpClient.PostAsync(baseUrl + transactionId, null);
+            var response = await httpClient.PostAsJsonAsync(baseUrl + transactionId, body);
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
             var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx.Message.ToString());
 
@@ -62,13 +64,14 @@
         }
 
         [Fact]
-        public async Task GivenExpiredRate_ShouldReturnBadRequest()
+        public async Task GivenFailedTransaction_ShouldReturnBadRequest()
         {
             // Arrange
-            var transactionId = testFixture.TransactionRateExpired;
+            var transactionId = testFixture.TransactionFailded;
+            var body = fixture.Create<InvoiceResponseData>();
 
             // Act
-            var response = await httpClient.PostAsync(baseUrl + transactionId, null);
+            var response = await httpClient.PostAsJsonAsync(baseUrl + transactionId, body);
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
             var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx.Message.ToString());
 
@@ -78,11 +81,32 @@
             Assert.NotNull(responseMessage);
             Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
             Assert.Single(responseMessage?.ErrorMessages);
-            Assert.Equal("Convertion Rate expired. Please perform convertion again.", responseMessage?.ErrorMessages[0]);
+            Assert.Equal("Transaction State is wrong, it should be Initialized.", responseMessage?.ErrorMessages[0]);
         }
 
         [Fact]
-        public async Task GivenValidRequest_ShouldReturnGetInitTransactionDto()
+        public async Task GivenTransmittedTransaction_ShouldReturnBadRequest()
+        {
+            // Arrange
+            var transactionId = testFixture.TransactionTransmitted;
+            var body = fixture.Create<InvoiceResponseData>();
+
+            // Act
+            var response = await httpClient.PostAsJsonAsync(baseUrl + transactionId, body);
+            var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx.Message.ToString());
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.NotNull(responseMessage);
+            Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
+            Assert.Single(responseMessage?.ErrorMessages);
+            Assert.Equal("Transaction State is wrong, it should be Initialized.", responseMessage?.ErrorMessages[0]);
+        }
+
+        [Fact]
+        public async Task GivenValidRequest_ShouldReturnEmpty()
         {
             // Arrange
             var dto = fixture
@@ -90,26 +114,21 @@
                 .With(e => e.FiatCurrency, "EUR")
                 .With(e => e.CryptoCurrency, "BTC")
                 .Create();
-            var responseConvertion = await httpClient.PostAsJsonAsync(baseUrl, dto);
+            var responseConvertion = await httpClient.PostAsJsonAsync("/payment/", dto);
             var responseMessageConvertion = await responseConvertion.Content.ReadFromJsonAsync<GetRatesDto>();
+            var responseAdd = await httpClient.PostAsync("/payment/" + responseMessageConvertion?.TransactionId, null);
+            var responseMessageAdd = await responseAdd.Content.ReadFromJsonAsync<GetInitTransactionDto>();
+            var notification = fixture.Build<InvoiceResponseData>().With(x => x.Status, "confirmed").Create();
 
             // Act
-            var response = await httpClient.PostAsync(baseUrl + responseMessageConvertion.TransactionId, null);
-            var responseMessage = await response.Content.ReadFromJsonAsync<GetInitTransactionDto>();
+            var response = await httpClient.PostAsJsonAsync(baseUrl + responseMessageAdd?.TransactionId, notification);
+            var responseMessageEx = await response.Content.ReadAsStringAsync();
 
             // Assert
             Assert.NotNull(response);
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.NotNull(responseMessage);
-            Assert.NotNull(responseMessage?.TransactionId);
-            Assert.NotEmpty(responseMessage?.TransactionId);
-            Assert.NotNull(responseMessage?.PaymentInfo);
-            Assert.NotEmpty(responseMessage?.PaymentInfo);
-            Assert.NotNull(responseMessage?.ExpiryDate);
-            Assert.Equal(DateTime.UtcNow.Day, responseMessage?.ExpiryDate?.Day);
-            Assert.Equal(DateTime.UtcNow.Month, responseMessage?.ExpiryDate?.Month);
-            Assert.Equal(DateTime.UtcNow.Year, responseMessage?.ExpiryDate?.Year);
+            Assert.Empty(responseMessageEx);
         }
 
         [Fact]
@@ -121,13 +140,15 @@
                 .With(e => e.FiatCurrency, "EUR")
                 .With(e => e.CryptoCurrency, "BTC")
                 .Create();
-            var responseConvertion = await httpClient.PostAsJsonAsync(baseUrl, dto);
+            var responseConvertion = await httpClient.PostAsJsonAsync("/payment/", dto);
             var responseMessageConvertion = await responseConvertion.Content.ReadFromJsonAsync<GetRatesDto>();
-            var responseInit = await httpClient.PostAsync(baseUrl + responseMessageConvertion.TransactionId, null);
+            var responseInit = await httpClient.PostAsync("/payment/" + responseMessageConvertion?.TransactionId, null);
             var responseMessageInit = await responseInit.Content.ReadFromJsonAsync<GetInitTransactionDto>();
+            var notification = fixture.Build<InvoiceResponseData>().With(x => x.Status, "confirmed").Create();
+            await httpClient.PostAsJsonAsync(baseUrl + responseMessageInit?.TransactionId, notification);
 
             // Act
-            var response = await httpClient.GetAsync(baseUrl + responseMessageConvertion.TransactionId);
+            var response = await httpClient.GetAsync("/payment/" + responseMessageConvertion?.TransactionId);
             var responseMessage = await response.Content.ReadFromJsonAsync<GetTransactionDto>();
 
             // Assert
@@ -136,29 +157,29 @@
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
             Assert.NotNull(responseMessage);
             Assert.Equal("Payment", responseMessage?.TransactionType);
-            Assert.Equal("Initialized", responseMessage?.TransactionState);
+            Assert.Equal("Transmitted", responseMessage?.TransactionState);
             Assert.Equal(dto.TransactionReference, responseMessage?.MerchantTransactionReference);
-            Assert.Equal(responseMessageConvertion.TransactionId, responseMessage?.TransactionReference);
+            Assert.Equal(responseMessageConvertion?.TransactionId, responseMessage?.TransactionReference);
             Assert.NotNull(responseMessage?.PaymentGateway);
             Assert.NotEmpty(responseMessage?.PaymentGateway);
             Assert.NotNull(responseMessage?.Details);
 
             Assert.NotNull(responseMessage?.Details.Conversion);
-            Assert.Equal(DateTime.UtcNow.Date, responseMessage?.Details.Conversion.DateTime.Date);
+            Assert.NotNull(responseMessage?.Details.Conversion.DateTime);
             Assert.NotNull(responseMessage?.Details.Conversion.ActionName);
             Assert.True(responseMessage?.Details.Conversion.Success);
             Assert.Null(responseMessage?.Details.Conversion.Reason);
             Assert.Null(responseMessage?.Details.Conversion.Message);
             Assert.NotNull(responseMessage?.Details.Conversion.ExpiryDate);
             Assert.NotNull(responseMessage?.Details.Conversion.FiatCurrency);
-            Assert.Equal(responseMessageConvertion.FiatCurrency, responseMessage?.Details.Conversion.FiatCurrency?.Currency);
-            Assert.Equal(responseMessageConvertion.Amount, responseMessage?.Details.Conversion.FiatCurrency?.Amount);
+            Assert.Equal(responseMessageConvertion?.FiatCurrency, responseMessage?.Details.Conversion.FiatCurrency?.Currency);
+            Assert.Equal(responseMessageConvertion?.Amount, responseMessage?.Details.Conversion.FiatCurrency?.Amount);
             Assert.NotNull(responseMessage?.Details.Conversion.CryptoCurrency);
             Assert.Equal(responseMessageConvertion?.Rate?.Currency, responseMessage?.Details.Conversion.CryptoCurrency?.Currency);
             Assert.Equal(responseMessageConvertion?.Rate?.Amount, responseMessage?.Details.Conversion.CryptoCurrency?.Amount);
 
-            Assert.NotNull(responseMessage.Details.Init);
-            Assert.Equal(DateTime.UtcNow.Date, responseMessage.Details.Init?.DateTime.Date);
+            Assert.NotNull(responseMessage?.Details.Init);
+            Assert.Equal(DateTime.UtcNow.Date, responseMessage?.Details.Init?.ExpiryDate.Date);
             Assert.NotNull(responseMessage?.Details.Init?.ActionName);
             Assert.True(responseMessage?.Details.Init?.Success);
             Assert.Null(responseMessage?.Details.Init?.Reason);
@@ -168,7 +189,14 @@
             Assert.Equal(responseMessageInit?.ExpiryDate, responseMessage?.Details.Init?.ExpiryDate);
             Assert.Equal(responseMessageInit?.TransactionId, responseMessage?.TransactionReference);
 
-            Assert.Null(responseMessage?.Details.Debit);
+            Assert.NotNull(responseMessage?.Details.Debit);
+            Assert.Equal(responseMessageConvertion?.Rate?.Currency, responseMessage?.Details.Debit?.CryptoCurrency);
+            Assert.Equal(responseMessageConvertion?.FiatCurrency, responseMessage?.Details.Debit?.FiatCurrency);
+            Assert.Equal(DateTime.UtcNow.Date, responseMessage?.Details.Debit?.DateTime.Date);
+            Assert.NotNull(responseMessage?.Details.Debit?.ActionName);
+            Assert.True(responseMessage?.Details.Debit?.Success);
+            Assert.Null(responseMessage?.Details.Debit?.Reason);
+            Assert.Null(responseMessage?.Details.Debit?.Message);
         }
     }
 }

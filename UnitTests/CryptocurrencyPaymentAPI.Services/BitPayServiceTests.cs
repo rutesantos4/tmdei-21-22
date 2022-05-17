@@ -384,8 +384,6 @@
             var data = fixture.CreateMany<BitPayRate>().ToList();
             data.Add(bitPayRate);
 
-            var bitPayRates = fixture.Build<BitPayRates>().With(x => x.Data, data).Create();
-
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
@@ -423,10 +421,10 @@
         public void OnServiceWorking_GivenNullPinger_ShouldReturnFalse()
         {
             // Arrange
-            var service = new BitPayService(restClientMock.Object, configurationMock.Object, null);
+            var bitpayService = new BitPayService(restClientMock.Object, configurationMock.Object, null);
 
             // Act
-            var result = service.ServiceWorking();
+            var result = bitpayService.ServiceWorking();
 
             // Assert
             result.Should().BeFalse();

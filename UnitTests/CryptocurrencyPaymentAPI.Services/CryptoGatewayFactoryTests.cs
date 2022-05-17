@@ -93,6 +93,24 @@
         }
 
         [TestMethod]
+        public void OnGetCryptoGatewayServices_GivenAnException_ShouldThrowExpection()
+        {
+            // Arrange
+            decisionConfigurationServiceMock
+                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<string>(), It.IsAny<string>()))
+                .Throws(new Exception());
+
+            factory = new CryptoGatewayFactory(configurationMock.Object, pingMock.Object, restClientMock.Object, decisionConfigurationServiceMock.Object);
+
+            // Act
+            var result = () => factory.GetCryptoGatewayServices();
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().Throw<Exception>();
+        }
+
+        [TestMethod]
         public void OnGetCryptoGatewayServices_GivenAEmptyList_ShouldThrowExpection()
         {
             // Arrange

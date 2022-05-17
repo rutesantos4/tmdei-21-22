@@ -28,7 +28,8 @@
                 var descriptor = services.SingleOrDefault(d =>
                     d.ServiceType == typeof(DbContextOptions<DatabaseContext>));
 
-                _ = services.Remove(descriptor);
+                if(descriptor != null)
+                    _ = services.Remove(descriptor);
 
                 services.AddDbContext<DatabaseContext>(options =>
                 {
@@ -59,5 +60,7 @@
         }
 
         public string TransactionRateExpired => DBSetup.TransactionRateExpired;
+        public string TransactionFailded => DBSetup.TransactionFailded;
+        public string TransactionTransmitted => DBSetup.TransactionTransmitted;
     }
 }

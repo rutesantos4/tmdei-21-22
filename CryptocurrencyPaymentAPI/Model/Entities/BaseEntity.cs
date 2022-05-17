@@ -8,6 +8,6 @@
         public long Id { get; set; }
         public long Version { get; set; }
         public bool IsDeleted { get; set; } = false;
-        public string DomainIdentifier { get; set; }
+        public string DomainIdentifier { get; set; } = string.Empty;
     }
 }
