@@ -10,7 +10,7 @@
     {
         public CoinPaymentsService(IRestClient restClient, IConfiguration configuration, IPing pinger) : base()
         {
-            ConverCurrencyEndPoint = configuration.GetSection("CoinPaymentsConfig:ConvertCurrencyEndPoint").Value;
+            ConvertCurrencyEndPoint = configuration.GetSection("CoinPaymentsConfig:ConvertCurrencyEndPoint").Value;
             CreateTransactionEndPoint = configuration.GetSection("CoinPaymentsConfig:CreateTransactionEndPoint").Value;
             RestClient = restClient;
             Pinger = pinger;

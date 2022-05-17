@@ -16,7 +16,7 @@
         public BitPayService(IRestClient restClient, IConfiguration configuration, IPing pinger) : base()
         {
             RestClient = restClient;
-            ConverCurrencyEndPoint = configuration.GetSection("BitPayConfig:ConvertCurrencyEndPoint").Value;
+            ConvertCurrencyEndPoint = configuration.GetSection("BitPayConfig:ConvertCurrencyEndPoint").Value;
             CreateTransactionEndPoint = configuration.GetSection("BitPayConfig:CreateTransactionEndPoint").Value;
             NotificationEndPoint = configuration.GetSection("BitPayConfig:NotificationEndPoint").Value;
             Pinger = pinger;
@@ -72,7 +72,7 @@
         {
             try
             {
-                var currencyRates = RestClient?.Get<BitPayRates>($"{ConverCurrencyEndPoint}{createPaymentTransaction.FiatCurrency}",
+                var currencyRates = RestClient?.Get<BitPayRates>($"{ConvertCurrencyEndPoint}{createPaymentTransaction.FiatCurrency}",
                     string.Empty,
                     out var responseHeaders);
 
@@ -116,7 +116,7 @@
 
         private static string GetLinkForCryptocurrency(string cryptocurrency, PaymentCodes paymentCodes)
         {
-            return cryptocurrency switch
+            return cryptocurrency.ToUpper() switch
             {
                 "BTC" => paymentCodes.BTC.BIP72b,
                 "BCH" => paymentCodes.BCH.BIP72b,

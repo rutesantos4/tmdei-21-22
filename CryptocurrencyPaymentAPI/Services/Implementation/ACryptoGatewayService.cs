@@ -13,7 +13,7 @@
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
 
-        public string ConverCurrencyEndPoint { get; set; } = string.Empty;
+        public string ConvertCurrencyEndPoint { get; set; } = string.Empty;
         public string CreateTransactionEndPoint { get; set; } = string.Empty;
         public string NotificationEndPoint { get; set; } = string.Empty;
         public IPing? Pinger { get; set; }
@@ -37,7 +37,7 @@
                 {
                     try
                     {
-                        Uri uri = new(ConverCurrencyEndPoint);
+                        Uri uri = new(ConvertCurrencyEndPoint);
                         PingReply reply = Pinger.Send(uri.Host);
                         pingable = reply.Status == IPStatus.Success;
                     }

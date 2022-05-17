@@ -11,7 +11,7 @@
 
         public CoinqvestService(IRestClient restClient, IConfiguration configuration, IPing pinger) : base()
         {
-            ConverCurrencyEndPoint = configuration.GetSection("CoinqvestConfig:ConvertCurrencyEndPoint").Value;
+            ConvertCurrencyEndPoint = configuration.GetSection("CoinqvestConfig:ConvertCurrencyEndPoint").Value;
             CreateTransactionEndPoint = configuration.GetSection("CoinqvestConfig:CreateTransactionEndPoint").Value;
             RestClient = restClient;
             Pinger = pinger;
