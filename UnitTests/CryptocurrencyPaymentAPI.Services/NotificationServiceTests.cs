@@ -54,5 +54,29 @@
             transactionRepositoryMock.Verify(x => x.GetByDomainIdentifier(It.IsAny<string>()), Times.Once);
             transactionRepositoryMock.Verify(x => x.Update(It.IsAny<Transaction>()), Times.Once);
         }
+
+        [TestMethod]
+        public async Task OnProcessCoinbaseTransaction_GivenValidNotification_ShouldReturnNothingAsync()
+        {
+            // Arrange
+            var transaction = fixture.Create<Transaction>();
+            paymentValidationMock.Setup(x => x.ValidateTransactionNotification(transaction));
+
+            transactionRepositoryMock
+                .Setup(x => x.GetByDomainIdentifier(It.IsAny<string>()))
+                .ReturnsAsync(transaction);
+
+            transactionRepositoryMock
+                .Setup(x => x.Update(It.IsAny<Transaction>()))
+                .ReturnsAsync(transaction);
+
+            // Act
+            await notificationService.ProcessCoinbaseTransaction(transaction.DomainIdentifier, fixture.Create<CoinbaseService.CoinbaseChargeResponse>());
+
+            // Assert
+            paymentValidationMock.Verify(x => x.ValidateTransactionNotification(transaction), Times.Once);
+            transactionRepositoryMock.Verify(x => x.GetByDomainIdentifier(It.IsAny<string>()), Times.Once);
+            transactionRepositoryMock.Verify(x => x.Update(It.IsAny<Transaction>()), Times.Once);
+        }
     }
 }

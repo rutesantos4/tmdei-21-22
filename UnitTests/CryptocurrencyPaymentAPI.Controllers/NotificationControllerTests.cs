@@ -3,6 +3,7 @@
     using AutoFixture;
     using FluentAssertions;
     using global::CryptocurrencyPaymentAPI.Controllers;
+    using global::CryptocurrencyPaymentAPI.Services.Implementation;
     using global::CryptocurrencyPaymentAPI.Services.Interfaces;
     using Microsoft.AspNetCore.Mvc;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -32,7 +33,23 @@
                 .Setup(e => e.ProcessBitPayTransaction(It.IsAny<string>(), It.IsAny<InvoiceResponseData>()));
 
             // Act
-            var actionResult = await controller.BitPayPaymentTransactionNotification(It.IsAny<string>(), It.IsAny<InvoiceResponseData>());
+            var actionResult = await controller.BitPayPaymentTransactionNotification(fixture.Create<string>(), fixture.Create<InvoiceResponseData>());
+
+            // Assert
+            notificationServiceMock.Verify();
+            var result = actionResult as StatusCodeResult;
+            result?.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
+        public async Task OnCoinbasePaymentTransactionNotification_GivenValidRequest_ShouldReturnOk()
+        {
+            // Arrange
+            notificationServiceMock
+                .Setup(e => e.ProcessCoinbaseTransaction(It.IsAny<string>(), It.IsAny<CoinbaseService.CoinbaseChargeResponse>()));
+
+            // Act
+            var actionResult = await controller.CoinbasePaymentTransactionNotification(fixture.Create<string>(), fixture.Create<CoinbaseService.CoinbaseChargeResponse>());
 
             // Assert
             notificationServiceMock.Verify();
