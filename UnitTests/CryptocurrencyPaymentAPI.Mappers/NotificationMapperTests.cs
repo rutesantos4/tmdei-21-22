@@ -146,5 +146,67 @@
             newEntity.Details.Debit?.Code.Should().Be(codeExpected);
             newEntity.Details.Debit?.CurrencyInfo.Should().BeNull();
         }
+
+
+        [TestMethod]
+        [DataRow("completed")]
+        [DataRow("COMPLETED")]
+        public void GivenValidCoinqvestNotification_ShouldMap(string status)
+        {
+            //Arrange
+            var checkout = fixture.Build<CoinqvestService.Checkout>().With(x => x.State, status).Create();
+            var checkoutData = fixture.Build<CoinqvestService.CheckoutData>().With(x => x.Checkout, checkout).Create();
+            var notification = fixture.Build<CoinqvestService.CoinqvestNotification>().With(x => x.Data, checkoutData).Create();
+            var entity = fixture.Create<Transaction>();
+
+            //Act
+            var newEntity = entity.CoinqvestNotificationToEntity(notification);
+
+            //Assert
+            newEntity.Should().NotBeNull();
+            newEntity.Should().BeOfType<Transaction>();
+            newEntity.Should().BeEquivalentTo(entity, o => o.ExcludingMissingMembers()
+            .Excluding(o => o.Details.Debit)
+            .Excluding(o => o.TransactionState));
+            newEntity.TransactionState.Should().Be(TransactionState.Transmitted);
+            newEntity.Details.Debit.Should().NotBeNull();
+            newEntity.Details.Debit?.ActionName.Should().Be(ActionType.Debit);
+            newEntity.Details.Debit?.DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
+            newEntity.Details.Debit?.Success.Should().BeTrue();
+            newEntity.Details.Debit?.Message.Should().BeNull();
+            newEntity.Details.Debit?.Code.Should().BeNull();
+            newEntity.Details.Debit?.CurrencyInfo?.CryptoCurrency.Should().Be(entity.Details.Conversion.CryptoCurrency.Currency);
+            newEntity.Details.Debit?.CurrencyInfo?.FiatCurrency.Should().Be(entity.Details.Conversion.FiatCurrency.Currency);
+        }
+
+        [TestMethod]
+        [DataRow("UNRESOLVED_UNDERPAID", "Transaction was underpaid by the customer.", "403")]
+        [DataRow("", "Transaction expired.", "401")]
+        public void GivenInvalidCoinqvestNotification_ShouldMap(string exceptionStatus, string messageExpected, string codeExpected)
+        {
+            //Arrange
+            var checkout = fixture.Build<CoinqvestService.Checkout>().With(x => x.State, exceptionStatus).Create();
+            var checkoutData = fixture.Build<CoinqvestService.CheckoutData>().With(x => x.Checkout, checkout).Create();
+            var notification = fixture.Build<CoinqvestService.CoinqvestNotification>().With(x => x.Data, checkoutData).Create();
+            var entity = fixture.Create<Transaction>();
+
+            //Act
+            var newEntity = entity.CoinqvestNotificationToEntity(notification);
+
+            //Assert
+            newEntity.Should().NotBeNull();
+            newEntity.Should().BeOfType<Transaction>();
+            newEntity.Should().BeEquivalentTo(entity, o => o.ExcludingMissingMembers()
+            .Excluding(o => o.Details.Debit)
+            .Excluding(o => o.TransactionState));
+            newEntity.TransactionState.Should().Be(TransactionState.Failed);
+            newEntity.Details.Debit.Should().NotBeNull();
+            newEntity.Details.Debit?.ActionName.Should().Be(ActionType.Debit);
+            newEntity.Details.Debit?.DateTime.Should().BeCloseTo(DateTime.UtcNow, TimeSpan.FromSeconds(10));
+            newEntity.Details.Debit?.Success.Should().BeFalse();
+            newEntity.Details.Debit?.Message.Should().Be(messageExpected);
+            newEntity.Details.Debit?.Code.Should().Be(codeExpected);
+            newEntity.Details.Debit?.CurrencyInfo.Should().BeNull();
+        }
     }
 }

@@ -56,5 +56,21 @@
             var result = actionResult as StatusCodeResult;
             result?.StatusCode.Should().Be(200);
         }
+
+        [TestMethod]
+        public async Task OnCoinqvestPaymentTransactionNotification_GivenValidRequest_ShouldReturnOk()
+        {
+            // Arrange
+            notificationServiceMock
+                .Setup(e => e.ProcessCoinqvestTransaction(It.IsAny<string>(), It.IsAny<CoinqvestService.CoinqvestNotification>()));
+
+            // Act
+            var actionResult = await controller.CoinqvestPaymentTransactionNotification(fixture.Create<string>(), fixture.Create<CoinqvestService.CoinqvestNotification>());
+
+            // Assert
+            notificationServiceMock.Verify();
+            var result = actionResult as StatusCodeResult;
+            result?.StatusCode.Should().Be(200);
+        }
     }
 }

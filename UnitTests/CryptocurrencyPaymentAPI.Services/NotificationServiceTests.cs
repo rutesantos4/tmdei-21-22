@@ -1,10 +1,6 @@
 ﻿namespace UnitTests.CryptocurrencyPaymentAPI.Services
 {
     using AutoFixture;
-    using FluentAssertions;
-    using global::CryptocurrencyPaymentAPI.DTOs;
-    using global::CryptocurrencyPaymentAPI.DTOs.Request;
-    using global::CryptocurrencyPaymentAPI.DTOs.Response;
     using global::CryptocurrencyPaymentAPI.Model.Entities;
     using global::CryptocurrencyPaymentAPI.Repositories.Interfaces;
     using global::CryptocurrencyPaymentAPI.Services.Implementation;
@@ -72,6 +68,30 @@
 
             // Act
             await notificationService.ProcessCoinbaseTransaction(transaction.DomainIdentifier, fixture.Create<CoinbaseService.CoinbaseChargeResponse>());
+
+            // Assert
+            paymentValidationMock.Verify(x => x.ValidateTransactionNotification(transaction), Times.Once);
+            transactionRepositoryMock.Verify(x => x.GetByDomainIdentifier(It.IsAny<string>()), Times.Once);
+            transactionRepositoryMock.Verify(x => x.Update(It.IsAny<Transaction>()), Times.Once);
+        }
+
+        [TestMethod]
+        public async Task OnProcessCoinqvestTransaction_GivenValidNotification_ShouldReturnNothingAsync()
+        {
+            // Arrange
+            var transaction = fixture.Create<Transaction>();
+            paymentValidationMock.Setup(x => x.ValidateTransactionNotification(transaction));
+
+            transactionRepositoryMock
+                .Setup(x => x.GetByDomainIdentifier(It.IsAny<string>()))
+                .ReturnsAsync(transaction);
+
+            transactionRepositoryMock
+                .Setup(x => x.Update(It.IsAny<Transaction>()))
+                .ReturnsAsync(transaction);
+
+            // Act
+            await notificationService.ProcessCoinqvestTransaction(transaction.DomainIdentifier, fixture.Create<CoinqvestService.CoinqvestNotification>());
 
             // Assert
             paymentValidationMock.Verify(x => x.ValidateTransactionNotification(transaction), Times.Once);
