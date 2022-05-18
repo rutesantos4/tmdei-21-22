@@ -15,11 +15,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.NetworkInformation;
-    using static global::CryptocurrencyPaymentAPI.Services.Implementation.CoinbaseService;
+    using static global::CryptocurrencyPaymentAPI.Services.Implementation.CoinqvestService;
     using PingReply = global::CryptocurrencyPaymentAPI.Services.Implementation.PingReply;
 
     [TestClass]
-    public class CoinbaseServiceTests
+    public class CoinqvestServiceTests
     {
         private readonly IFixture fixture;
         private readonly Mock<IRestClient> restClientMock;
@@ -28,7 +28,7 @@
         private readonly ICryptoGatewayService service;
         private readonly string url;
 
-        public CoinbaseServiceTests()
+        public CoinqvestServiceTests()
         {
             fixture = new Fixture();
             configurationMock = new Mock<IConfiguration>();
@@ -44,23 +44,23 @@
             configurationMock
                 .Setup(x => x.GetSection(It.IsAny<string>()))
                 .Returns(configurationSection.Object);
-            service = new CoinbaseService(restClientMock.Object, configurationMock.Object, pingMock.Object);
+            service = new CoinqvestService(restClientMock.Object, configurationMock.Object, pingMock.Object);
         }
 
+
         [DataTestMethod]
-        [DynamicData(nameof(OnCreateTransaction_GivenAValidTransaction_ShouldReturnTransaction_DataProvider), DynamicDataSourceType.Method)]
-        public void OnCreateTransaction_GivenAValidTransaction_ShouldReturnTransaction(string cryptocurrency, Func<CoinbaseChargeData, string> getPaymentLink)
+        public void OnCreateTransaction_GivenAValidTransaction_ShouldReturnTransaction()
         {
             // Arrange
-            var confirmPaymentTransactionDto = fixture.Build<ConfirmPaymentTransactionDto>().With(x => x.CryptoCurrency, cryptocurrency).Create();
-            var response = fixture.Create<CoinbaseChargeResponse>();
+            var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
+            var response = fixture.Create<ResponseComplete>();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                            x.Post<RequestComplete, ResponseComplete>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<RequestComplete>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -68,10 +68,10 @@
 
             var expected = new PaymentCreatedDto()
             {
-                CreateDate = response.Data.Created_at,
-                ExpiryDate = response.Data.Expires_at,
-                PaymentGatewayTransactionId = response.Data.Id,
-                PaymentLink = getPaymentLink(response.Data)
+                CreateDate = DateTime.UtcNow,
+                ExpiryDate = response.ExpirationTime,
+                PaymentGatewayTransactionId = response.CheckoutId,
+                PaymentLink = response.DepositInstructions.Address
             };
 
             // Act
@@ -79,29 +79,31 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                x.Post<RequestComplete, ResponseComplete>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<RequestComplete>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
             result.Should().NotBeNull();
-            result.Should().BeEquivalentTo(expected);
+            result.Should().BeEquivalentTo(expected, o => o.ExcludingMissingMembers()
+            .Excluding(o => o.CreateDate));
+            result?.CreateDate.Date.Should().Be(expected.CreateDate.Date);
         }
 
         [TestMethod]
         public void OnCreateTransaction_GivenANullResponse_ShouldReturnNull()
         {
             // Arrange
-            var confirmPaymentTransactionDto = fixture.Build<ConfirmPaymentTransactionDto>().With(x => x.CryptoCurrency, "BTC").Create();
-            CoinbaseChargeResponse? response = null;
+            var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
+            ResponseComplete? response = null;
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                            x.Post<RequestComplete, ResponseComplete>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<RequestComplete>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -112,9 +114,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                x.Post<RequestComplete, ResponseComplete>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<RequestComplete>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -125,16 +127,16 @@
         public void OnCreateTransaction_GivenANullData_ShouldReturnNull()
         {
             // Arrange
-            var confirmPaymentTransactionDto = fixture.Build<ConfirmPaymentTransactionDto>().With(x => x.CryptoCurrency, "BTC").Create();
-            CoinbaseChargeData? responseData = null;
-            var response = fixture.Build<CoinbaseChargeResponse>().With(x => x.Data, responseData).Create();
+            var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
+            DepositInstructions? responseData = null;
+            var response = fixture.Build<ResponseComplete>().With(x => x.DepositInstructions, responseData).Create();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                            x.Post<RequestComplete, ResponseComplete>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<RequestComplete>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -145,9 +147,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                x.Post<RequestComplete, ResponseComplete>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<RequestComplete>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -155,18 +157,22 @@
         }
 
         [TestMethod]
-        public void OnCreateTransaction_GivenAInvalidTransaction_ShouldReturnNull()
+        [DataRow("")]
+        [DataRow(" ")]
+        [DataRow(null)]
+        public void OnCreateTransaction_GivenAInvalidTransaction_ShouldReturnNull(string address)
         {
             // Arrange
             var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
-            var response = fixture.Create<CoinbaseChargeResponse>();
+            var responseData = fixture.Build<DepositInstructions>().With(x => x.Address, address).Create();
+            var response = fixture.Build<ResponseComplete>().With(x => x.DepositInstructions, responseData).Create();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                            x.Post<RequestComplete, ResponseComplete>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<RequestComplete>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -177,9 +183,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                x.Post<RequestComplete, ResponseComplete>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<RequestComplete>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -195,9 +201,9 @@
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                            x.Post<RequestComplete, ResponseComplete>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<RequestComplete>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -208,9 +214,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                x.Post<RequestComplete, ResponseComplete>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<RequestComplete>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -218,23 +224,27 @@
         }
 
         [DataTestMethod]
-        [DynamicData(nameof(OnGetCurrencyRates_GivenAValidRate_ShouldReturnRate_DataProvider), DynamicDataSourceType.Method)]
-        public void OnGetCurrencyRates_GivenAValidRate_ShouldReturnRate(string cryptocurrency, Func<Pricing, Money> currencyRate)
+        public void OnGetCurrencyRates_GivenAValidRate_ShouldReturnRate()
         {
             // Arrange
-            var confirmPaymentTransactionDto = fixture.Build<CreatePaymentTransactionDto>().With(x => x.CryptoCurrency, cryptocurrency).Create();
-            var bitcoin = fixture.Build<Money>().With(x => x.Amount, fixture.Create<long>().ToString()).Create();
-            var ethereum = fixture.Build<Money>().With(x => x.Amount, fixture.Create<long>().ToString()).Create();
-            var pricing = fixture.Build<Pricing>().With(x => x.Bitcoin, bitcoin).With(x => x.Ethereum, ethereum).Create();
-            var responseData = fixture.Build<CoinbaseChargeData>().With(x => x.Pricing, pricing).Create();
-            var response = fixture.Build<CoinbaseChargeResponse>().With(x => x.Data, responseData).Create();
+            var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
+            var paymentMethod = fixture
+                .Build<PaymentMethod>()
+                .With(x => x.AssetCode, createPaymentTransactionDto.CryptoCurrency)
+                .With(x => x.PaymentAmount, fixture.Create<long>().ToString())
+                .Create();
+
+            var data = fixture.CreateMany<PaymentMethod>().ToList();
+            data.Add(paymentMethod);
+
+            var response = fixture.Build<CoinqvestResponse>().With(x => x.PaymentMethods, data).Create();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                            x.Post<CoinqvestRequest, CoinqvestResponse>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<CoinqvestRequest>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -244,20 +254,21 @@
             {
                 CurrencyRate = new CurrencyRateDto()
                 {
-                    Currency = currencyRate(response.Data.Pricing).Currency,
-                    Rate = double.Parse(currencyRate(response.Data.Pricing).Amount) / confirmPaymentTransactionDto.Amount,
-                    Amount = double.Parse(currencyRate(response.Data.Pricing).Amount),
-                }
+                    Currency = paymentMethod.AssetCode,
+                    Rate = double.Parse(paymentMethod.PaymentAmount) / createPaymentTransactionDto.Amount,
+                    Amount = double.Parse(paymentMethod.PaymentAmount),
+                },
+                PaymentGatewayTransactionId = response.Id
             };
 
             // Act
-            var result = service.GetCurrencyRates(confirmPaymentTransactionDto);
+            var result = service.GetCurrencyRates(createPaymentTransactionDto);
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                x.Post<CoinqvestRequest, CoinqvestResponse>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<CoinqvestRequest>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -270,14 +281,14 @@
         {
             // Arrange
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
-            CoinbaseChargeResponse? response = null;
+            CoinqvestResponse? response = null;
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                            x.Post<CoinqvestRequest, CoinqvestResponse>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<CoinqvestRequest>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -289,7 +300,7 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinbaseCharge, CoinbaseChargeResponse>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CoinbaseCharge>(), out responseHeaders, It.IsAny<Dictionary<string, string>>()), Times.Once);
+                x.Post<CoinqvestRequest, CoinqvestResponse>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CoinqvestRequest>(), out responseHeaders, It.IsAny<Dictionary<string, string>>()), Times.Once);
 
             result.Should().BeNull();
         }
@@ -299,15 +310,15 @@
         {
             // Arrange
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
-            CoinbaseChargeData? responseData = null;
-            var response = fixture.Build<CoinbaseChargeResponse>().With(x => x.Data, responseData).Create();
+            List<PaymentMethod>? responseData = null;
+            var response = fixture.Build<CoinqvestResponse>().With(x => x.PaymentMethods, responseData).Create();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                            x.Post<CoinqvestRequest, CoinqvestResponse>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<CoinqvestRequest>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -318,7 +329,7 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinbaseCharge, CoinbaseChargeResponse>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CoinbaseCharge>(), out responseHeaders, It.IsAny<Dictionary<string, string>>()), Times.Once);
+                x.Post<CoinqvestRequest, CoinqvestResponse>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CoinqvestRequest>(), out responseHeaders, It.IsAny<Dictionary<string, string>>()), Times.Once);
 
             result.Should().BeNull();
         }
@@ -328,14 +339,14 @@
         {
             // Arrange
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
-            var response = fixture.Create<CoinbaseChargeResponse>();
+            var response = fixture.Create<CoinqvestResponse>();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                            x.Post<CoinqvestRequest, CoinqvestResponse>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<CoinqvestRequest>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -345,9 +356,9 @@
             var result = service.GetCurrencyRates(createPaymentTransactionDto);
 
             // Assert
-            restClientMock.Verify(x => x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+            restClientMock.Verify(x => x.Post<CoinqvestRequest, CoinqvestResponse>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<CoinqvestRequest>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()),
                                   Times.Once);
@@ -364,9 +375,9 @@
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                            x.Post<CoinqvestRequest, CoinqvestResponse>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<CoinqvestRequest>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -377,9 +388,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinbaseCharge, CoinbaseChargeResponse>(url,
+                x.Post<CoinqvestRequest, CoinqvestResponse>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinbaseCharge>(),
+                                                It.IsAny<CoinqvestRequest>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -387,10 +398,10 @@
         }
 
         [TestMethod]
-        public void OnGetPaymentGatewayEnum_ShouldReturnCoinbase()
+        public void OnGetPaymentGatewayEnum_ShouldReturnCoinqvest()
         {
             // Arrange
-            var expected = PaymentGatewayName.Coinbase;
+            var expected = PaymentGatewayName.Coinqvest;
 
             // Act
             var result = service.GetPaymentGatewayEnum();
@@ -466,23 +477,6 @@
 
             // Assert
             result.Should().BeTrue();
-        }
-
-        private static IEnumerable<object[]> OnCreateTransaction_GivenAValidTransaction_ShouldReturnTransaction_DataProvider()
-        {
-            Func<CoinbaseChargeData, string> btc = response => response.Addresses.Bitcoin;
-            yield return new object[] { "BTC", btc };
-
-            Func<CoinbaseChargeData, string> eth = response => response.Addresses.Ethereum;
-            yield return new object[] { "ETH", eth };
-        }
-        private static IEnumerable<object[]> OnGetCurrencyRates_GivenAValidRate_ShouldReturnRate_DataProvider()
-        {
-            Func<Pricing, Money> btc = response => response.Bitcoin;
-            yield return new object[] { "BTC", btc };
-
-            Func<Pricing, Money> eth = response => response.Ethereum;
-            yield return new object[] { "ETH", eth };
         }
     }
 }

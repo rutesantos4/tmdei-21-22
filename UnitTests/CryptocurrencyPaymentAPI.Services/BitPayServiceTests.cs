@@ -376,13 +376,6 @@
         {
             // Arrange
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
-            var bitPayRate = fixture
-                .Build<BitPayRate>()
-                .With(x => x.Code, createPaymentTransactionDto.CryptoCurrency)
-                .Create();
-
-            var data = fixture.CreateMany<BitPayRate>().ToList();
-            data.Add(bitPayRate);
 
             Dictionary<string, string> responseHeaders;
             restClientMock

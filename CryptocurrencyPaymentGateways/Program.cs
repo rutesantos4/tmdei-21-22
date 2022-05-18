@@ -966,7 +966,7 @@ app.MapPost("/coinqvest/checkout", (Coinqvest.Request request) =>
 })
 .WithName("Coinqvest-PostCheckout");
 
-app.MapPost("/coinqvest/checkout-commit", (Coinqvest.RequestComplete request) =>
+app.MapPost("/coinqvest/checkout/commit", (Coinqvest.RequestComplete request) =>
 {
     var id = Guid.NewGuid().ToString();
     var result = new
@@ -1306,7 +1306,7 @@ struct Coinqvest
     internal class Item
     {
         public string Description { get; set; }
-        public int NetAmount { get; set; }
+        public double NetAmount { get; set; }
         public int Quantity { get; set; }
     }
 
