@@ -4,7 +4,7 @@
 
     public class GetDetailDto
     {
-        public GetConversionActionDto Conversion { get; set; }
+        public GetConversionActionDto Conversion { get; set; } = new GetConversionActionDto();
 
         [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingDefault)]
         public GetInitActionDto? Init { get; set; }

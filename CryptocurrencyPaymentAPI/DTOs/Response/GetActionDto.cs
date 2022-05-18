@@ -4,7 +4,7 @@
 
     public abstract class GetActionDto
     {
-        public string ActionName { get; set; }
+        public string ActionName { get; set; } = string.Empty;
         public DateTime DateTime { get; set; }
         public bool Success { get; set; }
 

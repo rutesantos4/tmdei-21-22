@@ -61,6 +61,7 @@
 
         public ExceptionResult()
         {
+            Message = string.Empty;
         }
 
         public ExceptionResult(object message)

@@ -732,7 +732,7 @@ app.MapPost("bitpay/webhook", async ([FromQuery] string id, [FromQuery] string c
 app.MapPost("/coinpayments", ([FromQuery] string version,
                               [FromQuery] string key,
                               [FromQuery] string cmd,
-                              [FromQuery] int amount,
+                              [FromQuery] double amount,
                               [FromQuery] string currency1,
                               [FromQuery] string currency2,
                               [FromQuery] string buyer_email,
@@ -752,7 +752,7 @@ app.MapPost("/coinpayments", ([FromQuery] string version,
             result = new
             {
                 amount = amount,
-                address = address,
+                address = "ZZZ",
                 dest_tag = key,
                 txn_id = id,
                 confirms_needed = "10",

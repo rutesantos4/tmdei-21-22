@@ -138,7 +138,6 @@
                 "ETH" => pricing.Ethereum,
                 _ => null,
             };
-
         }
 
         #region Entities

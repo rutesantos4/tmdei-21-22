@@ -6,8 +6,8 @@
     public interface IPaymentValidation
     {
         void ValidatePaymentTransactionCreation(CreatePaymentTransactionDto dto);
-        void ValidateTransactionGet(Transaction transaction);
-        void ValidateTransactionConfirm(Transaction transaction);
-        void ValidateTransactionNotification(Transaction transaction);
+        void ValidateTransactionGet(Transaction? transaction);
+        void ValidateTransactionConfirm(Transaction? transaction);
+        void ValidateTransactionNotification(Transaction? transaction);
     }
 }

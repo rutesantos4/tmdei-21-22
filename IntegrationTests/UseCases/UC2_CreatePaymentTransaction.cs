@@ -123,7 +123,7 @@
                 .Create();
             var responseConvertion = await httpClient.PostAsJsonAsync(baseUrl, dto);
             var responseMessageConvertion = await responseConvertion.Content.ReadFromJsonAsync<GetRatesDto>();
-            var responseInit = await httpClient.PostAsync(baseUrl + responseMessageConvertion.TransactionId, null);
+            var responseInit = await httpClient.PostAsync(baseUrl + responseMessageConvertion?.TransactionId, null);
             var responseMessageInit = await responseInit.Content.ReadFromJsonAsync<GetInitTransactionDto>();
 
             // Act

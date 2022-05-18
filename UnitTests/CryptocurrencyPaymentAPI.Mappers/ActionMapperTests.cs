@@ -65,7 +65,7 @@
             dto.Should().NotBeNull();
             dto.Should().BeOfType<GetInitActionDto>();
             dto.Should().BeEquivalentTo(entity, o => o.ExcludingMissingMembers().Excluding(x => x.ActionName));
-            dto.ActionName.Should().Be(EnumDescriptionHelper.GetEnumValueAsString(entity.ActionName));
+            dto?.ActionName.Should().Be(EnumDescriptionHelper.GetEnumValueAsString(entity.ActionName));
         }
 
         [TestMethod]
@@ -155,7 +155,7 @@
             dto.Should().NotBeNull();
             dto.Should().BeOfType<GetDebitActionDto>();
             dto.Should().BeEquivalentTo(entity, o => o.ExcludingMissingMembers().Excluding(x => x.ActionName));
-            dto.ActionName.Should().Be(EnumDescriptionHelper.GetEnumValueAsString(entity.ActionName));
+            dto?.ActionName.Should().Be(EnumDescriptionHelper.GetEnumValueAsString(entity.ActionName));
         }
 
         [TestMethod]

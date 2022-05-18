@@ -77,7 +77,7 @@
                     Charge = new CoinqvestCharge()
                     {
                         Currency = createPaymentTransaction.FiatCurrency ?? string.Empty,
-                        LineItems = new Item[] {
+                        LineItems = new List<Item>() {
                             new Item() {
                                 Description = createPaymentTransaction.TransactionReference,
                                 NetAmount = createPaymentTransaction.Amount,
@@ -141,7 +141,7 @@
         public class CoinqvestCharge
         {
             public string Currency { get; set; } = string.Empty;
-            public Item[] LineItems { get; set; }
+            public List<Item> LineItems { get; set; } = new List<Item>();
         }
 
         public class Item

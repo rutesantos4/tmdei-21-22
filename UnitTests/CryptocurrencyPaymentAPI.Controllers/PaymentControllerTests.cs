@@ -41,7 +41,7 @@
             paymentServiceMock.Verify();
             var result = actionResult.Result as OkObjectResult;
             result.Should().NotBeNull();
-            result.Value.Should().BeEquivalentTo(expected);
+            result?.Value.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -60,7 +60,7 @@
             paymentServiceMock.Verify();
             var result = actionResult.Result as OkObjectResult;
             result.Should().NotBeNull();
-            result.Value.Should().BeEquivalentTo(expected);
+            result?.Value.Should().BeEquivalentTo(expected);
         }
 
         [TestMethod]
@@ -79,7 +79,7 @@
             paymentServiceMock.Verify();
             var result = actionResult.Result as OkObjectResult;
             result.Should().NotBeNull();
-            result.Value.Should().BeEquivalentTo(expected);
+            result?.Value.Should().BeEquivalentTo(expected);
         }
     }
 }

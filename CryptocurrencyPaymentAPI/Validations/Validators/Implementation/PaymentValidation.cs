@@ -28,7 +28,7 @@
             validationResult.ShouldThrowValidationException();
         }
 
-        public void ValidateTransactionConfirm(Transaction transaction)
+        public void ValidateTransactionConfirm(Transaction? transaction)
         {
             var validationResult = new ValidationResult();
 
@@ -47,7 +47,7 @@
             validationResult.ShouldThrowValidationException();
         }
 
-        public void ValidateTransactionGet(Transaction transaction)
+        public void ValidateTransactionGet(Transaction? transaction)
         {
             var validationResult = new ValidationResult();
 
@@ -59,7 +59,7 @@
             validationResult.ShouldThrowValidationException();
         }
 
-        public void ValidateTransactionNotification(Transaction transaction)
+        public void ValidateTransactionNotification(Transaction? transaction)
         {
             var validationResult = new ValidationResult();
 
