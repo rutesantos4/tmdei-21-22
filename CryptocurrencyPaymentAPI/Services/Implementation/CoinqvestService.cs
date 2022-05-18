@@ -186,6 +186,24 @@
             public string Amount { get; set; } = string.Empty;
             public string Address { get; set; } = string.Empty;
         }
+
+        public class CoinqvestNotification
+        {
+            public string EventType { get; set; } = string.Empty;
+            public CheckoutData Data { get; set; } = new CheckoutData();
+        }
+
+        public class CheckoutData
+        {
+            public Checkout Checkout { get; set; } = new Checkout();
+
+        }
+
+        public class Checkout
+        {
+            public string Id { get; set; } = string.Empty;
+            public string State { get; set; } = string.Empty;
+        }
         #endregion
     }
 }

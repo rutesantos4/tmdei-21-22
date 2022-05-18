@@ -18,7 +18,7 @@
                 validationResult.Messages.Select(x => x.Message).ToList());
         }
 
-        protected ValidationException(SerializationInfo serializationInfo, StreamingContext streamingContext) 
+        protected ValidationException(SerializationInfo serializationInfo, StreamingContext streamingContext)
             : base(serializationInfo, streamingContext)
         {
             ErrorCollection = new ApplicationErrorCollection();

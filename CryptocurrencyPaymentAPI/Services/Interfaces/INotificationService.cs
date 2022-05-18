@@ -8,5 +8,6 @@
     {
         Task ProcessBitPayTransaction(string transactionId, InvoiceResponseData bitpayNotification);
         Task ProcessCoinbaseTransaction(string transactionId, CoinbaseService.CoinbaseChargeResponse coinbaseNotification);
+        Task ProcessCoinqvestTransaction(string transactionId, CoinqvestService.CoinqvestNotification coinqvestNotification);
     }
 }

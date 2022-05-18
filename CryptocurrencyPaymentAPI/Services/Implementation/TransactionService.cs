@@ -28,7 +28,7 @@
 
             var response = cryptoGatewayService.CreateTransaction(confirmTransaction);
 
-            if(response == null)
+            if (response == null)
             {
                 var validationResult = new ValidationResult();
                 validationResult.AddMessages(ErrorCodes.OperationInvalid);
@@ -42,12 +42,12 @@
         {
             var listAvailablePaymentGateways = cryptoGatewayFactory.GetCryptoGatewayServices();
 
-            foreach(var cryptoGatewayService in listAvailablePaymentGateways)
+            foreach (var cryptoGatewayService in listAvailablePaymentGateways)
             {
                 log.Info($"Getting Rate");
                 var rates = cryptoGatewayService.GetCurrencyRates(createPaymentTransaction);
 
-                if(rates != null)
+                if (rates != null)
                 {
                     paymentGatewayName = cryptoGatewayService.GetPaymentGatewayEnum();
                     log.Info($"Got Rate from payment gateway '{paymentGatewayName}'\n{JsonConvert.SerializeObject(rates, Formatting.Indented)}");

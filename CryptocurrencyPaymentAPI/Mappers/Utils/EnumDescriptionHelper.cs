@@ -7,7 +7,7 @@
     {
         public static string GetEnumValueAsString<T>(this T stateEnum)
         {
-            if(stateEnum == null || stateEnum.GetType() == null) { return string.Empty; }
+            if (stateEnum == null || stateEnum.GetType() == null) { return string.Empty; }
             var state = stateEnum.ToString() ?? string.Empty;
             if (stateEnum.GetType().GetField(state) == null) { return state; }
             return GetValue(stateEnum.GetType().GetField(state), state);

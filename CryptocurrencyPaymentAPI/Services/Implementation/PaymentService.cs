@@ -18,7 +18,7 @@
         private readonly IPaymentValidation paymentValidation;
         private readonly ITransactionService transactionService;
 
-        public PaymentService(ITransactionRepository transactionRepository, 
+        public PaymentService(ITransactionRepository transactionRepository,
             ITransactionService transactionService,
             IPaymentValidation paymentValidation)
         {

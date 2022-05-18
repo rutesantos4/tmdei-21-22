@@ -6,7 +6,7 @@
 
     public class DecisionConfigurationService : IDecisionConfigurationService
     {
-        
+
         public List<PaymentGatewayName> GetPossiblePaymentGateway(string fiatCurrency, string cryptoCurrency)
         {
             // TODO - call external service

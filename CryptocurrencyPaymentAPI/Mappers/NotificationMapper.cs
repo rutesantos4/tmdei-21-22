@@ -9,7 +9,7 @@
     {
         public static Transaction BitPayNotificationToEntity(this Transaction transaction, BitPayService.InvoiceResponseData notification)
         {
-            if (new string[] { "confirmed", "complete" }.Contains(notification.Status))
+            if (new string[] { "confirmed", "complete" }.Contains(notification.Status.ToLower()))
             {
                 return GetSuccessTransaction(transaction);
             }
@@ -25,6 +25,16 @@
                 return GetSuccessTransaction(transaction);
             }
             var validationMessage = GetValidationMessage(lastTime);
+            return GetFailedTransaction(transaction, validationMessage);
+        }
+
+        public static Transaction CoinqvestNotificationToEntity(this Transaction transaction, CoinqvestService.CoinqvestNotification notification)
+        {
+            if (notification.Data.Checkout.State.Equals("COMPLETED", StringComparison.OrdinalIgnoreCase))
+            {
+                return GetSuccessTransaction(transaction);
+            }
+            var validationMessage = GetValidationMessage(notification);
             return GetFailedTransaction(transaction, validationMessage);
         }
 
@@ -62,7 +72,7 @@
             return transaction;
         }
 
-    private static ValidationMessage GetValidationMessage(BitPayService.InvoiceResponseData notification)
+        private static ValidationMessage GetValidationMessage(BitPayService.InvoiceResponseData notification)
         {
             if (notification.ExceptionStatus.Equals("paidOver", StringComparison.OrdinalIgnoreCase))
             {
@@ -85,6 +95,16 @@
             }
 
             if (notification.Context.Equals("UNDERPAID", StringComparison.OrdinalIgnoreCase))
+            {
+                return ErrorCodes.TransactionUnderPaid;
+            }
+
+            return ErrorCodes.TransactionExpired;
+        }
+
+        private static ValidationMessage GetValidationMessage(CoinqvestService.CoinqvestNotification notification)
+        {
+            if (notification.Data.Checkout.State.Equals("UNRESOLVED_UNDERPAID", StringComparison.OrdinalIgnoreCase))
             {
                 return ErrorCodes.TransactionUnderPaid;
             }

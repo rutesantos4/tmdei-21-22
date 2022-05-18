@@ -35,7 +35,7 @@
                 log.Info("Getting Cryptocurrency payment gateway");
                 var listPossiblePaymentGateways = decisionConfigurationService.GetPossiblePaymentGateway("TODO", "TODO");
 
-                if(listPossiblePaymentGateways == null
+                if (listPossiblePaymentGateways == null
                     || listPossiblePaymentGateways.Count == 0)
                 {
                     log.Error("None of payment gateways are valid to process transaction");
@@ -64,7 +64,8 @@
                 if (ex is ValidationException || ex is ServiceUnavailableException)
                 {
                     log.Error(ex.Message);
-                } else
+                }
+                else
                 {
                     log.Error($"Unexpected exception {ex.Message}");
                 }

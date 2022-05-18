@@ -6,6 +6,7 @@
     using System.Reflection;
     using static CryptocurrencyPaymentAPI.Services.Implementation.BitPayService;
     using static CryptocurrencyPaymentAPI.Services.Implementation.CoinbaseService;
+    using static CryptocurrencyPaymentAPI.Services.Implementation.CoinqvestService;
 
     [ApiController]
     [Route("[controller]")]
@@ -34,6 +35,15 @@
         {
             log.Info("Bitpay Payment transaction Notification");
             await notificationService.ProcessCoinbaseTransaction(transactionId, coinbaseNotification);
+            return Ok();
+        }
+
+        [HttpPost("coinqvest/{transactionId}")]
+        public async Task<ActionResult> CoinqvestPaymentTransactionNotification([FromRoute] string transactionId,
+            [FromBody] CoinqvestNotification coinqvestNotification)
+        {
+            log.Info("Bitpay Payment transaction Notification");
+            await notificationService.ProcessCoinqvestTransaction(transactionId, coinqvestNotification);
             return Ok();
         }
     }

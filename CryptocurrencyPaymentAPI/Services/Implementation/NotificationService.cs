@@ -1,6 +1,7 @@
 ﻿namespace CryptocurrencyPaymentAPI.Services.Implementation
 {
     using CryptocurrencyPaymentAPI.Mappers;
+    using CryptocurrencyPaymentAPI.Model.Entities;
     using CryptocurrencyPaymentAPI.Repositories.Interfaces;
     using CryptocurrencyPaymentAPI.Services.Interfaces;
     using CryptocurrencyPaymentAPI.Validations.Validators.Interfaces;
@@ -26,25 +27,40 @@
         {
             log.Info($"Process BitPay Transaction '{transactionId}'\n{JsonConvert.SerializeObject(bitpayNotification, Formatting.Indented)}");
 
-            log.Info($"Getting transaction '{transactionId}' from DB");
-            var transaction = await transactionRepository.GetByDomainIdentifier(transactionId);
-            log.Info($"Got transaction '{transactionId}' from DB");
-
-            log.Info("Validating request");
-            paymentValidation.ValidateTransactionNotification(transaction);
+            var transaction = await GetValidTransaction(transactionId);
 
             log.Info($"Setting Transaction '{transaction.DomainIdentifier}'");
             transaction = transaction.BitPayNotificationToEntity(bitpayNotification);
 
-            log.Info($"Updating Transaction '{transaction.DomainIdentifier}' to DB");
-            transaction = await transactionRepository.Update(transaction);
-            log.Info($"Updated Transaction '{transaction.DomainIdentifier}' to DB");
+            await UpdateTransaction(transaction);
         }
 
         public async Task ProcessCoinbaseTransaction(string transactionId, CoinbaseService.CoinbaseChargeResponse coinbaseNotification)
         {
             log.Info($"Process Coinbase Transaction '{transactionId}'\n{JsonConvert.SerializeObject(coinbaseNotification, Formatting.Indented)}");
 
+            var transaction = await GetValidTransaction(transactionId);
+
+            log.Info($"Setting Transaction '{transaction.DomainIdentifier}'");
+            transaction = transaction.CoinbaseNotificationToEntity(coinbaseNotification);
+
+            await UpdateTransaction(transaction);
+        }
+
+        public async Task ProcessCoinqvestTransaction(string transactionId, CoinqvestService.CoinqvestNotification coinqvestNotification)
+        {
+            log.Info($"Process Coinqvest Transaction '{transactionId}'\n{JsonConvert.SerializeObject(coinqvestNotification, Formatting.Indented)}");
+
+            var transaction = await GetValidTransaction(transactionId);
+
+            log.Info($"Setting Transaction '{transaction.DomainIdentifier}'");
+            transaction = transaction.CoinqvestNotificationToEntity(coinqvestNotification);
+
+            await UpdateTransaction(transaction);
+        }
+
+        private async Task<Transaction> GetValidTransaction(string transactionId)
+        {
             log.Info($"Getting transaction '{transactionId}' from DB");
             var transaction = await transactionRepository.GetByDomainIdentifier(transactionId);
             log.Info($"Got transaction '{transactionId}' from DB");
@@ -52,9 +68,11 @@
             log.Info("Validating request");
             paymentValidation.ValidateTransactionNotification(transaction);
 
-            log.Info($"Setting Transaction '{transaction.DomainIdentifier}'");
-            transaction = transaction.CoinbaseNotificationToEntity(coinbaseNotification);
+            return transaction;
+        }
 
+        private async Task UpdateTransaction(Transaction transaction)
+        {
             log.Info($"Updating Transaction '{transaction.DomainIdentifier}' to DB");
             transaction = await transactionRepository.Update(transaction);
             log.Info($"Updated Transaction '{transaction.DomainIdentifier}' to DB");

@@ -44,7 +44,7 @@
                 }
 
                 log.Info($"Transaction returned payment gateway\n{JsonConvert.SerializeObject(response, Formatting.Indented)}");
-                
+
                 var paymentLink = GetLinkForCryptocurrency(confirmTransactionDto.CryptoCurrency, response.Data.PaymentCodes);
 
                 if (string.IsNullOrWhiteSpace(paymentLink))
@@ -101,7 +101,7 @@
                         Amount = createPaymentTransaction.Amount * currencyRate.Rate,
                     }
                 };
-            } 
+            }
             catch (Exception ex)
             {
                 log.Error($"Unexpected exception {ex.Message}");

@@ -13,7 +13,8 @@
             ErrorMessages = errorMessages;
         }
 
-        public ApplicationErrorCollection() { 
+        public ApplicationErrorCollection()
+        {
             BaseMessage = string.Empty;
             ErrorMessages = new List<string>();
         }
