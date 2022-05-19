@@ -76,6 +76,30 @@
         }
 
         [TestMethod]
+        public async Task OnProcessCoinPaymentsTransaction_GivenValidNotification_ShouldReturnNothingAsync()
+        {
+            // Arrange
+            var transaction = fixture.Create<Transaction>();
+            paymentValidationMock.Setup(x => x.ValidateTransactionNotification(transaction));
+
+            transactionRepositoryMock
+                .Setup(x => x.GetByDomainIdentifier(It.IsAny<string>()))
+                .ReturnsAsync(transaction);
+
+            transactionRepositoryMock
+                .Setup(x => x.Update(It.IsAny<Transaction>()))
+                .ReturnsAsync(transaction);
+
+            // Act
+            await notificationService.ProcessCoinPaymentsTransaction(transaction.DomainIdentifier, fixture.Create<CoinPaymentsService.CoinPaymentNotification>());
+
+            // Assert
+            paymentValidationMock.Verify(x => x.ValidateTransactionNotification(transaction), Times.Once);
+            transactionRepositoryMock.Verify(x => x.GetByDomainIdentifier(It.IsAny<string>()), Times.Once);
+            transactionRepositoryMock.Verify(x => x.Update(It.IsAny<Transaction>()), Times.Once);
+        }
+
+        [TestMethod]
         public async Task OnProcessCoinqvestTransaction_GivenValidNotification_ShouldReturnNothingAsync()
         {
             // Arrange

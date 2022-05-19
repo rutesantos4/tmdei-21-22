@@ -58,6 +58,22 @@
         }
 
         [TestMethod]
+        public async Task OnCoinPaymentsPaymentTransactionNotification_GivenValidRequest_ShouldReturnOk()
+        {
+            // Arrange
+            notificationServiceMock
+                .Setup(e => e.ProcessCoinPaymentsTransaction(It.IsAny<string>(), It.IsAny<CoinPaymentsService.CoinPaymentNotification>()));
+
+            // Act
+            var actionResult = await controller.CoinPaymentsPaymentTransactionNotification(fixture.Create<string>(), fixture.Create<CoinPaymentsService.CoinPaymentNotification>());
+
+            // Assert
+            notificationServiceMock.Verify();
+            var result = actionResult as StatusCodeResult;
+            result?.StatusCode.Should().Be(200);
+        }
+
+        [TestMethod]
         public async Task OnCoinqvestPaymentTransactionNotification_GivenValidRequest_ShouldReturnOk()
         {
             // Arrange
