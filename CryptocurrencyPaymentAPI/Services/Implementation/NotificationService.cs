@@ -47,6 +47,18 @@
             await UpdateTransaction(transaction);
         }
 
+        public async Task ProcessCoinPaymentsTransaction(string transactionId, CoinPaymentsService.CoinPaymentNotification coinPaymentsNotification)
+        {
+            log.Info($"Process CoinPayments Transaction '{transactionId}'\n{JsonConvert.SerializeObject(coinPaymentsNotification, Formatting.Indented)}");
+
+            var transaction = await GetValidTransaction(transactionId);
+
+            log.Info($"Setting Transaction '{transaction.DomainIdentifier}'");
+            transaction = transaction.CoinPaymentsNotificationToEntity(coinPaymentsNotification);
+
+            await UpdateTransaction(transaction);
+        }
+
         public async Task ProcessCoinqvestTransaction(string transactionId, CoinqvestService.CoinqvestNotification coinqvestNotification)
         {
             log.Info($"Process Coinqvest Transaction '{transactionId}'\n{JsonConvert.SerializeObject(coinqvestNotification, Formatting.Indented)}");

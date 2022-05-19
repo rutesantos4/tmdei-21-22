@@ -215,6 +215,16 @@
             public int Timeout { get; set; }
         }
 
+        public class CoinPaymentNotification
+        {
+            public string Txn_id { get; set; } = string.Empty;
+            public string Amount1 { get; set; } = string.Empty;
+            public string Amount2 { get; set; } = string.Empty;
+            public string Currency1 { get; set; } = string.Empty;
+            public string Currency2 { get; set; } = string.Empty;
+            public int Status { get; set; }
+            public string Status_text { get; set; } = string.Empty;
+        }
         #endregion
     }
 }

@@ -59,7 +59,7 @@
             return ReadResponse(client.PostAsJsonAsync(path, payload).Result, out responseHeaders);
         }
 
-        private static HttpClient GetClient(string URL, Dictionary<string, string> headers)
+        private static HttpClient GetClient(string URL, Dictionary<string, string>? headers)
         {
             HttpClient client = new();
 

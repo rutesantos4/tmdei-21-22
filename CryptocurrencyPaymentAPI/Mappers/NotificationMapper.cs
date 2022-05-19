@@ -28,6 +28,16 @@
             return GetFailedTransaction(transaction, validationMessage);
         }
 
+        public static Transaction CoinPaymentsNotificationToEntity(this Transaction transaction, CoinPaymentsService.CoinPaymentNotification notification)
+        {
+            if (notification.Status >= 100)
+            {
+                return GetSuccessTransaction(transaction);
+            }
+            var validationMessage = ErrorCodes.TransactionExpired;
+            return GetFailedTransaction(transaction, validationMessage);
+        }
+
         public static Transaction CoinqvestNotificationToEntity(this Transaction transaction, CoinqvestService.CoinqvestNotification notification)
         {
             if (notification.Data.Checkout.State.Equals("COMPLETED", StringComparison.OrdinalIgnoreCase))
