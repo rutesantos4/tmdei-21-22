@@ -15,11 +15,11 @@
     using System.Collections.Generic;
     using System.Linq;
     using System.Net.NetworkInformation;
-    using static global::CryptocurrencyPaymentAPI.Services.Implementation.CoinqvestService;
+    using static global::CryptocurrencyPaymentAPI.Services.Implementation.CoinPaymentsService;
     using PingReply = global::CryptocurrencyPaymentAPI.Services.Implementation.PingReply;
 
     [TestClass]
-    public class CoinqvestServiceTests
+    public class CoinPaymentsServiceTests
     {
         private readonly IFixture fixture;
         private readonly Mock<IRestClient> restClientMock;
@@ -28,7 +28,7 @@
         private readonly ICryptoGatewayService service;
         private readonly string url;
 
-        public CoinqvestServiceTests()
+        public CoinPaymentsServiceTests()
         {
             fixture = new Fixture();
             configurationMock = new Mock<IConfiguration>();
@@ -44,22 +44,35 @@
             configurationMock
                 .Setup(x => x.GetSection(It.IsAny<string>()))
                 .Returns(configurationSection.Object);
-            service = new CoinqvestService(restClientMock.Object, configurationMock.Object, pingMock.Object);
+            service = new CoinPaymentsService(restClientMock.Object, configurationMock.Object, pingMock.Object);
         }
 
-        [DataTestMethod]
-        public void OnCreateTransaction_GivenAValidTransaction_ShouldReturnTransaction()
+
+        [TestMethod]
+        [DataRow("address", "qrcode", "address")]
+        [DataRow("address", "", "address")]
+        [DataRow("address", " ", "address")]
+        [DataRow("address", null, "address")]
+        [DataRow("", "qrcode", "qrcode")]
+        [DataRow(" ", "qrcode", "qrcode")]
+        [DataRow(null, "qrcode", "qrcode")]
+        public void OnCreateTransaction_GivenAValidTransaction_ShouldReturnTransaction(string address, string qrcode, string paymentLink)
         {
             // Arrange
             var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
-            var response = fixture.Create<ResponseComplete>();
+            var data = fixture
+                .Build<CoinPaymentsTransactionResult>()
+                .With(x => x.Address, address)
+                .With(x => x.Qrcode_url, qrcode)
+                .Create();
+            var response = fixture.Build<CoinPaymentsTransaction>().With(x => x.Result, data).Create();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<RequestComplete, ResponseComplete>(url,
+                            x.Post<object, CoinPaymentsTransaction>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<RequestComplete>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -68,9 +81,9 @@
             var expected = new PaymentCreatedDto()
             {
                 CreateDate = DateTime.UtcNow,
-                ExpiryDate = response.ExpirationTime,
-                PaymentGatewayTransactionId = response.CheckoutId,
-                PaymentLink = response.DepositInstructions.Address
+                ExpiryDate = DateTime.UtcNow.AddSeconds(response.Result.Timeout),
+                PaymentGatewayTransactionId = response.Result.Txn_id,
+                PaymentLink = paymentLink
             };
 
             // Act
@@ -78,16 +91,18 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<RequestComplete, ResponseComplete>(url,
+                x.Post<object, CoinPaymentsTransaction>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<RequestComplete>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(expected, o => o.ExcludingMissingMembers()
-            .Excluding(o => o.CreateDate));
+            .Excluding(o => o.CreateDate)
+            .Excluding(o => o.ExpiryDate));
             result?.CreateDate.Date.Should().Be(expected.CreateDate.Date);
+            result?.ExpiryDate.Date.Should().Be(expected.ExpiryDate.Date);
         }
 
         [TestMethod]
@@ -95,14 +110,14 @@
         {
             // Arrange
             var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
-            ResponseComplete? response = null;
+            CoinPaymentsTransaction? response = null;
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<RequestComplete, ResponseComplete>(url,
+                            x.Post<object, CoinPaymentsTransaction>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<RequestComplete>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -113,9 +128,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<RequestComplete, ResponseComplete>(url,
+                x.Post<object, CoinPaymentsTransaction>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<RequestComplete>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -127,15 +142,15 @@
         {
             // Arrange
             var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
-            DepositInstructions? responseData = null;
-            var response = fixture.Build<ResponseComplete>().With(x => x.DepositInstructions, responseData).Create();
+            CoinPaymentsTransactionResult? responseData = null;
+            var response = fixture.Build<CoinPaymentsTransaction>().With(x => x.Result, responseData).Create();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<RequestComplete, ResponseComplete>(url,
+                            x.Post<object, CoinPaymentsTransaction>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<RequestComplete>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -146,9 +161,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<RequestComplete, ResponseComplete>(url,
+                x.Post<object, CoinPaymentsTransaction>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<RequestComplete>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -156,22 +171,22 @@
         }
 
         [TestMethod]
-        [DataRow("")]
-        [DataRow(" ")]
-        [DataRow(null)]
-        public void OnCreateTransaction_GivenAInvalidTransaction_ShouldReturnNull(string address)
+        public void OnCreateTransaction_GivenAInvalidTransaction_ShouldReturnNull()
         {
             // Arrange
             var confirmPaymentTransactionDto = fixture.Create<ConfirmPaymentTransactionDto>();
-            var responseData = fixture.Build<DepositInstructions>().With(x => x.Address, address).Create();
-            var response = fixture.Build<ResponseComplete>().With(x => x.DepositInstructions, responseData).Create();
+            var responseData = fixture.Build<CoinPaymentsTransactionResult>()
+                .With(x => x.Address, "")
+                .With(x => x.Qrcode_url, "")
+                .Create();
+            var response = fixture.Build<CoinPaymentsTransaction>().With(x => x.Result, responseData).Create();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<RequestComplete, ResponseComplete>(url,
+                            x.Post<object, CoinPaymentsTransaction>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<RequestComplete>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -182,9 +197,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<RequestComplete, ResponseComplete>(url,
+                x.Post<object, CoinPaymentsTransaction>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<RequestComplete>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -200,9 +215,9 @@
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<RequestComplete, ResponseComplete>(url,
+                            x.Post<object, CoinPaymentsTransaction>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<RequestComplete>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -213,9 +228,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<RequestComplete, ResponseComplete>(url,
+                x.Post<object, CoinPaymentsTransaction>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<RequestComplete>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -223,27 +238,38 @@
         }
 
         [DataTestMethod]
-        public void OnGetCurrencyRates_GivenAValidRate_ShouldReturnRate()
+        [DynamicData(nameof(OnGetCurrencyRates_GivenAValidRate_ShouldReturnRate_DataProvider), DynamicDataSourceType.Method)]
+        public void OnGetCurrencyRates_GivenAValidRate_ShouldReturnRate(string cryptocurrency, string fiatcurrency, Func<CoinPaymentsRateResult, double, double> currencyRate)
         {
             // Arrange
-            var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
-            var paymentMethod = fixture
-                .Build<PaymentMethod>()
-                .With(x => x.AssetCode, createPaymentTransactionDto.CryptoCurrency)
-                .With(x => x.PaymentAmount, fixture.Create<long>().ToString())
+            var createPaymentTransactionDto = fixture.Build<CreatePaymentTransactionDto>()
+                .With(x => x.CryptoCurrency, cryptocurrency)
+                .With(x => x.FiatCurrency, fiatcurrency)
                 .Create();
-
-            var data = fixture.CreateMany<PaymentMethod>().ToList();
-            data.Add(paymentMethod);
-
-            var response = fixture.Build<CoinqvestResponse>().With(x => x.PaymentMethods, data).Create();
+            var bitcoin = fixture.Build<CoinPaymentsRate>().With(x => x.Rate_btc, fixture.Create<long>().ToString()).Create();
+            var LTC = fixture.Build<CoinPaymentsRate>().With(x => x.Rate_btc, fixture.Create<long>().ToString()).Create();
+            var MAID = fixture.Build<CoinPaymentsRate>().With(x => x.Rate_btc, fixture.Create<long>().ToString()).Create();
+            var XMR = fixture.Build<CoinPaymentsRate>().With(x => x.Rate_btc, fixture.Create<long>().ToString()).Create();
+            var LTCT = fixture.Build<CoinPaymentsRate>().With(x => x.Rate_btc, fixture.Create<long>().ToString()).Create();
+            var USD = fixture.Build<CoinPaymentsRate>().With(x => x.Rate_btc, fixture.Create<long>().ToString()).Create();
+            var cad = fixture.Build<CoinPaymentsRate>().With(x => x.Rate_btc, fixture.Create<long>().ToString()).Create();
+            var responseData = fixture.Build<CoinPaymentsRateResult>()
+                .With(x => x.BTC, bitcoin)
+                .With(x => x.LTC, LTC)
+                .With(x => x.MAID, MAID)
+                .With(x => x.XMR, XMR)
+                .With(x => x.LTCT, LTCT)
+                .With(x => x.USD, USD)
+                .With(x => x.CAD, cad)
+                .Create();
+            var response = fixture.Build<CoinPaymentsRates>().With(x => x.Result, responseData).Create();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinqvestRequest, CoinqvestResponse>(url,
+                            x.Post<object, CoinPaymentsRates>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinqvestRequest>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -253,11 +279,10 @@
             {
                 CurrencyRate = new CurrencyRateDto()
                 {
-                    Currency = paymentMethod.AssetCode,
-                    Rate = double.Parse(paymentMethod.PaymentAmount) / createPaymentTransactionDto.Amount,
-                    Amount = double.Parse(paymentMethod.PaymentAmount),
-                },
-                PaymentGatewayTransactionId = response.Id
+                    Currency = createPaymentTransactionDto.CryptoCurrency,
+                    Rate = currencyRate(response.Result, createPaymentTransactionDto.Amount) / createPaymentTransactionDto.Amount,
+                    Amount = currencyRate(response.Result, createPaymentTransactionDto.Amount),
+                }
             };
 
             // Act
@@ -265,9 +290,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinqvestRequest, CoinqvestResponse>(url,
+                x.Post<object, CoinPaymentsRates>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinqvestRequest>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -280,14 +305,14 @@
         {
             // Arrange
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
-            CoinqvestResponse? response = null;
+            CoinPaymentsRates? response = null;
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinqvestRequest, CoinqvestResponse>(url,
+                            x.Post<object, CoinPaymentsRates>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinqvestRequest>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -299,7 +324,7 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinqvestRequest, CoinqvestResponse>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CoinqvestRequest>(), out responseHeaders, It.IsAny<Dictionary<string, string>>()), Times.Once);
+                x.Post<object, CoinPaymentsRates>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), out responseHeaders, It.IsAny<Dictionary<string, string>>()), Times.Once);
 
             result.Should().BeNull();
         }
@@ -309,15 +334,15 @@
         {
             // Arrange
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
-            List<PaymentMethod>? responseData = null;
-            var response = fixture.Build<CoinqvestResponse>().With(x => x.PaymentMethods, responseData).Create();
+            CoinPaymentsRateResult? responseData = null;
+            var response = fixture.Build<CoinPaymentsRates>().With(x => x.Result, responseData).Create();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinqvestRequest, CoinqvestResponse>(url,
+                            x.Post<object, CoinPaymentsRates>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinqvestRequest>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -328,7 +353,7 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinqvestRequest, CoinqvestResponse>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CoinqvestRequest>(), out responseHeaders, It.IsAny<Dictionary<string, string>>()), Times.Once);
+                x.Post<object, CoinPaymentsRates>(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>(), out responseHeaders, It.IsAny<Dictionary<string, string>>()), Times.Once);
 
             result.Should().BeNull();
         }
@@ -338,14 +363,14 @@
         {
             // Arrange
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
-            var response = fixture.Create<CoinqvestResponse>();
+            var response = fixture.Create<CoinPaymentsRates>();
 
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinqvestRequest, CoinqvestResponse>(url,
+                            x.Post<object, CoinPaymentsRates>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinqvestRequest>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -355,9 +380,41 @@
             var result = service.GetCurrencyRates(createPaymentTransactionDto);
 
             // Assert
-            restClientMock.Verify(x => x.Post<CoinqvestRequest, CoinqvestResponse>(url,
+            restClientMock.Verify(x => x.Post<object, CoinPaymentsRates>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinqvestRequest>(),
+                                                It.IsAny<object>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()),
+                                  Times.Once);
+
+            result.Should().BeNull();
+        }
+
+        [TestMethod]
+        public void OnGetCurrencyRates_GivenAInvalidRateFiat_ShouldReturnNull()
+        {
+            // Arrange
+            var createPaymentTransactionDto = fixture.Build<CreatePaymentTransactionDto>().With(x => x.CryptoCurrency, "BTC").Create();
+            var response = fixture.Create<CoinPaymentsRates>();
+
+            Dictionary<string, string> responseHeaders;
+            restClientMock
+                .Setup(x =>
+                            x.Post<object, CoinPaymentsRates>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<object>(),
+                                                out responseHeaders,
+                                                It.IsAny<Dictionary<string, string>>()
+                                               )
+                ).Returns(response);
+
+            // Act
+            var result = service.GetCurrencyRates(createPaymentTransactionDto);
+
+            // Assert
+            restClientMock.Verify(x => x.Post<object, CoinPaymentsRates>(url,
+                                                It.IsAny<string>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()),
                                   Times.Once);
@@ -374,9 +431,9 @@
             Dictionary<string, string> responseHeaders;
             restClientMock
                 .Setup(x =>
-                            x.Post<CoinqvestRequest, CoinqvestResponse>(url,
+                            x.Post<object, CoinPaymentsRates>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinqvestRequest>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
@@ -387,9 +444,9 @@
 
             // Assert
             restClientMock.Verify(x =>
-                x.Post<CoinqvestRequest, CoinqvestResponse>(url,
+                x.Post<object, CoinPaymentsRates>(url,
                                                 It.IsAny<string>(),
-                                                It.IsAny<CoinqvestRequest>(),
+                                                It.IsAny<object>(),
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()), Times.Once);
 
@@ -397,10 +454,10 @@
         }
 
         [TestMethod]
-        public void OnGetPaymentGatewayEnum_ShouldReturnCoinqvest()
+        public void OnGetPaymentGatewayEnum_ShouldReturnCoinPayments()
         {
             // Arrange
-            var expected = PaymentGatewayName.Coinqvest;
+            var expected = PaymentGatewayName.CoinPayments;
 
             // Act
             var result = service.GetPaymentGatewayEnum();
@@ -476,6 +533,39 @@
 
             // Assert
             result.Should().BeTrue();
+        }
+
+        private static IEnumerable<object[]> OnGetCurrencyRates_GivenAValidRate_ShouldReturnRate_DataProvider()
+        {
+            Func<CoinPaymentsRateResult, double, double> btcUSD = (response, amount) => (amount * double.Parse(response.USD.Rate_btc)) / double.Parse(response.BTC.Rate_btc);
+            yield return new object[] { "BTC", "USD", btcUSD };
+
+            Func<CoinPaymentsRateResult, double, double> btcCAD = (response, amount) => (amount * double.Parse(response.CAD.Rate_btc)) / double.Parse(response.BTC.Rate_btc);
+            yield return new object[] { "BTC", "CAD", btcCAD };
+
+            Func<CoinPaymentsRateResult, double, double> LTCUSD = (response, amount) => (amount * double.Parse(response.USD.Rate_btc)) / double.Parse(response.LTC.Rate_btc);
+            yield return new object[] { "LTC", "USD", LTCUSD };
+
+            Func<CoinPaymentsRateResult, double, double> LTCCAD = (response, amount) => (amount * double.Parse(response.CAD.Rate_btc)) / double.Parse(response.LTC.Rate_btc);
+            yield return new object[] { "LTC", "CAD", LTCCAD };
+
+            Func<CoinPaymentsRateResult, double, double> MAIDUSD = (response, amount) => (amount * double.Parse(response.USD.Rate_btc)) / double.Parse(response.MAID.Rate_btc);
+            yield return new object[] { "MAID", "USD", MAIDUSD };
+
+            Func<CoinPaymentsRateResult, double, double> MAIDCAD = (response, amount) => (amount * double.Parse(response.CAD.Rate_btc)) / double.Parse(response.MAID.Rate_btc);
+            yield return new object[] { "MAID", "CAD", MAIDCAD };
+
+            Func<CoinPaymentsRateResult, double, double> XMRUSD = (response, amount) => (amount * double.Parse(response.USD.Rate_btc)) / double.Parse(response.XMR.Rate_btc);
+            yield return new object[] { "XMR", "USD", XMRUSD };
+
+            Func<CoinPaymentsRateResult, double, double> XMRCAD = (response, amount) => (amount * double.Parse(response.CAD.Rate_btc)) / double.Parse(response.XMR.Rate_btc);
+            yield return new object[] { "XMR", "CAD", XMRCAD };
+
+            Func<CoinPaymentsRateResult, double, double> LTCTUSD = (response, amount) => (amount * double.Parse(response.USD.Rate_btc)) / double.Parse(response.LTCT.Rate_btc);
+            yield return new object[] { "LTCT", "USD", LTCTUSD };
+
+            Func<CoinPaymentsRateResult, double, double> LTCTCAD = (response, amount) => (amount * double.Parse(response.CAD.Rate_btc)) / double.Parse(response.LTCT.Rate_btc);
+            yield return new object[] { "LTCT", "CAD", LTCTCAD };
         }
     }
 }
