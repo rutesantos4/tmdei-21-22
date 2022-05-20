@@ -43,6 +43,62 @@
         }
 
         [Fact]
+        public async Task GivenMissingHeader_ShouldReturnUnauthorized()
+        {
+            // Arrange
+            var transactionId = fixture.Create<string>();
+
+            // Act
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            var response = await httpClient.PostAsync(baseUrl + transactionId, null);
+            var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.NotNull(responseMessageEx);
+            Assert.Equal("Missing Authorization Header", responseMessageEx?.Message.ToString());
+        }
+
+        [Fact]
+        public async Task GivenInvalidHeader_ShouldReturnUnauthorized()
+        {
+            // Arrange
+            var transactionId = fixture.Create<string>();
+
+            // Act
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", fixture.Create<string>());
+            var response = await httpClient.PostAsync(baseUrl + transactionId, null);
+            var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.NotNull(responseMessageEx);
+            Assert.Equal("Invalid Authorization Header", responseMessageEx?.Message.ToString());
+        }
+
+        [Fact]
+        public async Task GivenInvalidCredentials_ShouldReturnUnauthorized()
+        {
+            // Arrange
+            var transactionId = fixture.Create<string>();
+
+            // Act
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Basic YWRtaW46YWRtaW4x");
+            var response = await httpClient.PostAsync(baseUrl + transactionId, null);
+            var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.NotNull(responseMessageEx);
+            Assert.Equal("Invalid Username or Password", responseMessageEx?.Message.ToString());
+        }
+
+        [Fact]
         public async Task GivenInvalidTransactionId_ShouldReturnBadRequest()
         {
             // Arrange

@@ -41,6 +41,74 @@
         }
 
         [Fact]
+        public async Task GivenMissingHeader_ShouldReturnUnauthorized()
+        {
+            // Arrange
+            var amount = fixture.Create<double>() % 1;
+            var dto = fixture
+                .Build<CreatePaymentTransactionDto>()
+                .With(e => e.Amount, amount)
+                .Create();
+
+            // Act
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            var response = await httpClient.PostAsJsonAsync(baseUrl, dto);
+            var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.NotNull(responseMessageEx);
+            Assert.Equal("Missing Authorization Header", responseMessageEx?.Message.ToString());
+        }
+
+        [Fact]
+        public async Task GivenInvalidHeader_ShouldReturnUnauthorized()
+        {
+            // Arrange
+            var amount = fixture.Create<double>() % 1;
+            var dto = fixture
+                .Build<CreatePaymentTransactionDto>()
+                .With(e => e.Amount, amount)
+                .Create();
+
+            // Act
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", fixture.Create<string>());
+            var response = await httpClient.PostAsJsonAsync(baseUrl, dto);
+            var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.NotNull(responseMessageEx);
+            Assert.Equal("Invalid Authorization Header", responseMessageEx?.Message.ToString());
+        }
+
+        [Fact]
+        public async Task GivenInvalidCredentials_ShouldReturnUnauthorized()
+        {
+            // Arrange
+            var amount = fixture.Create<double>() % 1;
+            var dto = fixture
+                .Build<CreatePaymentTransactionDto>()
+                .With(e => e.Amount, amount)
+                .Create();
+
+            // Act
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Basic YWRtaW46YWRtaW4x");
+            var response = await httpClient.PostAsJsonAsync(baseUrl, dto);
+            var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.NotNull(responseMessageEx);
+            Assert.Equal("Invalid Username or Password", responseMessageEx?.Message.ToString());
+        }
+
+        [Fact]
         public async Task GivenInvalidAmount_ShouldReturnBadRequest()
         {
             // Arrange

@@ -10,9 +10,6 @@
         {
         }
 
-        public DatabaseContext()
-        {
-        }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ConversionAction>();
