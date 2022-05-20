@@ -2,6 +2,7 @@
 {
     using CryptocurrencyPaymentAPI.Configurations;
     using CryptocurrencyPaymentAPI.Middlewares;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Logging;
     using static CryptocurrencyPaymentAPI.Configurations.DatabaseConfiguration;
 
@@ -24,6 +25,11 @@
             services.ConfigureProject();
             services.AddControllers();
             services.AddMvc();
+            services.ConfigureSwagger();
+            services
+                .AddAuthentication("BasicAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+            services.AddAuthorization();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -45,6 +51,8 @@
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseAuthentication();
 
             app.UseAuthorization();
 

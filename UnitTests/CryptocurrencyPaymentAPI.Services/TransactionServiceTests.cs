@@ -12,7 +12,6 @@
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using System.Collections.Generic;
-    using System.Linq;
 
     [TestClass]
     public class TransactionServiceTests
@@ -104,10 +103,12 @@
                 paymentGatewayMock2.Object
             };
 
-            cryptoGatewayFactoryMock.Setup(x => x.GetCryptoGatewayServices()).Returns(paymentGateways);
+            cryptoGatewayFactoryMock
+                .Setup(x => x.GetCryptoGatewayServices(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
+                .Returns(paymentGateways);
 
             // Act
-            var result = transactionService.GetCurrencyRates(fixture.Create<CreatePaymentTransactionDto>());
+            var result = transactionService.GetCurrencyRates(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Assert
             nullPaymentGatewayMock.Verify();
@@ -133,10 +134,12 @@
                 nullPaymentGatewayMock.Object,
             };
 
-            cryptoGatewayFactoryMock.Setup(x => x.GetCryptoGatewayServices()).Returns(paymentGateways);
+            cryptoGatewayFactoryMock
+                .Setup(x => x.GetCryptoGatewayServices(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
+                .Returns(paymentGateways);
 
             // Act
-            var result = () => transactionService.GetCurrencyRates(fixture.Create<CreatePaymentTransactionDto>());
+            var result = () => transactionService.GetCurrencyRates(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Assert
             nullPaymentGatewayMock.Verify();
@@ -174,8 +177,10 @@
                 paymentGatewayMock2.Object
             };
 
-            cryptoGatewayFactoryMock.Setup(x => x.GetCryptoGatewayServices()).Returns(paymentGateways);
-            transactionService.GetCurrencyRates(fixture.Create<CreatePaymentTransactionDto>());
+            cryptoGatewayFactoryMock
+                .Setup(x => x.GetCryptoGatewayServices(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
+                .Returns(paymentGateways);
+            transactionService.GetCurrencyRates(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Act
             var result = transactionService.GetPaymentGatewayEnum();

@@ -38,9 +38,9 @@
             return response;
         }
 
-        public CurrencyConvertedDto GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction)
+        public CurrencyConvertedDto GetCurrencyRates(AuthorizationRequestDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransaction)
         {
-            var listAvailablePaymentGateways = cryptoGatewayFactory.GetCryptoGatewayServices();
+            var listAvailablePaymentGateways = cryptoGatewayFactory.GetCryptoGatewayServices(authorizationRequestDto, createPaymentTransaction);
 
             foreach (var cryptoGatewayService in listAvailablePaymentGateways)
             {

@@ -30,6 +30,13 @@
                 object message;
                 switch (error)
                 {
+                    case NotAuthorizedException exception:
+                        // custom application error
+                        response.StatusCode = (int)HttpStatusCode.Unauthorized;
+                        response.Headers.Add("WWW-Authenticate", "Basic realm=\"dotnetthoughts.net\"");
+                        message = exception.Message;
+                        break;
+
                     case ValidationException exception:
                         // custom application error
                         response.StatusCode = (int)HttpStatusCode.BadRequest;

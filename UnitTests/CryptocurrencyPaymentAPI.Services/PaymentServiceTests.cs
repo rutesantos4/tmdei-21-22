@@ -72,7 +72,7 @@
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
             var currencyConvertedDto = fixture.Create<CurrencyConvertedDto>();
             transactionServiceMock
-                .Setup(x => x.GetCurrencyRates(It.IsAny<CreatePaymentTransactionDto>()))
+                .Setup(x => x.GetCurrencyRates(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .Returns(currencyConvertedDto);
 
             transactionRepositoryMock
@@ -80,10 +80,10 @@
                 .ReturnsAsync(transaction);
 
             // Act
-            var result = await paymentService.ConvertFiatToCryptocurrency(createPaymentTransactionDto);
+            var result = await paymentService.ConvertFiatToCryptocurrency(fixture.Create<AuthorizationRequestDto>(), createPaymentTransactionDto);
 
             // Assert
-            transactionServiceMock.Verify(x => x.GetCurrencyRates(It.IsAny<CreatePaymentTransactionDto>()), Times.Once);
+            transactionServiceMock.Verify(x => x.GetCurrencyRates(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()), Times.Once);
             paymentValidationMock.Verify(x => x.ValidatePaymentTransactionCreation(createPaymentTransactionDto), Times.Once);
             transactionRepositoryMock.Verify(x => x.Add(It.IsAny<Transaction>()), Times.Once);
             result.Should().NotBeNull();

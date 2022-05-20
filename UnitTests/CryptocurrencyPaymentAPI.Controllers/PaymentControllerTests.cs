@@ -50,7 +50,7 @@
             // Arrange
             var expected = fixture.Create<GetRatesDto>();
             paymentServiceMock
-                .Setup(e => e.ConvertFiatToCryptocurrency(It.IsAny<CreatePaymentTransactionDto>()))
+                .Setup(e => e.ConvertFiatToCryptocurrency(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .ReturnsAsync(expected);
 
             // Act

@@ -34,8 +34,9 @@
                 .CreateClient(new WebApplicationFactoryClientOptions
                 {
                     AllowAutoRedirect = false,
-                    BaseAddress = new Uri("http://localhost:5001")
+                    BaseAddress = new Uri("http://localhost:5001"),
                 });
+            httpClient.DefaultRequestHeaders.Add("Authorization", "Basic YWRtaW46YWRtaW4=");
             fixture = new Fixture();
         }
 

@@ -1,5 +1,6 @@
 ﻿namespace CryptocurrencyPaymentAPI.Services
 {
+    using CryptocurrencyPaymentAPI.DTOs.Request;
     using CryptocurrencyPaymentAPI.Model.Enums;
     using CryptocurrencyPaymentAPI.Services.Implementation;
     using CryptocurrencyPaymentAPI.Services.Interfaces;
@@ -28,12 +29,13 @@
             this.decisionConfigurationService = decisionConfigurationService;
         }
 
-        public List<ICryptoGatewayService> GetCryptoGatewayServices()
+        public List<ICryptoGatewayService> GetCryptoGatewayServices(AuthorizationRequestDto authorizationRequestDto,
+            CreatePaymentTransactionDto createPaymentTransactionDto)
         {
             try
             {
                 log.Info("Getting Cryptocurrency payment gateway");
-                var listPossiblePaymentGateways = decisionConfigurationService.GetPossiblePaymentGateway("TODO", "TODO");
+                var listPossiblePaymentGateways = decisionConfigurationService.GetPossiblePaymentGateway(authorizationRequestDto, createPaymentTransactionDto);
 
                 if (listPossiblePaymentGateways == null
                     || listPossiblePaymentGateways.Count == 0)

@@ -65,7 +65,8 @@
             return result;
         }
 
-        public async Task<GetRatesDto> ConvertFiatToCryptocurrency(CreatePaymentTransactionDto createPaymentTransaction)
+        public async Task<GetRatesDto> ConvertFiatToCryptocurrency(AuthorizationRequestDto authorizationRequestDto,
+            CreatePaymentTransactionDto createPaymentTransaction)
         {
             log.Info($"Create Payment transaction \n{JsonConvert.SerializeObject(createPaymentTransaction, Formatting.Indented)}");
 
@@ -73,7 +74,7 @@
             paymentValidation.ValidatePaymentTransactionCreation(createPaymentTransaction);
 
             log.Info($"Getting Rate");
-            var rates = transactionService.GetCurrencyRates(createPaymentTransaction);
+            var rates = transactionService.GetCurrencyRates(authorizationRequestDto, createPaymentTransaction);
             log.Info($"Got Rate '{rates.CurrencyRate}'");
 
             log.Info($"Building Transaction");

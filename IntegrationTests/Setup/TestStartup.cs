@@ -2,6 +2,7 @@
 {
     using CryptocurrencyPaymentAPI;
     using CryptocurrencyPaymentAPI.Configurations;
+    using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using Microsoft.Extensions.Logging;
@@ -18,6 +19,11 @@
             services.ConfigureProject();
             services.AddMvc();
             services.AddControllers().AddApplicationPart(typeof(Startup).Assembly);
+
+            services
+                .AddAuthentication("BasicAuthentication")
+                .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>("BasicAuthentication", null);
+            services.AddAuthorization();
 
             services.AddLogging(builder => builder
                 .AddConsole()

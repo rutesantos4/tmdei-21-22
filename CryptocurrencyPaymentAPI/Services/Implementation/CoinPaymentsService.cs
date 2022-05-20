@@ -55,8 +55,8 @@
 
                 log.Info($"Transaction returned payment gateway\n{JsonConvert.SerializeObject(response, Formatting.Indented)}");
 
-                var paymentLink = string.IsNullOrWhiteSpace(response.Result.Address) 
-                    ? response.Result.Qrcode_url 
+                var paymentLink = string.IsNullOrWhiteSpace(response.Result.Address)
+                    ? response.Result.Qrcode_url
                     : response.Result.Address;
 
                 if (string.IsNullOrWhiteSpace(paymentLink))

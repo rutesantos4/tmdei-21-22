@@ -4,9 +4,11 @@
     using CryptocurrencyPaymentAPI.DTOs.Response;
     using CryptocurrencyPaymentAPI.Services.Interfaces;
     using log4net;
+    using Microsoft.AspNetCore.Authorization;
     using Microsoft.AspNetCore.Mvc;
     using System.Reflection;
 
+    [Authorize]
     [ApiController]
     [Route("[controller]")]
     public class PaymentController : ControllerBase
@@ -23,7 +25,9 @@
         public async Task<ActionResult<GetRatesDto>> CreatePaymentTransaction([FromBody] CreatePaymentTransactionDto createPaymentTransaction)
         {
             log.Info("Create Payment transaction");
-            return Ok(await transactionService.ConvertFiatToCryptocurrency(createPaymentTransaction));
+            // Added on BasicAuthenticationHandler
+            var authorizationRequestDto = HttpContext?.Items["authorizationRequest"] as AuthorizationRequestDto ?? new AuthorizationRequestDto();
+            return Ok(await transactionService.ConvertFiatToCryptocurrency(authorizationRequestDto, createPaymentTransaction));
         }
 
         [HttpPost("{transactionId}")]

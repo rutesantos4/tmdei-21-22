@@ -7,7 +7,7 @@
     public interface ITransactionService
     {
         PaymentGatewayName GetPaymentGatewayEnum();
-        CurrencyConvertedDto GetCurrencyRates(CreatePaymentTransactionDto createPaymentTransaction);
+        CurrencyConvertedDto GetCurrencyRates(AuthorizationRequestDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransaction);
         PaymentCreatedDto CreateTransaction(ConfirmPaymentTransactionDto confirmTransaction);
     }
 }

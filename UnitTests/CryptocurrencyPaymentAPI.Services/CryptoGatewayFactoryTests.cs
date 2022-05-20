@@ -2,22 +2,19 @@
 {
     using AutoFixture;
     using FluentAssertions;
-    using global::CryptocurrencyPaymentAPI.DTOs;
     using global::CryptocurrencyPaymentAPI.DTOs.Request;
     using global::CryptocurrencyPaymentAPI.Model.Enums;
+    using global::CryptocurrencyPaymentAPI.Services;
     using global::CryptocurrencyPaymentAPI.Services.Implementation;
     using global::CryptocurrencyPaymentAPI.Services.Interfaces;
-    using global::CryptocurrencyPaymentAPI.Services;
     using global::CryptocurrencyPaymentAPI.Utils;
+    using global::CryptocurrencyPaymentAPI.Validations.Exceptions;
     using Microsoft.Extensions.Configuration;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using Moq;
     using System;
     using System.Collections.Generic;
     using System.Linq;
-    using static global::CryptocurrencyPaymentAPI.Services.Implementation.BitPayService;
-    using global::CryptocurrencyPaymentAPI.Validations.ValidationMessages;
-    using global::CryptocurrencyPaymentAPI.Validations.Exceptions;
 
     [TestClass]
     public class CryptoGatewayFactoryTests
@@ -56,7 +53,7 @@
             var listPossiblePaymentGateways = fixture.CreateMany<PaymentGatewayName>().ToList();
 
             decisionConfigurationServiceMock
-                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .Returns(listPossiblePaymentGateways);
 
             var pingReply = fixture.Build<PingReply>().With(e => e.Status, System.Net.NetworkInformation.IPStatus.Success).Create();
@@ -65,7 +62,7 @@
             factory = new CryptoGatewayFactory(configurationMock.Object, pingMock.Object, restClientMock.Object, decisionConfigurationServiceMock.Object);
 
             // Act
-            var result = factory.GetCryptoGatewayServices();
+            var result = factory.GetCryptoGatewayServices(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Assert
             result.Should().NotBeNull();
@@ -79,13 +76,13 @@
             List<PaymentGatewayName>? listPossiblePaymentGateways = null;
 
             decisionConfigurationServiceMock
-                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .Returns(listPossiblePaymentGateways);
 
             factory = new CryptoGatewayFactory(configurationMock.Object, pingMock.Object, restClientMock.Object, decisionConfigurationServiceMock.Object);
 
             // Act
-            var result = () => factory.GetCryptoGatewayServices();
+            var result = () => factory.GetCryptoGatewayServices(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Assert
             result.Should().NotBeNull();
@@ -97,13 +94,13 @@
         {
             // Arrange
             decisionConfigurationServiceMock
-                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .Throws(new Exception());
 
             factory = new CryptoGatewayFactory(configurationMock.Object, pingMock.Object, restClientMock.Object, decisionConfigurationServiceMock.Object);
 
             // Act
-            var result = () => factory.GetCryptoGatewayServices();
+            var result = () => factory.GetCryptoGatewayServices(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Assert
             result.Should().NotBeNull();
@@ -117,13 +114,13 @@
             List<PaymentGatewayName> listPossiblePaymentGateways = new();
 
             decisionConfigurationServiceMock
-                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .Returns(listPossiblePaymentGateways);
 
             factory = new CryptoGatewayFactory(configurationMock.Object, pingMock.Object, restClientMock.Object, decisionConfigurationServiceMock.Object);
 
             // Act
-            var result = () => factory.GetCryptoGatewayServices();
+            var result = () => factory.GetCryptoGatewayServices(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Assert
             result.Should().NotBeNull();
@@ -137,7 +134,7 @@
             var listPossiblePaymentGateways = fixture.CreateMany<PaymentGatewayName>().ToList();
 
             decisionConfigurationServiceMock
-                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<string>(), It.IsAny<string>()))
+                .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .Returns(listPossiblePaymentGateways);
 
             var status = fixture
@@ -149,7 +146,7 @@
             factory = new CryptoGatewayFactory(configurationMock.Object, pingMock.Object, restClientMock.Object, decisionConfigurationServiceMock.Object);
 
             // Act
-            var result = () => factory.GetCryptoGatewayServices();
+            var result = () => factory.GetCryptoGatewayServices(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Assert
             result.Should().NotBeNull();
