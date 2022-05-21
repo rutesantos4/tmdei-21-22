@@ -38,7 +38,7 @@
                     AllowAutoRedirect = false,
                     BaseAddress = new Uri("http://localhost:5001")
                 });
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Basic YWRtaW46YWRtaW4=");
+            httpClient.DefaultRequestHeaders.Add("Authorization", testFixture.AuthorizationHeader);
             fixture = new Fixture();
         }
 
@@ -119,6 +119,28 @@
         }
 
         [Fact]
+        public async Task GivenDifferentMerchatId_ShouldReturnBadRequest()
+        {
+            // Arrange
+            var transactionId = testFixture.TransactionFailded;
+
+            // Act
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", testFixture.AuthorizationHeader2);
+            var response = await httpClient.PostAsync(baseUrl + transactionId, null);
+            var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString());
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.NotNull(responseMessage);
+            Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
+            Assert.Single(responseMessage?.ErrorMessages);
+            Assert.Equal("Transaction does not exists.", responseMessage?.ErrorMessages[0]);
+        }
+
+        [Fact]
         public async Task GivenExpiredRate_ShouldReturnBadRequest()
         {
             // Arrange
@@ -167,6 +189,28 @@
             Assert.Equal(DateTime.UtcNow.Day, responseMessage?.ExpiryDate?.Day);
             Assert.Equal(DateTime.UtcNow.Month, responseMessage?.ExpiryDate?.Month);
             Assert.Equal(DateTime.UtcNow.Year, responseMessage?.ExpiryDate?.Year);
+        }
+
+        [Fact]
+        public async Task GivenDifferentMerchatId_GetShouldReturnBadRequest()
+        {
+            // Arrange
+            var transactionId = testFixture.TransactionFailded;
+
+            // Act
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", testFixture.AuthorizationHeader2);
+            var response = await httpClient.GetAsync(baseUrl + transactionId);
+            var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString());
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.NotNull(responseMessage);
+            Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
+            Assert.Single(responseMessage?.ErrorMessages);
+            Assert.Equal("Transaction does not exists.", responseMessage?.ErrorMessages[0]);
         }
 
         [Fact]

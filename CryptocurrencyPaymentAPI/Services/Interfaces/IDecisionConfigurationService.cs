@@ -5,6 +5,6 @@
 
     public interface IDecisionConfigurationService
     {
-        List<PaymentGatewayName> GetPossiblePaymentGateway(AuthorizationRequestDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransactionDto);
+        List<PaymentGatewayName> GetPossiblePaymentGateway(MerchantAuthorizationDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransactionDto);
     }
 }

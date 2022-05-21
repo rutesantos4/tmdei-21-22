@@ -28,11 +28,11 @@
             validationResult.ShouldThrowValidationException();
         }
 
-        public void ValidateTransactionConfirm(Transaction? transaction)
+        public void ValidateTransactionConfirm(Transaction? transaction, string merchantId)
         {
             var validationResult = new ValidationResult();
 
-            if (transaction is null)
+            if (transaction is null || !transaction.MerchantId.Equals(merchantId))
             {
                 validationResult.AddMessages(ErrorCodes.InvalidTransaction);
             }
@@ -47,11 +47,11 @@
             validationResult.ShouldThrowValidationException();
         }
 
-        public void ValidateTransactionGet(Transaction? transaction)
+        public void ValidateTransactionGet(Transaction? transaction, string merchantId)
         {
             var validationResult = new ValidationResult();
 
-            if (transaction is null)
+            if (transaction is null || !transaction.MerchantId.Equals(merchantId))
             {
                 validationResult.AddMessages(ErrorCodes.InvalidTransaction);
             }

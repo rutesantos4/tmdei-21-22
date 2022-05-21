@@ -39,7 +39,7 @@
                     AllowAutoRedirect = false,
                     BaseAddress = new Uri("http://localhost:5001")
                 });
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Basic YWRtaW46YWRtaW4=");
+            httpClient.DefaultRequestHeaders.Add("Authorization", testFixture.AuthorizationHeader);
             fixture = new Fixture();
         }
 

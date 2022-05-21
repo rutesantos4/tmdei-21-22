@@ -31,7 +31,7 @@
             // Arrange
             var expected = fixture.Create<GetInitTransactionDto>();
             paymentServiceMock
-                .Setup(e => e.CreatePaymentTransaction(It.IsAny<string>()))
+                .Setup(e => e.CreatePaymentTransaction(It.IsAny<MerchantAuthorizationDto>(), It.IsAny<string>()))
                 .ReturnsAsync(expected);
 
             // Act
@@ -50,7 +50,7 @@
             // Arrange
             var expected = fixture.Create<GetRatesDto>();
             paymentServiceMock
-                .Setup(e => e.ConvertFiatToCryptocurrency(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
+                .Setup(e => e.ConvertFiatToCryptocurrency(It.IsAny<MerchantAuthorizationDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .ReturnsAsync(expected);
 
             // Act
@@ -69,7 +69,7 @@
             // Arrange
             var expected = fixture.Create<GetTransactionDto>();
             paymentServiceMock
-                .Setup(e => e.GetTransaction(It.IsAny<string>()))
+                .Setup(e => e.GetTransaction(It.IsAny<MerchantAuthorizationDto>(), It.IsAny<string>()))
                 .ReturnsAsync(expected);
 
             // Act

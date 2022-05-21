@@ -27,7 +27,7 @@
             this.transactionService = transactionService;
         }
 
-        public async Task<GetInitTransactionDto> CreatePaymentTransaction(string transactionId)
+        public async Task<GetInitTransactionDto> CreatePaymentTransaction(MerchantAuthorizationDto authorizationRequestDto,  string transactionId)
         {
             log.Info($"Confirm Payment transaction '{transactionId}'");
 
@@ -36,7 +36,7 @@
             log.Info($"Got transaction '{transactionId}' from DB");
 
             log.Info("Validating request");
-            paymentValidation.ValidateTransactionConfirm(transaction);
+            paymentValidation.ValidateTransactionConfirm(transaction, authorizationRequestDto.MerchantId);
 
             var confirmPaymentTransactionDTO = new ConfirmPaymentTransactionDto()
             {
@@ -65,7 +65,7 @@
             return result;
         }
 
-        public async Task<GetRatesDto> ConvertFiatToCryptocurrency(AuthorizationRequestDto authorizationRequestDto,
+        public async Task<GetRatesDto> ConvertFiatToCryptocurrency(MerchantAuthorizationDto authorizationRequestDto,
             CreatePaymentTransactionDto createPaymentTransaction)
         {
             log.Info($"Create Payment transaction \n{JsonConvert.SerializeObject(createPaymentTransaction, Formatting.Indented)}");
@@ -78,7 +78,7 @@
             log.Info($"Got Rate '{rates.CurrencyRate}'");
 
             log.Info($"Building Transaction");
-            var transaction = createPaymentTransaction.ToEntity(rates, transactionService.GetPaymentGatewayEnum());
+            var transaction = createPaymentTransaction.ToEntity(rates, transactionService.GetPaymentGatewayEnum(), authorizationRequestDto.MerchantId);
             log.Info($"Built Transaction");
 
             log.Info($"Adding Transaction '{transaction.DomainIdentifier}' to DB");
@@ -91,7 +91,7 @@
             return result;
         }
 
-        public async Task<GetTransactionDto> GetTransaction(string transactionId)
+        public async Task<GetTransactionDto> GetTransaction(MerchantAuthorizationDto authorizationRequestDto, string transactionId)
         {
             log.Info($"Get transaction '{transactionId}'");
 
@@ -100,7 +100,7 @@
             log.Info($"Got transaction '{transactionId}' from DB");
 
             log.Info("Validating request");
-            paymentValidation.ValidateTransactionGet(transaction);
+            paymentValidation.ValidateTransactionGet(transaction, authorizationRequestDto.MerchantId);
 
             var result = transaction.ToDto();
 

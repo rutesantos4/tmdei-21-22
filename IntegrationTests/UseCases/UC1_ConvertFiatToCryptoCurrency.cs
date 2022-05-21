@@ -24,19 +24,21 @@
         /// </summary>
         private readonly HttpClient httpClient;
         private readonly IFixture fixture;
+        private readonly TestFixture<Startup> testFixture;
 
         private const string baseUrl = "/Payment";
         private const string errorBaseMessage = "Invalid operation, check the collection of errors for more details.";
 
         public UC1_ConvertFiatToCryptoCurrency(TestFixture<Startup> testFixture)
         {
+            this.testFixture = testFixture;
             httpClient = testFixture
                 .CreateClient(new WebApplicationFactoryClientOptions
                 {
                     AllowAutoRedirect = false,
                     BaseAddress = new Uri("http://localhost:5001"),
                 });
-            httpClient.DefaultRequestHeaders.Add("Authorization", "Basic YWRtaW46YWRtaW4=");
+            httpClient.DefaultRequestHeaders.Add("Authorization", testFixture.AuthorizationHeader);
             fixture = new Fixture();
         }
 
@@ -285,6 +287,28 @@
             Assert.Equal(responseMessageCreate.Rate?.Amount, responseMessage?.Details.Conversion?.CryptoCurrency?.Amount);
             Assert.Null(responseMessage?.Details.Init);
             Assert.Null(responseMessage?.Details.Debit);
+        }
+
+        [Fact]
+        public async Task GivenDifferentMerchatId_ShouldReturnBadRequest()
+        {
+            // Arrange
+            var transactionId = testFixture.TransactionFailded;
+
+            // Act
+            httpClient.DefaultRequestHeaders.Remove("Authorization");
+            httpClient.DefaultRequestHeaders.Add("Authorization", testFixture.AuthorizationHeader2);
+            var response = await httpClient.GetAsync($"{baseUrl}/{transactionId}");
+            var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString());
+
+            // Assert
+            Assert.NotNull(response);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.NotNull(responseMessage);
+            Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
+            Assert.Single(responseMessage?.ErrorMessages);
+            Assert.Equal("Transaction does not exists.", responseMessage?.ErrorMessages[0]);
         }
 
         [Fact]

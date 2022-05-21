@@ -5,8 +5,8 @@
 
     public interface IPaymentService
     {
-        Task<GetRatesDto> ConvertFiatToCryptocurrency(AuthorizationRequestDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransaction);
-        Task<GetInitTransactionDto> CreatePaymentTransaction(string transactionId);
-        Task<GetTransactionDto> GetTransaction(string transactionId);
+        Task<GetRatesDto> ConvertFiatToCryptocurrency(MerchantAuthorizationDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransaction);
+        Task<GetInitTransactionDto> CreatePaymentTransaction(MerchantAuthorizationDto authorizationRequestDto, string transactionId);
+        Task<GetTransactionDto> GetTransaction(MerchantAuthorizationDto authorizationRequestDto, string transactionId);
     }
 }

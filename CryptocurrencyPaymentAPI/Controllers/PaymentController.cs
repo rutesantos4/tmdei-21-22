@@ -26,7 +26,7 @@
         {
             log.Info("Create Payment transaction");
             // Added on BasicAuthenticationHandler
-            var authorizationRequestDto = HttpContext?.Items["authorizationRequest"] as AuthorizationRequestDto ?? new AuthorizationRequestDto();
+            var authorizationRequestDto = HttpContext?.Items["authorizationRequest"] as MerchantAuthorizationDto ?? new MerchantAuthorizationDto();
             return Ok(await transactionService.ConvertFiatToCryptocurrency(authorizationRequestDto, createPaymentTransaction));
         }
 
@@ -34,7 +34,9 @@
         public async Task<ActionResult<GetInitTransactionDto>> ConfirmPaymentTransaction([FromRoute] string transactionId)
         {
             log.Info($"Confirm Payment transaction '{transactionId}'");
-            return Ok(await transactionService.CreatePaymentTransaction(transactionId));
+            // Added on BasicAuthenticationHandler
+            var authorizationRequestDto = HttpContext?.Items["authorizationRequest"] as MerchantAuthorizationDto ?? new MerchantAuthorizationDto();
+            return Ok(await transactionService.CreatePaymentTransaction(authorizationRequestDto, transactionId));
         }
 
         [HttpGet("{transactionId}")]
@@ -42,7 +44,9 @@
             [FromRoute] string transactionId)
         {
             log.Info($"Confirm Payment transaction '{transactionId}'");
-            return Ok(await transactionService.GetTransaction(transactionId));
+            // Added on BasicAuthenticationHandler
+            var authorizationRequestDto = HttpContext?.Items["authorizationRequest"] as MerchantAuthorizationDto ?? new MerchantAuthorizationDto();
+            return Ok(await transactionService.GetTransaction(authorizationRequestDto, transactionId));
         }
     }
 }

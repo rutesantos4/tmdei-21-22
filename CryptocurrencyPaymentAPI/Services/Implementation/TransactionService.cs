@@ -38,7 +38,7 @@
             return response;
         }
 
-        public CurrencyConvertedDto GetCurrencyRates(AuthorizationRequestDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransaction)
+        public CurrencyConvertedDto GetCurrencyRates(MerchantAuthorizationDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransaction)
         {
             var listAvailablePaymentGateways = cryptoGatewayFactory.GetCryptoGatewayServices(authorizationRequestDto, createPaymentTransaction);
 

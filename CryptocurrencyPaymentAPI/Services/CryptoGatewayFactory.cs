@@ -29,7 +29,7 @@
             this.decisionConfigurationService = decisionConfigurationService;
         }
 
-        public List<ICryptoGatewayService> GetCryptoGatewayServices(AuthorizationRequestDto authorizationRequestDto,
+        public List<ICryptoGatewayService> GetCryptoGatewayServices(MerchantAuthorizationDto authorizationRequestDto,
             CreatePaymentTransactionDto createPaymentTransactionDto)
         {
             try

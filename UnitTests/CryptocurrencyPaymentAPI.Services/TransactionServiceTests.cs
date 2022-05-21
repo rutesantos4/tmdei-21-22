@@ -104,11 +104,11 @@
             };
 
             cryptoGatewayFactoryMock
-                .Setup(x => x.GetCryptoGatewayServices(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
+                .Setup(x => x.GetCryptoGatewayServices(It.IsAny<MerchantAuthorizationDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .Returns(paymentGateways);
 
             // Act
-            var result = transactionService.GetCurrencyRates(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
+            var result = transactionService.GetCurrencyRates(fixture.Create<MerchantAuthorizationDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Assert
             nullPaymentGatewayMock.Verify();
@@ -135,11 +135,11 @@
             };
 
             cryptoGatewayFactoryMock
-                .Setup(x => x.GetCryptoGatewayServices(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
+                .Setup(x => x.GetCryptoGatewayServices(It.IsAny<MerchantAuthorizationDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .Returns(paymentGateways);
 
             // Act
-            var result = () => transactionService.GetCurrencyRates(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
+            var result = () => transactionService.GetCurrencyRates(fixture.Create<MerchantAuthorizationDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Assert
             nullPaymentGatewayMock.Verify();
@@ -178,9 +178,9 @@
             };
 
             cryptoGatewayFactoryMock
-                .Setup(x => x.GetCryptoGatewayServices(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
+                .Setup(x => x.GetCryptoGatewayServices(It.IsAny<MerchantAuthorizationDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .Returns(paymentGateways);
-            transactionService.GetCurrencyRates(fixture.Create<AuthorizationRequestDto>(), fixture.Create<CreatePaymentTransactionDto>());
+            transactionService.GetCurrencyRates(fixture.Create<MerchantAuthorizationDto>(), fixture.Create<CreatePaymentTransactionDto>());
 
             // Act
             var result = transactionService.GetPaymentGatewayEnum();

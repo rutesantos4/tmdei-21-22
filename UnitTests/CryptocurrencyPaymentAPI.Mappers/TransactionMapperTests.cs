@@ -30,9 +30,10 @@
             var dto = fixture.Create<CreatePaymentTransactionDto>();
             var dtoConvertion = fixture.Create<CurrencyConvertedDto>();
             var paymentGatewayName = fixture.Create<PaymentGatewayName>();
+            var merchantId = fixture.Create<string>();
 
             //Act
-            var entity = dto.ToEntity(dtoConvertion, paymentGatewayName);
+            var entity = dto.ToEntity(dtoConvertion, paymentGatewayName, merchantId);
 
             //Assert
             entity.Should().NotBeNull();
@@ -42,7 +43,7 @@
             entity.TransactionState.Should().Be(TransactionState.CurrencyConverted);
             entity.PaymentGatewayTransactionId.Should().Be(dtoConvertion.PaymentGatewayTransactionId);
             entity.TransactionReference.Should().Be(dto.TransactionReference);
-            entity.MerchantId.Should().Be("TODO");
+            entity.MerchantId.Should().Be(merchantId);
             entity.Details.Should().NotBeNull();
             entity.Details.Conversion.Should().BeOfType<ConversionAction>();
             entity.Details.Conversion.ActionName.Should().Be(ActionType.Convert);
@@ -63,9 +64,10 @@
             CreatePaymentTransactionDto? dto = null;
             var dtoConvertion = fixture.Create<CurrencyConvertedDto>();
             var paymentGatewayName = fixture.Create<PaymentGatewayName>();
+            var merchantId = fixture.Create<string>();
 
             //Act
-            var entity = dto.ToEntity(dtoConvertion, paymentGatewayName);
+            var entity = dto.ToEntity(dtoConvertion, paymentGatewayName, merchantId);
 
             //Assert
             entity.Should().NotBeNull();

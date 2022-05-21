@@ -100,7 +100,21 @@
             Transaction? entity = null;
 
             // Act
-            var validation = () => paymentValidator.ValidateTransactionGet(entity);
+            var validation = () => paymentValidator.ValidateTransactionGet(entity, fixture.Create<string>());
+
+            // Assert
+            validation.Should().Throw<ValidationException>();
+        }
+
+        [TestMethod]
+        public void OnValidateTransactionCreationGet_GivenDifferentMerchantId_ShouldThrowException()
+        {
+            // Arrange
+            var entity = fixture.Create<Transaction>();
+            var merchantId = fixture.Create<string>();
+
+            // Act
+            var validation = () => paymentValidator.ValidateTransactionGet(entity, merchantId);
 
             // Assert
             validation.Should().Throw<ValidationException>();
@@ -113,7 +127,7 @@
             var entity = fixture.Create<Transaction>();
 
             // Act
-            var validation = () => paymentValidator.ValidateTransactionGet(entity);
+            var validation = () => paymentValidator.ValidateTransactionGet(entity, entity.MerchantId);
 
             // Assert
             validation.Should().NotThrow<ValidationException>();
@@ -126,7 +140,20 @@
             Transaction? entity = null;
 
             // Act
-            var validation = () => paymentValidator.ValidateTransactionConfirm(entity);
+            var validation = () => paymentValidator.ValidateTransactionConfirm(entity, fixture.Create<string>());
+
+            // Assert
+            validation.Should().Throw<ValidationException>();
+        }
+
+        [TestMethod]
+        public void OnValidateTransactionConfirm_GivenDifferentMerchantId_ShouldThrowException()
+        {
+            // Arrange
+            var entity = fixture.Create<Transaction>();
+
+            // Act
+            var validation = () => paymentValidator.ValidateTransactionConfirm(entity, fixture.Create<string>());
 
             // Assert
             validation.Should().Throw<ValidationException>();
@@ -150,7 +177,7 @@
                 .Create();
 
             // Act
-            var validation = () => paymentValidator.ValidateTransactionConfirm(entity);
+            var validation = () => paymentValidator.ValidateTransactionConfirm(entity, entity.MerchantId);
 
             // Assert
             validation.Should().Throw<ValidationException>();
@@ -176,7 +203,7 @@
                 .Create();
 
             // Act
-            var validation = () => paymentValidator.ValidateTransactionConfirm(entity);
+            var validation = () => paymentValidator.ValidateTransactionConfirm(entity, entity.MerchantId);
 
             // Assert
             validation.Should().Throw<ValidationException>();
@@ -201,7 +228,7 @@
                 .Create();
 
             // Act
-            var validation = () => paymentValidator.ValidateTransactionConfirm(entity);
+            var validation = () => paymentValidator.ValidateTransactionConfirm(entity, entity.MerchantId);
 
             // Assert
             validation.Should().NotThrow<ValidationException>();

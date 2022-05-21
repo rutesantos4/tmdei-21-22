@@ -6,7 +6,7 @@
 
     public interface ICryptoGatewayFactory
     {
-        List<ICryptoGatewayService> GetCryptoGatewayServices(AuthorizationRequestDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransactionDto);
+        List<ICryptoGatewayService> GetCryptoGatewayServices(MerchantAuthorizationDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransactionDto);
         ICryptoGatewayService GetCryptoGatewayService(PaymentGatewayName paymentGateway);
     }
 }

@@ -62,5 +62,7 @@
         public string TransactionRateExpired => DBSetup.TransactionRateExpired;
         public string TransactionFailded => DBSetup.TransactionFailded;
         public string TransactionTransmitted => DBSetup.TransactionTransmitted;
+        public string AuthorizationHeader => "Basic bWVyY2hhbnQtdGVzdHM6bWVyY2hhbnQtdGVzdHM=";
+        public string AuthorizationHeader2 => "Basic YWRtaW46YWRtaW4=";
     }
 }

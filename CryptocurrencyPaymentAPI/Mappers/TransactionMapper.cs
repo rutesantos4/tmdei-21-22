@@ -50,7 +50,10 @@
                 Details = entity.Details.ToDto()
             };
 
-        public static Transaction ToEntity(this CreatePaymentTransactionDto dto, CurrencyConvertedDto dtoConvertion, PaymentGatewayName paymentGatewayName) =>
+        public static Transaction ToEntity(this CreatePaymentTransactionDto dto, 
+            CurrencyConvertedDto dtoConvertion, 
+            PaymentGatewayName paymentGatewayName, 
+            string merchantId) =>
             dto is null
             ? new Transaction()
             : new Transaction()
@@ -86,7 +89,7 @@
                 PaymentGatewayTransactionId = dtoConvertion?.PaymentGatewayTransactionId ?? string.Empty,
                 TransactionType = TransactionType.Payment,
                 TransactionReference = dto.TransactionReference ?? string.Empty,
-                MerchantId = "TODO"
+                MerchantId = merchantId
             };
     }
 }

@@ -8,7 +8,7 @@
     public class DecisionConfigurationService : IDecisionConfigurationService
     {
 
-        public List<PaymentGatewayName> GetPossiblePaymentGateway(AuthorizationRequestDto authorizationRequestDto,
+        public List<PaymentGatewayName> GetPossiblePaymentGateway(MerchantAuthorizationDto authorizationRequestDto,
             CreatePaymentTransactionDto createPaymentTransactionDto)
         {
             // TODO - call external service

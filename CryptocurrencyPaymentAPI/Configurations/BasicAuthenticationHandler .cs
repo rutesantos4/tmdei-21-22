@@ -48,10 +48,31 @@
                 // TODO - Call external API
                 if (credentials[0] == "admin" && credentials[1] == "admin")
                 {
-                    var authorizationRequest = new AuthorizationRequestDto()
+                    var authorizationRequest = new MerchantAuthorizationDto()
                     {
                         Username = credentials[0],
                         Password = credentials[1],
+                        MerchantId = "admin",
+                        AuthorizationHeader = authHeader
+                    };
+                    Context.Items["authorizationRequest"] = authorizationRequest;
+
+                    var claims = new[] {
+                        new Claim(ClaimTypes.NameIdentifier, credentials[0]),
+                        new Claim(ClaimTypes.Role, "Merchant")
+                    };
+                    var identity = new ClaimsIdentity(claims, "Basic");
+                    var claimsPrincipal = new ClaimsPrincipal(identity);
+                    return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
+                }
+                if (credentials[0] == "merchant-tests" && credentials[1] == "merchant-tests")
+                {
+                    var authorizationRequest = new MerchantAuthorizationDto()
+                    {
+                        Username = credentials[0],
+                        Password = credentials[1],
+                        MerchantId = "merchantId-Test",
+                        AuthorizationHeader = authHeader
                     };
                     Context.Items["authorizationRequest"] = authorizationRequest;
 

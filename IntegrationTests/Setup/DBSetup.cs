@@ -29,6 +29,7 @@
                 .With(e => e.DomainIdentifier, TransactionRateExpired)
                 .With(e => e.Details, details)
                 .With(e => e.TransactionState, CryptocurrencyPaymentAPI.Model.Enums.TransactionState.CurrencyConverted)
+                .With(e => e.MerchantId, "merchantId-Test")
                 .Create();
             db.Transactions.Add(entity);
 
@@ -37,6 +38,7 @@
                 .With(e => e.IsDeleted, false)
                 .With(e => e.DomainIdentifier, TransactionFailded)
                 .With(e => e.TransactionState, CryptocurrencyPaymentAPI.Model.Enums.TransactionState.Failed)
+                .With(e => e.MerchantId, "merchantId-Test")
                 .Create();
             db.Transactions.Add(transactionFailed);
 
@@ -45,6 +47,7 @@
                 .With(e => e.IsDeleted, false)
                 .With(e => e.DomainIdentifier, TransactionTransmitted)
                 .With(e => e.TransactionState, CryptocurrencyPaymentAPI.Model.Enums.TransactionState.Transmitted)
+                .With(e => e.MerchantId, "merchantId-Test")
                 .Create();
             db.Transactions.Add(transactionTransmitted);
 

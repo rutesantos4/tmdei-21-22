@@ -37,6 +37,7 @@
         {
             // Arrange
             var transaction = fixture.Create<Transaction>();
+            var merchantAuthorizationDto = fixture.Build<MerchantAuthorizationDto>().With(x => x.MerchantId, transaction.MerchantId).Create();
             var paymentCreatedDto = fixture.Create<PaymentCreatedDto>();
             transactionServiceMock
                 .Setup(x => x.CreateTransaction(It.IsAny<ConfirmPaymentTransactionDto>()))
@@ -51,14 +52,14 @@
                 .ReturnsAsync(transaction);
 
             paymentValidationMock
-                .Setup(x => x.ValidateTransactionConfirm(transaction));
+                .Setup(x => x.ValidateTransactionConfirm(transaction, merchantAuthorizationDto.MerchantId));
 
             // Act
-            var result = await paymentService.CreatePaymentTransaction(transaction.DomainIdentifier);
+            var result = await paymentService.CreatePaymentTransaction(merchantAuthorizationDto, transaction.DomainIdentifier);
 
             // Assert
             transactionServiceMock.Verify(x => x.CreateTransaction(It.IsAny<ConfirmPaymentTransactionDto>()), Times.Once);
-            paymentValidationMock.Verify(x => x.ValidateTransactionConfirm(transaction), Times.Once);
+            paymentValidationMock.Verify(x => x.ValidateTransactionConfirm(transaction, merchantAuthorizationDto.MerchantId), Times.Once);
             transactionRepositoryMock.Verify(x => x.GetByDomainIdentifier(transaction.DomainIdentifier), Times.Once);
             result.Should().NotBeNull();
             result.Should().BeOfType<GetInitTransactionDto>();
@@ -72,7 +73,7 @@
             var createPaymentTransactionDto = fixture.Create<CreatePaymentTransactionDto>();
             var currencyConvertedDto = fixture.Create<CurrencyConvertedDto>();
             transactionServiceMock
-                .Setup(x => x.GetCurrencyRates(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()))
+                .Setup(x => x.GetCurrencyRates(It.IsAny<MerchantAuthorizationDto>(), It.IsAny<CreatePaymentTransactionDto>()))
                 .Returns(currencyConvertedDto);
 
             transactionRepositoryMock
@@ -80,10 +81,10 @@
                 .ReturnsAsync(transaction);
 
             // Act
-            var result = await paymentService.ConvertFiatToCryptocurrency(fixture.Create<AuthorizationRequestDto>(), createPaymentTransactionDto);
+            var result = await paymentService.ConvertFiatToCryptocurrency(fixture.Create<MerchantAuthorizationDto>(), createPaymentTransactionDto);
 
             // Assert
-            transactionServiceMock.Verify(x => x.GetCurrencyRates(It.IsAny<AuthorizationRequestDto>(), It.IsAny<CreatePaymentTransactionDto>()), Times.Once);
+            transactionServiceMock.Verify(x => x.GetCurrencyRates(It.IsAny<MerchantAuthorizationDto>(), It.IsAny<CreatePaymentTransactionDto>()), Times.Once);
             paymentValidationMock.Verify(x => x.ValidatePaymentTransactionCreation(createPaymentTransactionDto), Times.Once);
             transactionRepositoryMock.Verify(x => x.Add(It.IsAny<Transaction>()), Times.Once);
             result.Should().NotBeNull();
@@ -95,17 +96,18 @@
         {
             // Arrange
             var transaction = fixture.Create<Transaction>();
-            paymentValidationMock.Setup(x => x.ValidateTransactionGet(transaction));
+            var merchantAuthorizationDto = fixture.Build<MerchantAuthorizationDto>().With(x => x.MerchantId, transaction.MerchantId).Create();
+            paymentValidationMock.Setup(x => x.ValidateTransactionGet(transaction, merchantAuthorizationDto.MerchantId));
 
             transactionRepositoryMock
                 .Setup(x => x.GetByDomainIdentifier(It.IsAny<string>()))
                 .ReturnsAsync(transaction);
 
             // Act
-            var result = await paymentService.GetTransaction(It.IsAny<string>());
+            var result = await paymentService.GetTransaction(merchantAuthorizationDto, transaction.TransactionReference);
 
             // Assert
-            paymentValidationMock.Verify(x => x.ValidateTransactionGet(transaction), Times.Once);
+            paymentValidationMock.Verify(x => x.ValidateTransactionGet(transaction, merchantAuthorizationDto.MerchantId), Times.Once);
             transactionRepositoryMock.Verify(x => x.GetByDomainIdentifier(It.IsAny<string>()), Times.Once);
             result.Should().NotBeNull();
             result.Should().BeOfType<GetTransactionDto>();
