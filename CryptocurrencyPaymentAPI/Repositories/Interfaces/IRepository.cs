@@ -3,7 +3,6 @@
     using CryptocurrencyPaymentAPI.Model.Entities;
 
     public interface IRepository<T> where T : BaseEntity
-
     {
         Task<T> GetById(long id);
         Task<T> GetByDomainIdentifier(string domainIdentifier);

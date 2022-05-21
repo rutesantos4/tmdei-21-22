@@ -1,5 +1,6 @@
 ﻿namespace CryptocurrencyPaymentAPI.Utils
 {
+    using CryptocurrencyPaymentAPI.Middlewares;
     using CryptocurrencyPaymentAPI.Validations.Exceptions;
     using log4net;
     using Newtonsoft.Json;
@@ -91,7 +92,17 @@
             else
             {
                 log.Info("Failed to get REST Response");
-                var message = $"Status Code: {(int)response.StatusCode}, Reason: {response.ReasonPhrase}";
+                var message = string.Empty;
+                string result = response.Content.ReadAsStringAsync().Result;
+                try
+                {
+                    var jObject = JsonConvert.DeserializeObject<ExceptionResult>(result);
+                    message = $"{jObject?.Message}";
+                }
+                catch
+                {
+                    message = $"Status Code: {(int)response.StatusCode}, Reason: {response.ReasonPhrase}";
+                }
                 log.Debug(message);
 
                 throw new RestClientException(

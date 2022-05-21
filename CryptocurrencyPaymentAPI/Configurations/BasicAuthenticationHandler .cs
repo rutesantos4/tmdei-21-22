@@ -1,30 +1,33 @@
 ﻿namespace CryptocurrencyPaymentAPI.Configurations
 {
     using CryptocurrencyPaymentAPI.DTOs.Request;
+    using CryptocurrencyPaymentAPI.Utils;
     using CryptocurrencyPaymentAPI.Validations.Exceptions;
     using log4net;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Options;
     using Microsoft.Extensions.Primitives;
-    using System.Net.Http.Headers;
     using System.Reflection;
     using System.Security.Claims;
-    using System.Text;
     using System.Text.Encodings.Web;
 
     public class BasicAuthenticationHandler : AuthenticationHandler<AuthenticationSchemeOptions>
     {
         private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
+        private const string AUTHORIZATION_SERVICE_UNEXPECTED_ERROR = "The authorization service is not responding. Please, try again later.";
         private readonly IConfiguration configuration;
+        private readonly IRestClient restClient;
 
         public BasicAuthenticationHandler(
            IOptionsMonitor<AuthenticationSchemeOptions> options,
            ILoggerFactory logger,
            UrlEncoder encoder,
            ISystemClock clock,
-           IConfiguration configuration) : base(options, logger, encoder, clock)
+           IConfiguration configuration,
+           IRestClient restClient) : base(options, logger, encoder, clock)
         {
             this.configuration = configuration;
+            this.restClient = restClient;
         }
 
         protected override Task<AuthenticateResult> HandleAuthenticateAsync()
@@ -35,61 +38,49 @@
                 throw new NotAuthorizedException("Missing Authorization Header");
             }
 
-            var authEndPoint = this.configuration.GetSection("AuthEndPoint")?.Value;
-            log.Debug($"authEndPoint {authEndPoint}");
-
-            var authHeader = authHeaderStringValues.ToString();
-            if (authHeader != null && authHeader.StartsWith("basic", StringComparison.OrdinalIgnoreCase))
+            try
             {
-                var token = AuthenticationHeaderValue.Parse(authHeaderStringValues).Parameter ?? string.Empty;
-                log.Debug($"Auth {token}");
-                var credentialstring = Encoding.UTF8.GetString(Convert.FromBase64String(token));
-                var credentials = credentialstring.Split(':', 2);
-                // TODO - Call external API
-                if (credentials[0] == "admin" && credentials[1] == "admin")
+                var authEndPoint = this.configuration.GetSection("AuthEndPoint")?.Value;
+                if(authEndPoint == null)
                 {
-                    var authorizationRequest = new MerchantAuthorizationDto()
-                    {
-                        Username = credentials[0],
-                        Password = credentials[1],
-                        MerchantId = "admin",
-                        AuthorizationHeader = authHeader
-                    };
-                    Context.Items["authorizationRequest"] = authorizationRequest;
-
-                    var claims = new[] {
-                        new Claim(ClaimTypes.NameIdentifier, credentials[0]),
-                        new Claim(ClaimTypes.Role, "Merchant")
-                    };
-                    var identity = new ClaimsIdentity(claims, "Basic");
-                    var claimsPrincipal = new ClaimsPrincipal(identity);
-                    return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
+                    throw new ServiceUnavailableException(AUTHORIZATION_SERVICE_UNEXPECTED_ERROR);
                 }
-                if (credentials[0] == "merchant-tests" && credentials[1] == "merchant-tests")
-                {
-                    var authorizationRequest = new MerchantAuthorizationDto()
-                    {
-                        Username = credentials[0],
-                        Password = credentials[1],
-                        MerchantId = "merchantId-Test",
-                        AuthorizationHeader = authHeader
-                    };
-                    Context.Items["authorizationRequest"] = authorizationRequest;
+                log.Debug($"authEndPoint {authEndPoint}");
 
-                    var claims = new[] {
-                        new Claim(ClaimTypes.NameIdentifier, credentials[0]),
-                        new Claim(ClaimTypes.Role, "Merchant")
-                    };
-                    var identity = new ClaimsIdentity(claims, "Basic");
-                    var claimsPrincipal = new ClaimsPrincipal(identity);
-                    return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
+                var authHeader = authHeaderStringValues.ToString();
+                var authResponse = restClient.Get<MerchantAuthorizationDto>(
+                    authEndPoint, 
+                    string.Empty, 
+                    out var responseHeaders, 
+                    new Dictionary<string, string>() { { "Authorization", authHeader } });
+
+
+                if (authResponse == null)
+                {
+                    throw new ServiceUnavailableException(AUTHORIZATION_SERVICE_UNEXPECTED_ERROR);
                 }
 
-                throw new NotAuthorizedException("Invalid Username or Password");
+                Context.Items["authorizationRequest"] = authResponse;
+
+                var claims = new[] {
+                            new Claim(ClaimTypes.NameIdentifier, authResponse.MerchantId),
+                            new Claim(ClaimTypes.Role, "Merchant")
+                        };
+                var identity = new ClaimsIdentity(claims, "Basic");
+                var claimsPrincipal = new ClaimsPrincipal(identity);
+                return Task.FromResult(AuthenticateResult.Success(new AuthenticationTicket(claimsPrincipal, Scheme.Name)));
+
             }
-            else
+            catch (RestClientException ex)
             {
-                throw new NotAuthorizedException("Invalid Authorization Header");
+                if (ex.Status == (int)System.Net.HttpStatusCode.Unauthorized)
+                {
+                    throw new NotAuthorizedException(ex.Message);
+                }
+                else
+                {
+                    throw new ServiceUnavailableException(AUTHORIZATION_SERVICE_UNEXPECTED_ERROR);
+                }
             }
         }
     }
