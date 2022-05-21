@@ -12,7 +12,7 @@
             ping = new System.Net.NetworkInformation.Ping();
         }
 
-        public void Dispose() => ping.Dispose();
+        //public void Dispose() => ping.Dispose();
 
 
         public PingReply Send(string address)

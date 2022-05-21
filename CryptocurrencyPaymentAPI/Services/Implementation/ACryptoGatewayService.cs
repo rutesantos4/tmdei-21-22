@@ -33,8 +33,8 @@
             }
             else
             {
-                using (Pinger)
-                {
+                //using (Pinger)
+                //{
                     try
                     {
                         Uri uri = new(ConvertCurrencyEndPoint);
@@ -51,12 +51,12 @@
                     }
                     finally
                     {
-                        if (Pinger != null)
-                        {
-                            Pinger.Dispose();
-                        }
+                        //if (Pinger != null)
+                        //{
+                        //    Pinger.Dispose();
+                        //}
                     }
-                }
+                //}
             }
 
             return pingable;

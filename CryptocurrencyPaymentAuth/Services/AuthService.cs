@@ -36,7 +36,7 @@
 
             var merchant = await merchantRepository.Authenticate(username, password);
 
-            if(merchant == null)
+            if (merchant == null)
             {
                 throw new NotAuthorizedException("Invalid Username or Password");
             }

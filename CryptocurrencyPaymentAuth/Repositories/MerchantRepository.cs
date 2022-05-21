@@ -1,8 +1,8 @@
 ﻿namespace CryptocurrencyPaymentAuth.Repositories
 {
     using CryptocurrencyPaymentAuth.Model;
-    using System.Threading.Tasks;
     using System.Linq;
+    using System.Threading.Tasks;
 
     public class MerchantRepository : IMerchantRepository
     {

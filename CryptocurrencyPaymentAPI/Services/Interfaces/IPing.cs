@@ -2,7 +2,7 @@
 {
     using CryptocurrencyPaymentAPI.Services.Implementation;
 
-    public interface IPing : IDisposable
+    public interface IPing /*: IDisposable*/
     {
         PingReply Send(string address);
     }
