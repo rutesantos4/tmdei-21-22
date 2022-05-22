@@ -41,7 +41,7 @@
             try
             {
                 var authEndPoint = this.configuration.GetSection("AuthEndPoint")?.Value;
-                if(authEndPoint == null)
+                if (authEndPoint == null)
                 {
                     throw new ServiceUnavailableException(AUTHORIZATION_SERVICE_UNEXPECTED_ERROR);
                 }
@@ -49,9 +49,9 @@
 
                 var authHeader = authHeaderStringValues.ToString();
                 var authResponse = restClient.Get<MerchantAuthorizationDto>(
-                    authEndPoint, 
-                    string.Empty, 
-                    out var responseHeaders, 
+                    authEndPoint,
+                    string.Empty,
+                    out var responseHeaders,
                     new Dictionary<string, string>() { { "Authorization", authHeader } });
 
 

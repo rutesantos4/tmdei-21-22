@@ -27,7 +27,7 @@
             this.transactionService = transactionService;
         }
 
-        public async Task<GetInitTransactionDto> CreatePaymentTransaction(MerchantAuthorizationDto authorizationRequestDto,  string transactionId)
+        public async Task<GetInitTransactionDto> CreatePaymentTransaction(MerchantAuthorizationDto authorizationRequestDto, string transactionId)
         {
             log.Info($"Confirm Payment transaction '{transactionId}'");
 

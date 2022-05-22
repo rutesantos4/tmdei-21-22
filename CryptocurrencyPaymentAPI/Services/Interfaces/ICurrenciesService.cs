@@ -2,12 +2,10 @@
 {
     using CryptocurrencyPaymentAPI.DTOs.Request;
     using CryptocurrencyPaymentAPI.DTOs.Response;
-    using CryptocurrencyPaymentAPI.Model.Enums;
     using System.Threading.Tasks;
 
-    public interface IDecisionConfigurationService
+    public interface ICurrenciesService
     {
-        List<PaymentGatewayName> GetPossiblePaymentGateway(MerchantAuthorizationDto authorizationRequestDto, CreatePaymentTransactionDto createPaymentTransactionDto);
         Task<GetCryptoFromFiatCurrencyDto> GetCryptoFromFiatCurrency(MerchantAuthorizationDto authorizationRequestDto, string currency);
     }
 }

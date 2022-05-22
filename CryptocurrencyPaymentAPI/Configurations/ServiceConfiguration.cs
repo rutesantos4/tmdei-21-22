@@ -13,6 +13,7 @@
             services.AddTransient<ITransactionService, TransactionService>();
             services.AddTransient<IDecisionConfigurationService, DecisionConfigurationService>();
             services.AddTransient<INotificationService, NotificationService>();
+            services.AddTransient<ICurrenciesService, CurrenciesService>();
 
             services.AddTransient<ICryptoGatewayFactory, CryptoGatewayFactory>();
             services.AddTransient<IRestClient, RestClient>();

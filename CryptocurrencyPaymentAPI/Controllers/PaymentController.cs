@@ -43,7 +43,7 @@
         public async Task<ActionResult<GetTransactionDto>> GetTransaction(
             [FromRoute] string transactionId)
         {
-            log.Info($"Confirm Payment transaction '{transactionId}'");
+            log.Info($"Get Payment transaction '{transactionId}'");
             // Added on BasicAuthenticationHandler
             var authorizationRequestDto = HttpContext?.Items["authorizationRequest"] as MerchantAuthorizationDto ?? new MerchantAuthorizationDto();
             return Ok(await transactionService.GetTransaction(authorizationRequestDto, transactionId));

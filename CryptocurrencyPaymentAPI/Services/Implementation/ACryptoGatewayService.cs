@@ -35,27 +35,27 @@
             {
                 //using (Pinger)
                 //{
-                    try
-                    {
-                        Uri uri = new(ConvertCurrencyEndPoint);
-                        PingReply reply = Pinger.Send(uri.Host);
-                        pingable = reply.Status == IPStatus.Success;
-                    }
-                    catch (PingException ex)
-                    {
-                        log.Error(ex.Message);
-                    }
-                    catch (Exception ex)
-                    {
-                        log.Error($"Unexpected exception {ex.Message}");
-                    }
-                    finally
-                    {
-                        //if (Pinger != null)
-                        //{
-                        //    Pinger.Dispose();
-                        //}
-                    }
+                try
+                {
+                    Uri uri = new(ConvertCurrencyEndPoint);
+                    PingReply reply = Pinger.Send(uri.Host);
+                    pingable = reply.Status == IPStatus.Success;
+                }
+                catch (PingException ex)
+                {
+                    log.Error(ex.Message);
+                }
+                catch (Exception ex)
+                {
+                    log.Error($"Unexpected exception {ex.Message}");
+                }
+                finally
+                {
+                    //if (Pinger != null)
+                    //{
+                    //    Pinger.Dispose();
+                    //}
+                }
                 //}
             }
 
