@@ -77,7 +77,7 @@
 
             decisionConfigurationServiceMock
                 .Setup(e => e.GetPossiblePaymentGateway(It.IsAny<MerchantAuthorizationDto>(), It.IsAny<CreatePaymentTransactionDto>()))
-                .Returns(listPossiblePaymentGateways);
+                .Returns(listPossiblePaymentGateways!);
 
             factory = new CryptoGatewayFactory(configurationMock.Object, pingMock.Object, restClientMock.Object, decisionConfigurationServiceMock.Object);
 

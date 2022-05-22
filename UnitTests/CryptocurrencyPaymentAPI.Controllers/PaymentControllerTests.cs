@@ -35,7 +35,7 @@
                 .ReturnsAsync(expected);
 
             // Act
-            var actionResult = await controller.ConfirmPaymentTransaction(It.IsAny<string>());
+            var actionResult = await controller.ConfirmPaymentTransaction(fixture.Create<string>());
 
             // Assert
             paymentServiceMock.Verify();
@@ -54,7 +54,7 @@
                 .ReturnsAsync(expected);
 
             // Act
-            var actionResult = await controller.CreatePaymentTransaction(It.IsAny<CreatePaymentTransactionDto>());
+            var actionResult = await controller.CreatePaymentTransaction(fixture.Create<CreatePaymentTransactionDto>());
 
             // Assert
             paymentServiceMock.Verify();
@@ -73,7 +73,7 @@
                 .ReturnsAsync(expected);
 
             // Act
-            var actionResult = await controller.GetTransaction(It.IsAny<string>());
+            var actionResult = await controller.GetTransaction(fixture.Create<string>());
 
             // Assert
             paymentServiceMock.Verify();

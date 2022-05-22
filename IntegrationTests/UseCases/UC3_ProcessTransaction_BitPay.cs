@@ -53,7 +53,7 @@
             // Act
             var response = await httpClient.PostAsJsonAsync(baseUrl + transactionId, body);
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
-            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx.Message.ToString());
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message.ToString()!);
 
             // Assert
             Assert.NotNull(response);
@@ -74,7 +74,7 @@
             // Act
             var response = await httpClient.PostAsJsonAsync(baseUrl + transactionId, body);
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
-            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx.Message.ToString());
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message.ToString()!);
 
             // Assert
             Assert.NotNull(response);
@@ -95,7 +95,7 @@
             // Act
             var response = await httpClient.PostAsJsonAsync(baseUrl + transactionId, body);
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
-            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx.Message.ToString());
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message.ToString()!);
 
             // Assert
             Assert.NotNull(response);

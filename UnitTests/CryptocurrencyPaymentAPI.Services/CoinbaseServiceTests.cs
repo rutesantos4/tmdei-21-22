@@ -105,7 +105,7 @@
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
-                ).Returns(response);
+                ).Returns(response!);
 
             // Act
             var result = service.CreateTransaction(confirmPaymentTransactionDto);
@@ -281,7 +281,7 @@
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
-                ).Returns(response);
+                ).Returns(response!);
 
 
             // Act
@@ -403,7 +403,7 @@
         public void OnServiceWorking_GivenNullPinger_ShouldReturnFalse()
         {
             // Arrange
-            var CoinbaseService = new CoinbaseService(restClientMock.Object, configurationMock.Object, null);
+            var CoinbaseService = new CoinbaseService(restClientMock.Object, configurationMock.Object, null!);
 
             // Act
             var result = CoinbaseService.ServiceWorking();

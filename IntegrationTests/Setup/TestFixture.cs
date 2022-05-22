@@ -28,7 +28,7 @@
                 var descriptor = services.SingleOrDefault(d =>
                     d.ServiceType == typeof(DbContextOptions<DatabaseContext>));
 
-                if(descriptor != null)
+                if (descriptor != null)
                     _ = services.Remove(descriptor);
 
                 services.AddDbContext<DatabaseContext>(options =>

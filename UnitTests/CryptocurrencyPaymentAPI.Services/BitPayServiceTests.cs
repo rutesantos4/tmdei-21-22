@@ -54,7 +54,7 @@
             // Arrange
             var confirmPaymentTransactionDto = fixture.Build<ConfirmPaymentTransactionDto>().With(x => x.CryptoCurrency, cryptocurrency).Create();
             var invoiceResponseData = fixture
-                .Build<InvoiceResponseData >()
+                .Build<InvoiceResponseData>()
                 .With(x => x.CurrentTime, DateTimeOffset.Now.ToUnixTimeMilliseconds())
                 .With(x => x.ExpirationTime, DateTimeOffset.Now.AddMinutes(15).ToUnixTimeMilliseconds())
                 .Create();
@@ -113,7 +113,7 @@
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
-                ).Returns(invoiceResponse);
+                ).Returns(invoiceResponse!);
 
             // Act
             var result = service.CreateTransaction(confirmPaymentTransactionDto);
@@ -242,7 +242,7 @@
 
             Dictionary<string, string> responseHeaders;
             restClientMock
-                .Setup(x => 
+                .Setup(x =>
                             x.Get<BitPayRates>(url + createPaymentTransactionDto.FiatCurrency,
                                                 It.IsAny<string>(),
                                                 out responseHeaders,
@@ -264,7 +264,7 @@
             var result = service.GetCurrencyRates(createPaymentTransactionDto);
 
             // Assert
-            restClientMock.Verify(x => 
+            restClientMock.Verify(x =>
                 x.Get<object>(It.IsAny<string>(), It.IsAny<string>(), out responseHeaders, It.IsAny<Dictionary<string, string>>()), Times.Once);
 
             result.Should().NotBeNull();
@@ -294,7 +294,7 @@
                                                 out responseHeaders,
                                                 It.IsAny<Dictionary<string, string>>()
                                                )
-                ).Returns(bitPayRates);
+                ).Returns(bitPayRates!);
 
             // Act
             var result = service.GetCurrencyRates(createPaymentTransactionDto);
@@ -321,7 +321,7 @@
 
             BitPayRates bitPayRates = new()
             {
-                Data = null
+                Data = null!
             };
 
             Dictionary<string, string> responseHeaders;
@@ -414,7 +414,7 @@
         public void OnServiceWorking_GivenNullPinger_ShouldReturnFalse()
         {
             // Arrange
-            var bitpayService = new BitPayService(restClientMock.Object, configurationMock.Object, null);
+            var bitpayService = new BitPayService(restClientMock.Object, configurationMock.Object, null!);
 
             // Act
             var result = bitpayService.ServiceWorking();
@@ -439,8 +439,8 @@
         public void OnServiceWorking_GivenException_ShouldReturnFalse()
         {
             // Arrange
-            pingMock.Setup(x => x.Send(It.IsAny<string>())).Throws(new System.NullReferenceException(fixture.Create<string>()));
-            
+            pingMock.Setup(x => x.Send(It.IsAny<string>())).Throws(new NullReferenceException(fixture.Create<string>()));
+
             // Act
             var result = service.ServiceWorking();
 
@@ -471,7 +471,7 @@
             var pingReply = fixture.Build<PingReply>().With(e => e.Status, IPStatus.Success).Create();
 
             pingMock.Setup(x => x.Send(It.IsAny<string>())).Returns(pingReply);
-            
+
             // Act
             var result = service.ServiceWorking();
 

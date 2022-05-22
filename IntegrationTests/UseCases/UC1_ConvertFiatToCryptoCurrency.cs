@@ -117,13 +117,13 @@
             var amount = fixture.Create<double>() % 1;
             var dto = fixture
                 .Build<CreatePaymentTransactionDto>()
-                .With(e => e.Amount, amount )
+                .With(e => e.Amount, amount)
                 .Create();
 
             // Act
             var response = await httpClient.PostAsJsonAsync(baseUrl, dto);
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
-            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx.Message.ToString());
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message.ToString()!);
 
             // Assert
             Assert.NotNull(response);
@@ -147,7 +147,7 @@
             // Act
             var response = await httpClient.PostAsJsonAsync(baseUrl, dto);
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
-            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString());
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString()!);
 
             // Assert
             Assert.NotNull(response);
@@ -171,7 +171,7 @@
             // Act
             var response = await httpClient.PostAsJsonAsync(baseUrl, dto);
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
-            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString());
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString()!);
 
             // Assert
             Assert.NotNull(response);
@@ -198,7 +198,7 @@
             // Act
             var response = await httpClient.PostAsJsonAsync(baseUrl, dto);
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
-            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString());
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString()!);
 
             // Assert
             Assert.NotNull(response);
@@ -258,7 +258,7 @@
             var responseMessageCreate = await responseCreate.Content.ReadFromJsonAsync<GetRatesDto>();
 
             // Act
-            var response = await httpClient.GetAsync($"{baseUrl}/{responseMessageCreate.TransactionId}");
+            var response = await httpClient.GetAsync($"{baseUrl}/{responseMessageCreate?.TransactionId}");
             var responseMessage = await response.Content.ReadFromJsonAsync<GetTransactionDto>();
 
             // Assert
@@ -269,7 +269,7 @@
             Assert.Equal("Payment", responseMessage?.TransactionType);
             Assert.Equal("CurrencyConverted", responseMessage?.TransactionState);
             Assert.Equal(dto.TransactionReference, responseMessage?.MerchantTransactionReference);
-            Assert.Equal(responseMessageCreate.TransactionId, responseMessage?.TransactionReference);
+            Assert.Equal(responseMessageCreate?.TransactionId, responseMessage?.TransactionReference);
             Assert.NotNull(responseMessage?.PaymentGateway);
             Assert.NotEmpty(responseMessage?.PaymentGateway);
             Assert.NotNull(responseMessage?.Details);
@@ -280,11 +280,11 @@
             Assert.Equal(DateTime.UtcNow.Date, responseMessage?.Details.Conversion.DateTime.Date);
             Assert.Equal(DateTime.UtcNow.Date, responseMessage?.Details.Conversion?.ExpiryDate?.Date);
             Assert.NotNull(responseMessage?.Details.Conversion?.FiatCurrency);
-            Assert.Equal(responseMessageCreate.FiatCurrency, responseMessage?.Details.Conversion?.FiatCurrency?.Currency);
-            Assert.Equal(responseMessageCreate.Amount, responseMessage?.Details.Conversion?.FiatCurrency?.Amount);
+            Assert.Equal(responseMessageCreate?.FiatCurrency, responseMessage?.Details.Conversion?.FiatCurrency?.Currency);
+            Assert.Equal(responseMessageCreate?.Amount, responseMessage?.Details.Conversion?.FiatCurrency?.Amount);
             Assert.NotNull(responseMessage?.Details.Conversion?.CryptoCurrency);
-            Assert.Equal(responseMessageCreate.Rate?.Currency, responseMessage?.Details.Conversion?.CryptoCurrency?.Currency);
-            Assert.Equal(responseMessageCreate.Rate?.Amount, responseMessage?.Details.Conversion?.CryptoCurrency?.Amount);
+            Assert.Equal(responseMessageCreate?.Rate?.Currency, responseMessage?.Details.Conversion?.CryptoCurrency?.Currency);
+            Assert.Equal(responseMessageCreate?.Rate?.Amount, responseMessage?.Details.Conversion?.CryptoCurrency?.Amount);
             Assert.Null(responseMessage?.Details.Init);
             Assert.Null(responseMessage?.Details.Debit);
         }
@@ -300,7 +300,7 @@
             httpClient.DefaultRequestHeaders.Add("Authorization", testFixture.AuthorizationHeader2);
             var response = await httpClient.GetAsync($"{baseUrl}/{transactionId}");
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
-            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString());
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString()!);
 
             // Assert
             Assert.NotNull(response);
@@ -320,7 +320,7 @@
             // Act
             var response = await httpClient.GetAsync($"{baseUrl}/{transactionId}");
             var responseMessageEx = await response.Content.ReadFromJsonAsync<ExceptionResult>();
-            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString());
+            var responseMessage = JsonSerializer.Deserialize<ApplicationErrorCollection>(responseMessageEx?.Message?.ToString()!);
 
             // Assert
             Assert.NotNull(response);

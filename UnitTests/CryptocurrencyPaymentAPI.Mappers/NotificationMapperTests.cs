@@ -2,11 +2,9 @@
 {
     using AutoFixture;
     using FluentAssertions;
-    using global::CryptocurrencyPaymentAPI.DTOs.Response;
     using global::CryptocurrencyPaymentAPI.Mappers;
     using global::CryptocurrencyPaymentAPI.Model.Entities;
     using global::CryptocurrencyPaymentAPI.Model.Enums;
-    using global::CryptocurrencyPaymentAPI.Model.ValueObjects;
     using global::CryptocurrencyPaymentAPI.Services.Implementation;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
     using System;
