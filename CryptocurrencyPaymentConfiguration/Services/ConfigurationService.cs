@@ -1,5 +1,6 @@
 ﻿namespace CryptocurrencyPaymentConfiguration.Services
 {
+    using CryptocurrencyPaymentAPI.DTOs.Response;
     using CryptocurrencyPaymentConfiguration.DTOs;
     using CryptocurrencyPaymentConfiguration.Model;
     using CryptocurrencyPaymentConfiguration.Repositories;
@@ -15,6 +16,27 @@
         {
             _logger = logger;
             this.configurationRepository = configurationRepository;
+        }
+
+        public async Task<CryptoFromFiatCurrencyDto> GetCryptoFromFiatCurrency(string merchantId, string currency)
+        {
+            var merchant = await configurationRepository.GetByMerchantId(merchantId);
+
+            if (merchant == null)
+            {
+                return new CryptoFromFiatCurrencyDto();
+            }
+
+            List<string> listCrypto = merchant.CurrencyPaymentGateways
+                .Where(x => x.FiatCurrency == currency)
+                .Select(x => x.CryptoCurrency)
+                .ToList();
+
+            return new CryptoFromFiatCurrencyDto()
+            {
+                FiatCurrency = currency,
+                Cryptocurrencies = listCrypto
+            };
         }
 
         public async Task<DecisionTransactionResponseDto> GetPossiblePaymentGateways(DecisionTransactionRequestDto decisionTransactionRequestDto)
