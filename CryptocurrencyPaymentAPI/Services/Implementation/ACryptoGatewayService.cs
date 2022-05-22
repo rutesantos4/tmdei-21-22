@@ -33,8 +33,6 @@
             }
             else
             {
-                //using (Pinger)
-                //{
                 try
                 {
                     Uri uri = new(ConvertCurrencyEndPoint);
@@ -49,14 +47,6 @@
                 {
                     log.Error($"Unexpected exception {ex.Message}");
                 }
-                finally
-                {
-                    //if (Pinger != null)
-                    //{
-                    //    Pinger.Dispose();
-                    //}
-                }
-                //}
             }
 
             return pingable;

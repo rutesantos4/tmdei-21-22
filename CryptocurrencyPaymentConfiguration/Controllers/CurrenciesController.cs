@@ -22,7 +22,7 @@
             [FromRoute] string currency,
             [FromRoute] string merchantId)
         {
-            _logger.LogInformation($"Get Cryptocurrencies that can be converted from Fiat currency '{currency}'");
+            _logger.LogInformation($"GetCryptoFromFiatCurrency");
             return Ok(await configurationService.GetCryptoFromFiatCurrency(merchantId, currency));
         }
     }

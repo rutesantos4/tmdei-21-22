@@ -64,8 +64,6 @@
                 possiblePaymentGateways = currencyPaymentGateways.PaymentGatewayNames;
             }
 
-            _logger.LogInformation($"possiblePaymentGateways\n{JsonConvert.SerializeObject(possiblePaymentGateways, Formatting.Indented)}");
-
             return new DecisionTransactionResponseDto()
             {
                 PaymentGateways = possiblePaymentGateways

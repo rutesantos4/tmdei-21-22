@@ -3,7 +3,6 @@ namespace CryptocurrencyPaymentConfiguration.Controllers
     using CryptocurrencyPaymentConfiguration.DTOs;
     using CryptocurrencyPaymentConfiguration.Services;
     using Microsoft.AspNetCore.Mvc;
-    using Newtonsoft.Json;
 
     [ApiController]
     [Route("[controller]")]
@@ -21,7 +20,7 @@ namespace CryptocurrencyPaymentConfiguration.Controllers
         [HttpPost]
         public async Task<ActionResult<DecisionTransactionResponseDto>> GetPossiblePaymentGateways([FromBody] DecisionTransactionRequestDto decisionTransactionRequestDto)
         {
-            _logger.LogInformation($"GetPossiblePaymentGateways\n{JsonConvert.SerializeObject(decisionTransactionRequestDto, Formatting.Indented)}");
+            _logger.LogInformation("GetPossiblePaymentGateways");
             return Ok(await configurationService.GetPossiblePaymentGateways(decisionTransactionRequestDto));
         }
     }

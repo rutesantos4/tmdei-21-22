@@ -20,7 +20,7 @@ namespace CryptocurrencyPaymentAuth.Controllers
         [HttpGet]
         public async Task<ActionResult<MerchantAuthorizationDto>> IsAuthorized([FromHeader] string authorization)
         {
-            _logger.LogInformation($"IsAuthorized({authorization})");
+            _logger.LogInformation($"IsAuthorized");
             return Ok(await authService.IsAuthorized(authorization));
         }
     }
