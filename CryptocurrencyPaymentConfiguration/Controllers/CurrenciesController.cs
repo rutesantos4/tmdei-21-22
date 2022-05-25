@@ -2,19 +2,20 @@
 {
     using CryptocurrencyPaymentAPI.DTOs.Response;
     using CryptocurrencyPaymentConfiguration.Services;
+    using log4net;
     using Microsoft.AspNetCore.Mvc;
+    using System.Reflection;
 
     [ApiController]
     [Route("[controller]")]
     public class CurrenciesController : ControllerBase
     {
-        private readonly ILogger<ConfigurationController> _logger;
+        private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         private readonly IConfigurationService configurationService;
 
-        public CurrenciesController(ILogger<ConfigurationController> logger, IConfigurationService configurationService)
+        public CurrenciesController(IConfigurationService configurationService)
         {
             this.configurationService = configurationService;
-            _logger = logger;
         }
 
         [HttpGet("fiat/{currency}/{merchantId}")]
@@ -22,7 +23,7 @@
             [FromRoute] string currency,
             [FromRoute] string merchantId)
         {
-            _logger.LogInformation($"GetCryptoFromFiatCurrency");
+            _logger.Info($"GetCryptoFromFiatCurrency");
             return Ok(await configurationService.GetCryptoFromFiatCurrency(merchantId, currency));
         }
     }

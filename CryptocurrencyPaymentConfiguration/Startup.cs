@@ -2,6 +2,7 @@
 {
     using CryptocurrencyPaymentConfiguration.Configurations;
     using CryptocurrencyPaymentConfiguration.Middlewares;
+    using Microsoft.Extensions.Logging;
 
     public class Startup
     {
@@ -28,6 +29,8 @@
             {
                 app.UseDeveloperExceptionPage();
             }
+
+            loggerFactory.AddLog4Net();
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 

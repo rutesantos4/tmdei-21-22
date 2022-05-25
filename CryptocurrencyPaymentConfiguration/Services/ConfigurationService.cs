@@ -4,17 +4,18 @@
     using CryptocurrencyPaymentConfiguration.DTOs;
     using CryptocurrencyPaymentConfiguration.Model;
     using CryptocurrencyPaymentConfiguration.Repositories;
+    using log4net;
     using Newtonsoft.Json;
+    using System.Reflection;
     using System.Threading.Tasks;
 
     public class ConfigurationService : IConfigurationService
     {
-        private readonly ILogger<IConfigurationService> _logger;
+        private static readonly ILog _logger = LogManager.GetLogger(MethodBase.GetCurrentMethod()?.DeclaringType);
         private readonly IConfigurationRepository configurationRepository;
 
-        public ConfigurationService(ILogger<IConfigurationService> logger, IConfigurationRepository configurationRepository)
+        public ConfigurationService(IConfigurationRepository configurationRepository)
         {
-            _logger = logger;
             this.configurationRepository = configurationRepository;
         }
 
@@ -42,7 +43,7 @@
         public async Task<DecisionTransactionResponseDto> GetPossiblePaymentGateways(DecisionTransactionRequestDto decisionTransactionRequestDto)
         {
             var merchant = await configurationRepository.GetByMerchantId(decisionTransactionRequestDto.MerchantId);
-            _logger.LogInformation($"merchant\n{JsonConvert.SerializeObject(merchant, Formatting.Indented)}");
+            _logger.Info($"merchant\n{JsonConvert.SerializeObject(merchant, Formatting.Indented)}");
 
             var possiblePaymentGateways = new List<PaymentGatewayName>();
 

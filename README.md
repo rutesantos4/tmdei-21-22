@@ -32,7 +32,7 @@ Run the following command in the project directory (`/CryptocurrencyPaymentAPI`)
 
 2. Execute the tests and perform the code coverage of unit tests
 
-	dotnet test ../IntegrationTests/IntegrationTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+		dotnet test ../IntegrationTests/IntegrationTests.csproj /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
 
 3. Begin the SonarQube Analysis
 
