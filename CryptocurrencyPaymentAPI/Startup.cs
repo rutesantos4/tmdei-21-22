@@ -44,6 +44,7 @@
             loggerFactory.AddLog4Net();
 
             app.UseMiddleware<ExceptionHandlingMiddleware>();
+            app.UseMiddleware<SwaggerBasicAuthMiddleware>();
 
             app.UseSwagger();
 
