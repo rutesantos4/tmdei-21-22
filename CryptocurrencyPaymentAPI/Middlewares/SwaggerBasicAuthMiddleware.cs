@@ -28,6 +28,7 @@
                     {
                         context.RequestServices.GetService<Services.Interfaces.IAuthenticationService>()?.AuthenticateMerchant(authHeader);
 
+                        SetResponseHeaders(context.Response.Headers);
                         await next.Invoke(context).ConfigureAwait(false);
                         return;
                     }
@@ -36,13 +37,20 @@
                         log.Debug(ex);
                     }
                 }
-                context.Response.Headers["WWW-Authenticate"] = "Basic";
+                SetResponseHeaders(context.Response.Headers);
+                context.Response.Headers.WWWAuthenticate = "Basic";
                 context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
             }
             else
             {
                 await next.Invoke(context).ConfigureAwait(false);
             }
+        }
+
+        private static void SetResponseHeaders(IHeaderDictionary headers)
+        {
+            headers.CacheControl = "no-store";
+            headers.Pragma = "no-cache";
         }
     }
 }
