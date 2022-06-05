@@ -52,6 +52,7 @@
             headers.CacheControl = "no-store";
             headers.Pragma = "no-cache";
             headers.XFrameOptions = "SAMEORIGIN";
+            headers.StrictTransportSecurity = "max-age=31536000; includeSubDomains; preload";
         }
     }
 }

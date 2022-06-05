@@ -39,6 +39,9 @@
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+            } else
+            {
+                app.UseHsts();
             }
 
             loggerFactory.AddLog4Net();
