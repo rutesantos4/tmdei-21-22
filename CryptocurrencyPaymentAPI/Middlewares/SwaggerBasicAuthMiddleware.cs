@@ -51,6 +51,7 @@
         {
             headers.CacheControl = "no-store";
             headers.Pragma = "no-cache";
+            headers.XFrameOptions = "SAMEORIGIN";
         }
     }
 }
