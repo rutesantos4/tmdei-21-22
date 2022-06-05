@@ -2,7 +2,6 @@ namespace CryptocurrencyPaymentAPI
 {
     using Microsoft.AspNetCore.Hosting;
     using Microsoft.Extensions.Hosting;
-    using System.Net.Security;
     using System.Security.Authentication;
 
     public static class Program
