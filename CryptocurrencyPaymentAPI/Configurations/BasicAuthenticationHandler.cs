@@ -82,6 +82,10 @@
                     throw new ServiceUnavailableException(AUTHORIZATION_SERVICE_UNEXPECTED_ERROR);
                 }
             }
+            catch (Exception)
+            {
+                throw new ServiceUnavailableException(AUTHORIZATION_SERVICE_UNEXPECTED_ERROR);
+            }
         }
     }
 }

@@ -63,6 +63,6 @@
         public string TransactionFailded => DBSetup.TransactionFailded;
         public string TransactionTransmitted => DBSetup.TransactionTransmitted;
         public string AuthorizationHeader => "Basic bWVyY2hhbnQtdGVzdHM6bWVyY2hhbnQtdGVzdHM=";
-        public string AuthorizationHeader2 => "Basic YWRtaW46YWRtaW4=";
+        public string AuthorizationHeader2 => "Basic YWRtaW4tYXV0aGVudGljYXRlZDphZG1pbi1hdXRoZW50aWNhdGVk";
     }
 }

@@ -1,6 +1,7 @@
 ﻿namespace CryptocurrencyPaymentAPI
 {
     using CryptocurrencyPaymentAPI.Configurations;
+    using CryptocurrencyPaymentAPI.Configurations.SwaggerConfiguration;
     using CryptocurrencyPaymentAPI.Middlewares;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Logging;
@@ -46,7 +47,10 @@
 
             app.UseSwagger();
 
-            app.UseSwaggerUI();
+            app.UseSwaggerUI(swaggerUiOptions =>
+            {
+                swaggerUiOptions.DefaultModelsExpandDepth(-1);
+            });
 
             app.UseHttpsRedirection();
 

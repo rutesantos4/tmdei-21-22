@@ -2,6 +2,7 @@
 {
     using CryptocurrencyPaymentAPI;
     using CryptocurrencyPaymentAPI.Configurations;
+    using CryptocurrencyPaymentAPI.Configurations.SwaggerConfiguration;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
@@ -17,6 +18,7 @@
         {
             services.AddSwaggerGen();
             services.ConfigureProject();
+            services.ConfigureSwagger();
             services.AddMvc();
             services.AddControllers().AddApplicationPart(typeof(Startup).Assembly);
 

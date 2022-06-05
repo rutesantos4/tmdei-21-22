@@ -1,4 +1,4 @@
-﻿namespace CryptocurrencyPaymentAPI.Configurations
+﻿namespace CryptocurrencyPaymentAPI.Configurations.SwaggerConfiguration
 {
     using Microsoft.OpenApi.Models;
 
@@ -29,6 +29,8 @@
                     Array.Empty<string>()
                 }
             });
+            c.OperationFilter<SwaggerAuthOperationFilter>();
+            c.DocumentFilter<SwaggerDocumentFilter>();
         });
     }
 }
