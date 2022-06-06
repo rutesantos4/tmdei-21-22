@@ -1,6 +1,7 @@
 ﻿namespace CryptocurrencyPaymentAPI.Configurations
 {
     using CryptocurrencyPaymentAPI.Validations.Exceptions;
+    using CryptocurrencyPaymentAPI.Validations.ValidationMessages;
     using Microsoft.AspNetCore.Authentication;
     using Microsoft.Extensions.Options;
     using Microsoft.Extensions.Primitives;
@@ -26,15 +27,11 @@
             bool hasAuthHeader = Request.Headers.TryGetValue("Authorization", out StringValues authHeaderStringValues);
             if (!hasAuthHeader)
             {
-                throw new NotAuthorizedException("Missing Authorization Header");
+                throw new NotAuthorizedException(ErrorCodes.MissingAuthorizationHeader.Message);
             }
             var authHeader = authHeaderStringValues.ToString();
             var authResponse = authenticationService.AuthenticateMerchant(authHeader);
 
-            if (authResponse == null)
-            {
-                return Task.FromResult(AuthenticateResult.Fail("Invalid Authorization Header"));
-            }
             Context.Items["authorizationRequest"] = authResponse;
 
             var claims = new[] {

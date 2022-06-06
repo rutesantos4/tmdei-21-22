@@ -4,10 +4,10 @@
     using CryptocurrencyPaymentAPI.Services.Interfaces;
     using CryptocurrencyPaymentAPI.Utils;
     using CryptocurrencyPaymentAPI.Validations.Exceptions;
+    using CryptocurrencyPaymentAPI.Validations.ValidationMessages;
 
     public class AuthenticationService : IAuthenticationService
     {
-        private const string AUTHORIZATION_SERVICE_UNEXPECTED_ERROR = "The authorization service is not responding. Please, try again later.";
 
         private readonly IRestClient restClient;
         private readonly string? authEndPoint;
@@ -24,7 +24,7 @@
             {
                 if (authEndPoint == null)
                 {
-                    throw new ServiceUnavailableException(AUTHORIZATION_SERVICE_UNEXPECTED_ERROR);
+                    throw new ServiceUnavailableException(ErrorCodes.AuthorizationServiceNotResponding.Message);
                 }
 
                 var authResponse = restClient.Get<MerchantAuthorizationDto>(
@@ -35,7 +35,7 @@
 
                 if (authResponse == null)
                 {
-                    throw new ServiceUnavailableException(AUTHORIZATION_SERVICE_UNEXPECTED_ERROR);
+                    throw new ServiceUnavailableException(ErrorCodes.AuthorizationServiceNotResponding.Message);
                 }
 
                 return authResponse;
@@ -48,12 +48,12 @@
                 }
                 else
                 {
-                    throw new ServiceUnavailableException(AUTHORIZATION_SERVICE_UNEXPECTED_ERROR);
+                    throw new ServiceUnavailableException(ErrorCodes.AuthorizationServiceNotResponding.Message);
                 }
             }
             catch (Exception)
             {
-                throw new ServiceUnavailableException(AUTHORIZATION_SERVICE_UNEXPECTED_ERROR);
+                throw new ServiceUnavailableException(ErrorCodes.AuthorizationServiceNotResponding.Message);
             }
         }
     }

@@ -17,5 +17,8 @@
         public static readonly ValidationMessage TransactionExpired = new(401, "Transaction expired.");
         public static readonly ValidationMessage TransactionOverPaid = new(402, "Transaction was overpaid by the customer.");
         public static readonly ValidationMessage TransactionUnderPaid = new(403, "Transaction was underpaid by the customer.");
+
+        public static readonly ValidationMessage MissingAuthorizationHeader = new(500, "Missing Authorization Header");
+        public static readonly ValidationMessage AuthorizationServiceNotResponding = new(501, "The authorization service is not responding. Please, try again later.");
     }
 }

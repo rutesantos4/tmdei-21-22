@@ -162,7 +162,7 @@
             return (amount * double.Parse(fiatCurrencyResult.Rate_btc)) / double.Parse(cryptocurrencyResult.Rate_btc);
         }
 
-        private string BuildQuery(SortedList<string, string> parms)
+        private static string BuildQuery(SortedList<string, string> parms)
         {
             var pJsonContent = new StringBuilder();
             foreach (KeyValuePair<string, string> parm in parms)

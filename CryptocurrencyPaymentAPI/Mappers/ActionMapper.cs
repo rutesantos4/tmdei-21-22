@@ -8,6 +8,20 @@
 
     public static class ActionMapper
     {
+        public static InitAction ToEntity(this PaymentCreatedDto dto) =>
+            dto is null
+            ? new InitAction()
+            : new InitAction()
+            {
+                ActionName = ActionType.Init,
+                DateTime = DateTime.UtcNow,
+                Success = true,
+                ExpiryDate = dto.ExpiryDate,
+                PaymentInfo = GetPaymentInfo(dto),
+                Message = null,
+                Code = null
+            };
+
         public static GetConversionActionDto ToDto(this ConversionAction entity) =>
             entity is null
             ? new GetConversionActionDto()
@@ -21,20 +35,6 @@
                 CryptoCurrency = entity.CryptoCurrency.ToDto(),
                 Reason = entity.Code,
                 Message = entity.Message,
-            };
-
-        public static InitAction ToEntity(this PaymentCreatedDto dto) =>
-            dto is null
-            ? new InitAction()
-            : new InitAction()
-            {
-                ActionName = ActionType.Init,
-                DateTime = DateTime.UtcNow,
-                Success = true,
-                ExpiryDate = dto.ExpiryDate,
-                PaymentInfo = GetPaymentInfo(dto),
-                Message = null,
-                Code = null
             };
 
         public static GetInitActionDto? ToDto(this InitAction entity) =>
