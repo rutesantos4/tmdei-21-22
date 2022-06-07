@@ -4,6 +4,7 @@
     using FluentAssertions;
     using global::CryptocurrencyPaymentAPI.Validations.Exceptions;
     using Microsoft.VisualStudio.TestTools.UnitTesting;
+    using System.Net;
 
     [TestClass]
     public class NotAuthorizedExceptionTests
@@ -27,6 +28,34 @@
 
             // Assert
             result.Should().Be(message);
+        }
+
+        [TestMethod]
+        public void OnGetErrorMessage_GivenAString_ShouldReturnValidMessage()
+        {
+            // Arrange
+            var message = fixture.Create<string>();
+            var exception = new NotAuthorizedException(message);
+
+            // Act
+            var result = exception.ErrorMessage;
+
+            // Assert
+            result.Should().Be(message);
+        }
+
+        [TestMethod]
+        public void OnGetStatusCode_GivenAString_ShouldReturnValidMessage()
+        {
+            // Arrange
+            var message = fixture.Create<string>();
+            var exception = new NotAuthorizedException(message);
+
+            // Act
+            var result = exception.StatusCode;
+
+            // Assert
+            result.Should().Be((int)HttpStatusCode.Unauthorized);
         }
     }
 }

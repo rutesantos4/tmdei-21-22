@@ -60,6 +60,8 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.True(response.Headers.Contains("WWW-Authenticate"));
+            Assert.NotEmpty(response.Headers.GetValues("WWW-Authenticate"));
             Assert.NotNull(responseMessageEx);
             Assert.Equal("Missing Authorization Header", responseMessageEx?.Message.ToString());
         }
@@ -83,6 +85,8 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.True(response.Headers.Contains("WWW-Authenticate"));
+            Assert.NotEmpty(response.Headers.GetValues("WWW-Authenticate"));
             Assert.NotNull(responseMessageEx);
             Assert.Equal("Invalid Authorization Header", responseMessageEx?.Message.ToString());
         }
@@ -106,6 +110,8 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+            Assert.True(response.Headers.Contains("WWW-Authenticate"));
+            Assert.NotEmpty(response.Headers.GetValues("WWW-Authenticate"));
             Assert.NotNull(responseMessageEx);
             Assert.Equal("Invalid Username or Password", responseMessageEx?.Message.ToString());
         }
@@ -128,6 +134,7 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
             Assert.Single(responseMessage?.ErrorMessages);
@@ -152,6 +159,7 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
             Assert.Single(responseMessage?.ErrorMessages);
@@ -176,6 +184,7 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
             Assert.Single(responseMessage?.ErrorMessages);
@@ -203,6 +212,7 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
             Assert.Equal(3, responseMessage?.ErrorMessages.Count);
@@ -229,6 +239,7 @@
             Assert.NotNull(response);
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.NotNull(responseMessage?.TransactionId);
             Assert.NotEmpty(responseMessage?.TransactionId);
@@ -265,6 +276,7 @@
             Assert.NotNull(response);
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal("Payment", responseMessage?.TransactionType);
             Assert.Equal("CurrencyConverted", responseMessage?.TransactionState);
@@ -305,6 +317,7 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
             Assert.Single(responseMessage?.ErrorMessages);
@@ -325,6 +338,7 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
             Assert.Single(responseMessage?.ErrorMessages);

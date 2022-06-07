@@ -1,10 +1,11 @@
 ﻿namespace CryptocurrencyPaymentAPI.Validations.Exceptions
 {
     using CryptocurrencyPaymentAPI.Validations.ValidationMessages;
+    using System.Net;
     using System.Runtime.Serialization;
 
     [Serializable]
-    public class ValidationException : Exception
+    public class ValidationException : Exception, IException
     {
         private const string BaseMessage = "Invalid operation, check the collection of errors for more details.";
 
@@ -23,5 +24,9 @@
         {
             ErrorCollection = new ApplicationErrorCollection();
         }
+
+        public int StatusCode { get => (int)HttpStatusCode.BadRequest; }
+
+        public object ErrorMessage { get => ErrorCollection; }
     }
 }

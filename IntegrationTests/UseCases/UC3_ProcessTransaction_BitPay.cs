@@ -58,6 +58,7 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
             Assert.Single(responseMessage?.ErrorMessages);
@@ -79,6 +80,7 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
             Assert.Single(responseMessage?.ErrorMessages);
@@ -100,6 +102,7 @@
             // Assert
             Assert.NotNull(response);
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal(errorBaseMessage, responseMessage?.BaseMessage);
             Assert.Single(responseMessage?.ErrorMessages);
@@ -129,6 +132,7 @@
             Assert.NotNull(response);
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.Empty(responseMessageEx);
         }
 
@@ -156,6 +160,7 @@
             Assert.NotNull(response);
             Assert.True(response.IsSuccessStatusCode);
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.False(response.Headers.Contains("WWW-Authenticate"));
             Assert.NotNull(responseMessage);
             Assert.Equal("Payment", responseMessage?.TransactionType);
             Assert.Equal("Transmitted", responseMessage?.TransactionState);

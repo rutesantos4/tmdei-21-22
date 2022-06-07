@@ -28,32 +28,23 @@
                 var response = context.Response;
                 response.ContentType = "application/json";
                 object message;
-                switch (error)
+
+                if (error is IException exception)
                 {
-                    case NotAuthorizedException exception:
-                        // custom application error
-                        response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                        response.Headers.Add("WWW-Authenticate", "Basic realm=\"dotnetthoughts.net\"");
-                        message = exception.Message;
-                        break;
+                    // custom application error
+                    response.StatusCode = exception.StatusCode;
+                    message = exception.ErrorMessage;
 
-                    case ValidationException exception:
-                        // custom application error
-                        response.StatusCode = (int)HttpStatusCode.BadRequest;
-                        message = exception.ErrorCollection;
-                        break;
-
-                    case ServiceUnavailableException exception:
-                        // custom application error
-                        response.StatusCode = (int)HttpStatusCode.ServiceUnavailable;
-                        message = exception.Message;
-                        break;
-
-                    default:
-                        // unhandled error
-                        response.StatusCode = (int)HttpStatusCode.InternalServerError;
-                        message = error?.Message ?? string.Empty;
-                        break;
+                    if (response.StatusCode == (int)HttpStatusCode.Unauthorized)
+                    {
+                        response.Headers.WWWAuthenticate = "Basic realm=\"dotnetthoughts.net\"";
+                    }
+                }
+                else
+                {
+                    // unhandled error
+                    response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                    message = error?.Message ?? string.Empty;
                 }
 
                 var result = JsonSerializer.Serialize(new ExceptionResult(message));
